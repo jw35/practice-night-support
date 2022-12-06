@@ -130,8 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom user from https://pypi.org/project/django-use-email-as-username/
 AUTH_USER_MODEL = 'custom_user.User'
 
-LOGIN_REDIRECT_URL = "dashboard"
-LOGOUT_REDIRECT_URL = "dashboard"
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
 
 # Needs '$ python -m smtpd -n -c DebuggingServer localhost:1025'
 EMAIL_HOST = "localhost"

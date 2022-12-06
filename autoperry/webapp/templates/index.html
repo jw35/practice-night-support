@@ -1,0 +1,24 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'authn.html' %}
+
+{% block heading %}Welcome to Auto-Perry{% endblock %}
+
+{% block content %}
+
+<p>This is the Bellringing Practice Night Support service of the Cambridge District of the Ely Diocesan Association of Church Bell Ringers.</p>
+
+<ul>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'my-events' %}">Your events</a></li>
+    <li><a href="{% url 'create-event' %}">Create a new event</a></li>
+    {% endif %}
+    <li><a href="{% url 'events' %}">Events needing volunteers</a></li>
+    <li><a href="{% url 'events' %}?all=1">All events</a></li>
+</ul>
+
+{% if not user.is_authenticated %}
+<p><a href="{% url 'login' %}">Login</a> to see events you have volunteered for and events you manage and to create events.</p>
+{% endif %}
+
+{% endblock %}

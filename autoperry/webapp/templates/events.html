@@ -1,0 +1,29 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'authn.html' %}
+
+{% block heading %}Auto-Perry: Events{% endblock %}
+
+{% block content %}
+
+<p>Events listing.</p>
+
+{% if request.GET.all %}
+  {% if request.GET.past %}
+     <p>Showing all events (past and future).</p>
+  {% else %}
+     <p>Showing all future events.</p>
+  {% endif %}
+{% else %}
+<p>Showing only upcoming events needing volunteers.</p>
+{% endif %}
+
+<p>{{ heading }}</p>
+
+<ul>
+{% for event in events %}
+    <li>{{ event }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
