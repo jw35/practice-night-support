@@ -1,0 +1,74 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'authn.html' %}
+
+{% block heading %}Auto-Perry: Event Details{% endblock %}
+
+{% block content %}
+
+<h2>Event Details</h2>
+
+{% if event.cancelled %}
+   <p><b>*** This event has been cancelled ***</b></p>
+{% endif %}
+
+<dl>
+    <dt>Date</dt>
+    <dd>{{event.start|date:"l, j M Y"}}</dd>
+
+    <dt>Start</dt>
+    <dd>{{event.start|date:"g:i a"}}</dd>
+
+    <dt>End</dt>
+    <dd>{{event.end|date:"g:i a"}}</dd>
+
+    <dt>Location</dt>
+    <dd>{{event.location}}</dd>
+
+    <dt>Requested helpers</dt>
+    <dd>{{event.helpers_required}}</dd>
+
+    <dt>Current helpers</dt>
+    <dd>{{event.helpers.all|length}}
+
+    <dt>Event created</dt>
+    <dd>{{event.created|date:"l, j M Y g:i a"}}</dd>
+
+    {% if event.cancelled %}
+    <dt>Event cancelled</dt>
+    <dd>{{event.cancelled|date:"l, j M Y g:i a"}}</dd>
+    {% endif %}
+
+</dd>
+
+{% if user.is_authenticated %}
+
+    {% if is_owner %}
+    <p>You are the organiser of this event.
+        {% if event.helpers.all %}
+    The helpers for this event are currently:</p>
+    <ul>
+          {% for helper in event.helpers.all %}
+        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+          {% endfor %}
+    </ul>
+        {% else %}
+    This event currently has no helpers.</dl>
+        {% endif %}
+    {% else %}
+    <p>You are not the organiser of this event.</p>
+    {% endif %}
+
+    {% if is_helper %}
+    <p>You are currently a helper for this event. The event is being organised by {{ event.owner.get_full_name }} ({{ event.owner.email|urlize }}).
+    {% else %}
+    <p>You are not currently a helper for this event{% if event.helpers_required > event.helpers.all|length %} (<a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>){% endif %}.</p>
+    {% endif %}
+
+{% else %}
+
+<p><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a> to see more information for events you are organising or have volunteered to help with, or to volunteer for this one.</p>
+
+{% endif %}
+
+{% endblock %}

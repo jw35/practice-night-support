@@ -18,7 +18,7 @@
 </ul>
 
 {% if not user.is_authenticated %}
-<p><a href="{% url 'login' %}">Login</a> to see events you have volunteered for and events you manage and to create events.</p>
+<p><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a> to see events you have volunteered for and events you manage and to create events.</p>
 {% endif %}
 
 {% endblock %}
