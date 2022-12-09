@@ -40,7 +40,10 @@ def events(request):
             event_list = event_list.filter(start__gte=timezone.now())
             heading = "All future events"
     else:
-        event_list = event_list.filter(start__gte=timezone.now()).filter(helpers_required__gt=F("helpers_available"))
+        event_list = (event_list
+                      .filter(start__gte=timezone.now())
+                      .filter(cancelled=None)
+                      .filter(helpers_required__gt=F("helpers_available")))
         heading = "Events needing helpers"
     return render(request, "events.html",
         context={'events': event_list, 'heading': heading})
