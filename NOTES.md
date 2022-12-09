@@ -8,6 +8,5 @@ Dummy SMTP server for development: `python -m smtpd -n -c DebuggingServer localh
 
 Development server on http://127.0.0.1:8000/: `cd autoperry/; ./manage.py runserver`
 
-User dashboard: `http://127.0.0.1:8000/dashboard/`
 
 USer registration: `http://127.0.0.1:8000/register/`
