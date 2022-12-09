@@ -32,7 +32,7 @@
          <td>{{event.helpers_required}}</td>
          <td>{{event.helpers_available}}</td>
          <td>
-            {% if event.helpers_required > event.helpers_available %}
+            {% if event.helpers_required > event.helpers_available and not event.cancelled and not event.past %}
               <a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>
             {% else %}
               ---

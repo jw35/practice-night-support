@@ -1,4 +1,5 @@
-from django.db import models    
+from django.db import models
+from django.utils import timezone
 
 from custom_user.models import User
 
@@ -18,6 +19,14 @@ class Event(models.Model):
     @property
     def end(self):
         return self.start + self.duration
+
+    @property
+    def past(self):
+        return self.start < timezone.now()
+
+    @property
+    def helpers_needed(self):
+        return self.helpers_required > len(self.helpers.all()) and not self.cancelled and not self.past
 
     def __str__(self):
     	return (self.location +

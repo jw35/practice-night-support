@@ -33,7 +33,7 @@ def register(request):
             return redirect(reverse("index"))
 
 def events(request):
-    event_list = Event.objects.all().annotate(helpers_available=Count('volunteer'))
+    event_list = Event.objects.all().annotate(helpers_available=Count('volunteer')).order_by('start')
     if 'all' in request.GET:
         heading = "All events"
         if 'past' not in request.GET:
@@ -46,7 +46,9 @@ def events(request):
                       .filter(helpers_required__gt=F("helpers_available")))
         heading = "Events needing helpers"
     return render(request, "events.html",
-        context={'events': event_list, 'heading': heading})
+        context={'events': event_list,
+                 'heading': heading,
+                 })
 
 @login_required
 def volunteer(request, event_id):
