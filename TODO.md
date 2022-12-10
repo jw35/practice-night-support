@@ -15,18 +15,11 @@ TODO
 * [DONE] Event detail page
          * [DONE] Filter volunteer links on event cancelled and user already volunteered
 * [DONE] Event cancellation page
-*        Volunteer for event page (auth rqd.)
-         *        Can't volunteer if
-                  *        Event in the past
-                  *        Event cancelled
-                  *        User already volunteered
-* Cancel volunteering (auth rqd.)
-         *        Can't cancel if
-                  *        User not already volunteered
-                  *        Event cancelled
-                  *        Event in the past
+* [DONE] Volunteer for event page (auth rqd.)
+* [DONE] Cancel volunteering (auth rqd.)
 * Abstract out event listing componenet
 * Rework event listing to use new component
 * Add 'upcomming events with not enough helpers' to index page
 * Review url structure (esp event/events)
-* Rework event listing with toggle button future/all, drop upcomming needing volounteres
+* Rework event listing with toggle button future/all, drop upcomming needing volunteers
+* Should we show 'Volounteer' link in tables if already volountered?
