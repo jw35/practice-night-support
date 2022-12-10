@@ -29,3 +29,4 @@ TODO
 * Rework event listing to use new component
 * Add 'upcomming events with not enough helpers' to index page
 * Review url structure (esp event/events)
+* Rework event listing with toggle button future/all, drop upcomming needing volounteres
