@@ -8,6 +8,14 @@
 
 <h2>Event Details</h2>
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% if event.past %}
    <p><b>*** This event has already happened ***</b></p>
 {% elif event.cancelled %}
@@ -46,17 +54,22 @@
 {% if user.is_authenticated %}
 
     {% if is_owner %}
-    <p>You are the organiser of this event.
+    <p>You are the organiser of this event:<p>
+        <ul>
         {% if event.helpers.all %}
-    The helpers for this event are currently:</p>
+    <li>The helpers for this event are currently:
     <ul>
           {% for helper in event.helpers.all %}
         <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
           {% endfor %}
-    </ul>
+    </ul></li>
         {% else %}
-    This event currently has no helpers.</dl>
+    <li>This event currently has no helpers.</li>
         {% endif %}
+        {% if not event.cancelled %}
+    <li>You can <a href="{% url 'cancel-event'  event_id=event.pk %}">cancel</a> this event.</li>
+        {% endif %}
+    </ul>
     {% else %}
     <p>You are not the organiser of this event.</p>
     {% endif %}
@@ -72,5 +85,7 @@
 <p><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a> to see more information for events you are organising or have volunteered to help with, or to volunteer for this one.</p>
 
 {% endif %}
+
+<p><a href="{% url 'events' %}">Event list</a></p>
 
 {% endblock %}

@@ -5,8 +5,12 @@ from webapp.forms import CustomUserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, F
 from django.utils import timezone
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 
-from webapp.models import Event
+from .models import Event
+from .forms import EventForm
 
 # Create your views here.
 
@@ -86,4 +90,47 @@ def my_events(request):
 
 @login_required()
 def create_event(request):
-    return render(request, "create-event.html")
+
+    if request.method == 'POST':
+
+        form = EventForm(request.POST)
+
+        if form.is_valid():
+
+            event = Event.objects.create(start=form.cleaned_data['start'],
+                                 duration=form.cleaned_data['duration'],
+                                 location=form.cleaned_data['location'],
+                                 helpers_required=form.cleaned_data['helpers_required'],
+                                 owner=request.user)
+            messages.success(request, 'Event created')
+
+            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+
+    else:
+        form = EventForm()
+
+    return render(request, 'create-event.html', {'form': form})
+
+@login_required()
+def cancel_event(request, event_id):
+
+    event = get_object_or_404(Event, pk=event_id)
+    errors = []
+
+    user = request.user
+    if not user.is_authenticated or user.get_username() != event.owner.get_username():
+        errors.append('You are not the owner of this event')
+
+    if event.cancelled:
+        errors.append('This event has already been cancelled')
+
+    if not errors and request.method == 'POST':
+        event.cancelled = timezone.now()
+        event.save()
+
+        messages.success(request, 'Event cancelled')
+
+        return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+
+    return render(request, 'cancel-event.html', {'event': event, 'errors': errors})
+
