@@ -7,14 +7,14 @@ TODO
 *        User cancellation page (auth rqd.)
          *        Need to cancel any events first
          *        Need to cancel any volunteering first
-*        User dashboard (my events and my volounteering)  (auth rqd.)
-*        New Event page (auth rqd.)
+*        User dashboard (my events and my volounteering)  (auth rqd.) (use new component, see below)
+* [DONE] New Event page (auth rqd.)
 * [DONE] Event listing page
          *        Add navigation for all/past
-         *        Filter volunteer links on event cancelled and user already volunteered
+         * [DONE] Filter volunteer links on event cancelled and user already volunteered
 * [DONE] Event detail page
-         *        Filter volunteer links on event cancelled and user already volunteered
-*        Event cancellation page
+         * [DONE] Filter volunteer links on event cancelled and user already volunteered
+* [DONE] Event cancellation page
 *        Volunteer for event page (auth rqd.)
          *        Can't volunteer if
                   *        Event in the past
@@ -25,3 +25,7 @@ TODO
                   *        User not already volunteered
                   *        Event cancelled
                   *        Event in the past
+* Abstract out event listing componenet
+* Rework event listing to use new component
+* Add 'upcomming events with not enough helpers' to index page
+* Review url structure (esp event/events)
