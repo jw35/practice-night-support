@@ -1,0 +1,60 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'authn.html' %}
+
+{% block heading %}Auto-Perry: Event Cancellation{% endblock %}
+
+{% block content %}
+
+<h2>Event Cancellation</h2>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<dl>
+    <dt>Date</dt>
+    <dd>{{event.start|date:"l, j M Y"}}</dd>
+
+    <dt>Start</dt>
+    <dd>{{event.start|date:"g:i a"}}</dd>
+
+    <dt>End</dt>
+    <dd>{{event.end|date:"g:i a"}}</dd>
+
+    <dt>Location</dt>
+    <dd>{{event.location}}</dd>
+</dl>
+
+{% if errors %}
+<ul>
+{% for error in errors %}
+  <li>{{ error }}</li>
+{% endfor %}
+</ul>
+
+{% else %}
+
+{% if event.helpers.all %}
+<p>There are currently helpers for this event. If you are going to cancel it then you need to let them know:</p>
+    <ul>
+          {% for helper in event.helpers.all %}
+        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+          {% endfor %}
+    </ul>
+{% endif %}
+
+<p>Are you sure you want to cancel this event?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Cancel event">
+</form>
+
+{% endif %}
+
+{% endblock %}

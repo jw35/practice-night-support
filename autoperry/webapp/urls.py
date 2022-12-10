@@ -7,10 +7,10 @@ urlpatterns = [
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"register/", views.register, name="register"),
     path(r"events/", views.events, name="events"),
-    path(r"my-events/", views.my_events, name="my-events"),
+    path(r"events/mine/", views.my_events, name="my-events"),
     path(r"event/create/", views.create_event, name="create-event"),
     path(r"event/<int:event_id>/", views.event_details, name="event_details"),
     path(r"event/<int:event_id>/cancel", views.cancel_event, name="cancel-event"),
-    path(r"event/<int:event_id>/volunteer/", views.volunteer, name="volunteer")
-
+    path(r"event/<int:event_id>/volunteer/", views.volunteer, name="volunteer"),
+    path(r"event/<int:event_id>/unvolunteer/", views.unvolunteer, name="unvolunteer")
 ]

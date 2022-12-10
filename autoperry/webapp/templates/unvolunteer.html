@@ -1,0 +1,50 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'authn.html' %}
+
+{% block heading %}Auto-Perry: Un-volunteer for an Event{% endblock %}
+
+{% block content %}
+
+<h2>Un-volunteer for an Event</h2>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<dl>
+    <dt>Date</dt>
+    <dd>{{event.start|date:"l, j M Y"}}</dd>
+
+    <dt>Start</dt>
+    <dd>{{event.start|date:"g:i a"}}</dd>
+
+    <dt>End</dt>
+    <dd>{{event.end|date:"g:i a"}}</dd>
+
+    <dt>Location</dt>
+    <dd>{{event.location}}</dd>
+</dl>
+
+{% if errors %}
+<ul>
+{% for error in errors %}
+  <li>{{ error }}</li>
+{% endfor %}
+</ul>
+{% else %}
+
+<p>Please confirm this is the event you want to un-volunteer for.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" name="confirm" value="Un-volunteer">  <input type="submit" name="cancel" value="Cancell">
+</form>
+
+{% endif %}
+
+{% endblock %}
