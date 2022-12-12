@@ -27,5 +27,5 @@ TODO
 * [DONE] Add a UniqueConstraint on user/event in Volunteers
 * Add transaction protection to update views
 * User cancellation and user suspension
-* [DONE] Rework 'user has volunteered' or 'user owns event' tests to use equality
-* Rename 'set' relations in Event
+* Rework 'user has volunteered' or 'user owns event' tests to use equality
+* [DONE] Rename 'set' relations in Event
