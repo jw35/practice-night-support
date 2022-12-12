@@ -22,7 +22,7 @@
          <td>{{event.helpers_required}}</td>
          <td>{{event.helpers_available}}</td>
          <td>
-            {% if event.helpers_needed %}
+            {% if event.helpers_needed and user not in event.helpers.all %}
               <a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>
             {% else %}
               ---

@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
 from pprint import pprint
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm
@@ -21,13 +21,16 @@ from django.http import HttpResponse
 
 
 def index(request):
+    user = request.user
+
     event_list = (Event.objects.all()
                   .filter(start__gte=timezone.now())
                   .filter(start__lte=timezone.now()+timedelta(days=14))
                   .filter(cancelled=None)
-                  .annotate(helpers_available=Count('volunteer'))
+                  .annotate(helpers_available=Count('helpers'))
                   .filter(helpers_required__gt=F("helpers_available"))
                   .order_by('start'))
+
     return render(request, "index.html", context={'events': event_list})
 
 def dashboard(request):
@@ -70,19 +73,14 @@ def event_details(request, event_id):
 
     user = request.user
 
-    is_owner = user.is_authenticated and user.get_username() == event.owner.get_username()
+    is_owner = user.is_authenticated and user == event.owner
 
-    is_helper = False
-    if user.is_authenticated:
-        for helper in event.helpers.all():
-            if helper.get_username() == user.get_username():
-                is_helper = True
-                break
+    is_helper = user.is_authenticated and user in event.helpers.all()
 
     return render(request, "event.html",
         context={'event': event,
-                 'is_owner': is_owner,
-                 'is_helper': is_helper
+                 'user_is_owner': is_owner,
+                 'user_is_helper': is_helper
                 })
 
 @login_required()
@@ -98,8 +96,11 @@ def create_event(request):
 
         if form.is_valid():
 
-            event = Event.objects.create(start=form.cleaned_data['start'],
-                                 duration=form.cleaned_data['duration'],
+            start = datetime.combine(form.cleaned_data['date'], form.cleaned_data['time'])
+            duration = timedelta(hours=form.cleaned_data['hours'], minutes=form.cleaned_data['minutes'])
+
+            event = Event.objects.create(start=start,
+                                 duration=duration,
                                  location=form.cleaned_data['location'],
                                  helpers_required=form.cleaned_data['helpers_required'],
                                  owner=request.user)
@@ -119,7 +120,7 @@ def cancel_event(request, event_id):
     errors = []
 
     user = request.user
-    if not user.is_authenticated or user.get_username() != event.owner.get_username():
+    if user != event.owner:
         errors.append('You are not the owner of this event')
 
     if event.past:
@@ -149,10 +150,8 @@ def volunteer(request, event_id):
         errors.append('This event has been cancelled')
 
     user = request.user
-    for helper in event.helpers.all():
-        if helper.get_username() == user.get_username():
-            errors.append('You have already volunteered to help at this event')
-            break
+    if user in event.helpers.all():
+        errors.append('You have already volunteered to help at this event')
 
     if not errors and request.method == 'POST':
         if 'confirm' in request.POST:
@@ -174,6 +173,10 @@ def unvolunteer(request, event_id):
 
     if event.past:
         errors.append('This event has already happened')
+
+    user = request.user
+    if user not in event.helpers.all():
+        errors.append('You are not a volunteer for this event')
 
     if not errors and request.method == 'POST':
         if 'confirm' in request.POST:

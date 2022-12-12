@@ -22,10 +22,13 @@ TODO
 * [DONE] Add 'upcomming events with not enough helpers' to index page
 * [DONE] Review url structure (esp event/events)
 * [DONE] Rework event listing with toggle button future/all, drop upcoming needing volunteers
-* Don't show 'Volunteer' link in tables if already volunteered
+* [DONE] Don't show 'Volunteer' link in tables if already volunteered
 * Require authentication, put login/register on index page
 * [DONE] Add a UniqueConstraint on user/event in Volunteers
 * Add transaction protection to update views
 * User cancellation and user suspension
-* Rework 'user has volunteered' or 'user owns event' tests to use equality
+* [DONE] Rework 'user has volunteered' or 'user owns event' tests to use object equality
 * [DONE] Rename 'set' relations in Event
+* In Event create, split start into date and time, and duration i H and M
+* Improve Admin display of objects
+* Validate start and duration when creating events
