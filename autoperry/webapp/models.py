@@ -46,3 +46,8 @@ class Volunteer(models.Model):
     person = models.ForeignKey(User, models.DO_NOTHING)
     created = models.DateTimeField(auto_now_add=True)
     cancelled = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['event', 'person'], name='only_volunteer_once')
+        ]
