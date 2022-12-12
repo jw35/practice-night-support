@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
 from pprint import pprint
+from datetime import timedelta
 
 from .models import Event
 from .forms import EventForm
@@ -20,7 +21,14 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return render(request, "index.html")
+    event_list = (Event.objects.all()
+                  .filter(start__gte=timezone.now())
+                  .filter(start__lte=timezone.now()+timedelta(days=14))
+                  .filter(cancelled=None)
+                  .annotate(helpers_available=Count('volunteer'))
+                  .filter(helpers_required__gt=F("helpers_available"))
+                  .order_by('start'))
+    return render(request, "index.html", context={'events': event_list})
 
 def dashboard(request):
     return render(request, "users/dashboard.html")
@@ -39,22 +47,22 @@ def register(request):
             return redirect(reverse("index"))
 
 def events(request):
+
+    if 'past' in request.GET:
+        if request.GET['past'] == 'y':
+            request.session['include_past'] = True
+        else:
+            request.session['include_past'] = False
+    elif 'include_past' not in request.session:
+        request.session['include_past'] = False
+
     event_list = Event.objects.all().annotate(helpers_available=Count('volunteer')).order_by('start')
-    if 'all' in request.GET:
-        heading = "All events"
-        if 'past' not in request.GET:
-            event_list = event_list.filter(start__gte=timezone.now())
-            heading = "All future events"
-    else:
-        event_list = (event_list
-                      .filter(start__gte=timezone.now())
-                      .filter(cancelled=None)
-                      .filter(helpers_required__gt=F("helpers_available")))
-        heading = "Events needing helpers"
+
+    if not request.session['include_past']:
+        event_list = event_list.filter(start__gte=timezone.now())
+
     return render(request, "events.html",
-        context={'events': event_list,
-                 'heading': heading,
-                 })
+        context={'events': event_list})
 
 
 def event_details(request, event_id):

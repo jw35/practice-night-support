@@ -6,7 +6,13 @@
 
 {% block content %}
 
-<h2>{{ heading }}</h2>
+<h2>Events</h2>
+
+{% if request.session.include_past %}
+<p><a href="{% url 'events' %}?past=n">Omit past events</a></p>
+{% else %}
+<p><a href="{% url 'events' %}?past=y">Include past events</a></p>
+{% endif %}
 
 {% include 'events-list-fragment.html' %}
 
