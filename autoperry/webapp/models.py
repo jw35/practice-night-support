@@ -11,8 +11,8 @@ class Event(models.Model):
     duration = models.DurationField(blank=False)
     location = models.CharField(max_length=128, blank=False)
     helpers_required = models.IntegerField(blank=False)
-    owner = models.ForeignKey(User, models.DO_NOTHING, related_name='owned_event_set')
-    helpers = models.ManyToManyField(User, through="Volunteer", related_name='volunteered_event_set')
+    owner = models.ForeignKey(User, models.DO_NOTHING, related_name='events_owned')
+    helpers = models.ManyToManyField(User, through="Volunteer", related_name='events_volunteered')
     created = models.DateTimeField(auto_now_add=True)
     cancelled = models.DateTimeField(null=True, blank=True)
 
