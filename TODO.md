@@ -33,4 +33,4 @@ TODO
 * Require authentication, put login/register on index page
 * User cancellation and user suspension
 * Improve Admin display of objects
-* Validate start and duration when creating events
+* [DONE] Validate start when creating events
