@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 
 from pprint import pprint
 from datetime import datetime, timedelta
@@ -32,9 +33,6 @@ def index(request):
                   .order_by('start'))
 
     return render(request, "index.html", context={'events': event_list})
-
-def dashboard(request):
-    return render(request, "users/dashboard.html")
 
 def register(request):
     if request.method == "GET":
@@ -85,7 +83,36 @@ def event_details(request, event_id):
 
 @login_required()
 def my_events(request):
-    return render(request, "my-events.html")
+
+    user = request.user
+
+    if 'past' in request.GET:
+        if request.GET['past'] == 'y':
+            request.session['include_past'] = True
+        else:
+            request.session['include_past'] = False
+    elif 'include_past' not in request.session:
+        request.session['include_past'] = False
+
+    events_as_organiser = (Event.objects.all()
+                           .filter(owner=user)
+                           .annotate(helpers_available=Count('volunteer'))
+                           .order_by('start'))
+
+    if not request.session['include_past']:
+        events_as_organiser = events_as_organiser.filter(start__gte=timezone.now())
+
+    events_as_voluteer = (Event.objects.all()
+                           .filter(helpers=user)
+                           .annotate(helpers_available=Count('volunteer'))
+                           .order_by('start'))
+
+    if not request.session['include_past']:
+        events_as_voluteer = events_as_voluteer.filter(start__gte=timezone.now())
+
+    return render(request, "my-events.html",
+                  context={ 'events_as_organiser': events_as_organiser,
+                             'events_as_voluteer': events_as_voluteer})
 
 @login_required()
 def create_event(request):
@@ -116,51 +143,55 @@ def create_event(request):
 @login_required()
 def cancel_event(request, event_id):
 
-    event = get_object_or_404(Event, pk=event_id)
-    errors = []
+    with transaction.atomic():
 
-    user = request.user
-    if user != event.owner:
-        errors.append('You are not the owner of this event')
+        event = get_object_or_404(Event, pk=event_id)
+        errors = []
 
-    if event.past:
-        errors.append('This event has already happened')
-    elif event.cancelled:
-        errors.append('This event has already been cancelled')
+        user = request.user
+        if user != event.owner:
+            errors.append('You are not the owner of this event')
 
-    if not errors and request.method == 'POST':
-        event.cancelled = timezone.now()
-        event.save()
+        if event.past:
+            errors.append('This event has already happened')
+        elif event.cancelled:
+            errors.append('This event has already been cancelled')
 
-        messages.success(request, 'Event cancelled')
+        if not errors and request.method == 'POST':
+            event.cancelled = timezone.now()
+            event.save()
 
-        return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+            messages.success(request, 'Event cancelled')
+
+            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
 
     return render(request, 'cancel-event.html', {'event': event, 'errors': errors})
 
 @login_required
 def volunteer(request, event_id):
 
-    event = get_object_or_404(Event, pk=event_id)
-    errors = []
+    with transaction.atomic():
 
-    if event.past:
-        errors.append('This event has already happened')
-    elif event.cancelled:
-        errors.append('This event has been cancelled')
+        event = get_object_or_404(Event, pk=event_id)
+        errors = []
 
-    user = request.user
-    if user in event.helpers.all():
-        errors.append('You have already volunteered to help at this event')
+        if event.past:
+            errors.append('This event has already happened')
+        elif event.cancelled:
+            errors.append('This event has been cancelled')
 
-    if not errors and request.method == 'POST':
-        if 'confirm' in request.POST:
-            event.helpers.add(user)
-            event.save()
+        user = request.user
+        if user in event.helpers.all():
+            errors.append('You have already volunteered to help at this event')
 
-            messages.success(request, 'You have been added as a volunteer for this event')
+        if not errors and request.method == 'POST':
+            if 'confirm' in request.POST:
+                event.helpers.add(user)
+                event.save()
 
-        return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+                messages.success(request, 'You have been added as a volunteer for this event')
+
+            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
 
     return render(request, 'volunteer.html', {'event': event, 'errors': errors})
 
@@ -168,24 +199,26 @@ def volunteer(request, event_id):
 @login_required
 def unvolunteer(request, event_id):
 
-    event = get_object_or_404(Event, pk=event_id)
-    errors = []
+    with transaction.atomic():
 
-    if event.past:
-        errors.append('This event has already happened')
+        event = get_object_or_404(Event, pk=event_id)
+        errors = []
 
-    user = request.user
-    if user not in event.helpers.all():
-        errors.append('You are not a volunteer for this event')
+        if event.past:
+            errors.append('This event has already happened')
 
-    if not errors and request.method == 'POST':
-        if 'confirm' in request.POST:
-            event.helpers.remove(request.user)
-            event.save()
+        user = request.user
+        if user not in event.helpers.all():
+            errors.append('You are not a volunteer for this event')
 
-            messages.success(request, 'You are no longer a volunteer for this event')
+        if not errors and request.method == 'POST':
+            if 'confirm' in request.POST:
+                event.helpers.remove(request.user)
+                event.save()
 
-        return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+                messages.success(request, 'You are no longer a volunteer for this event')
+
+            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
 
     return render(request, 'unvolunteer.html', {'event': event, 'errors': errors})
 
