@@ -8,22 +8,53 @@
 
 <p>This is the Bellringing Practice Night Support service of the Cambridge District of the Ely Diocesan Association of Church Bell Ringers.</p>
 
+{% if user.is_authenticated %}
+
 <ul>
-    {% if user.is_authenticated %}
+    <li><a href="{% url 'events' %}">All events</a></li>
     <li><a href="{% url 'my-events' %}">Your events</a></li>
     <li><a href="{% url 'create-event' %}">Create a new event</a></li>
-    {% endif %}
-    <li><a href="{% url 'events' %}">Events needing volunteers</a></li>
-    <li><a href="{% url 'events' %}?all=1">All events</a></li>
-</ul>
 
-{% if not user.is_authenticated %}
-<p><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a> to see events you have volunteered for and events you manage and to create events.</p>
-{% else %}
+</ul>
 
 <h2>Events in the next fortnight needing volunteers</h2>
 
 {% include 'events-list-fragment.html' %}
+
+{% else %}
+
+<table>
+
+    <tr valign="top">
+        <td valign="top" width="50%">
+
+<h2>EITHER Login:</h2>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ login_form.as_p }}
+  <input type="hidden" name="next_page" value="{{ next_page }}">
+  <button type="submit" name="login">Login</button>
+</form>
+
+<p><a href="{% url 'password_reset' %}">Forgotten password?</a></p>
+
+       </td>
+       <td  width="50%">
+
+<h2>OR Register:</h2>
+
+<form method="POST" class="registration">
+    {% csrf_token %}
+    {{ registration_form.as_p }}
+    <input type="hidden" name="next_page" value="{{ next_page }}">
+    <button type="submit" name="register">Register</button>
+</form>
+
+</td>
+</tr>
+
+</table>
 
 {% endif %}
 

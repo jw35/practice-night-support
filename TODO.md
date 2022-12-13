@@ -1,6 +1,5 @@
 TODO
 
-
 * [DONE] Alter Volunteer relation to use Django 'through'
 * [DONE] User dashboard (my events and my volunteering)  (auth rqd.) (use new component, see below)
 * [DONE] New Event page (auth rqd.)
@@ -30,7 +29,7 @@ TODO
 * User cancellation page (auth rqd.)
          * Need to cancel any events first
          * Need to cancel any volunteering first
-* Require authentication, put login/register on index page
+* [DONE] Require authentication, put login/register on index page
 * User cancellation and user suspension
 * Improve Admin display of objects
 * [DONE] Validate start when creating events
