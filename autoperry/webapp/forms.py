@@ -16,9 +16,17 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class EventForm(forms.Form):
-    date = forms.DateField(help_text='Date of the event, for example 2022-12-09', initial=timezone.now().strftime("%Y-%m-%d"))
-    time = forms.TimeField(help_text='When the event starts, for example 19:30', initial="19:30")
-    hours = forms.IntegerField(min_value=0, max_value=24, help_text="Hours")
-    minutes = forms.IntegerField(min_value=0, max_value=59, help_text="Minutes")
+    start = forms.SplitDateTimeField(help_text='Event start date ("YYY-MM-DD") & time (HH:MM)',
+        initial=timezone.now().replace(hour=19, minute=30, second=0),
+        widget=forms.SplitDateTimeWidget(time_format='%H:%M'))
+    hours = forms.IntegerField(min_value=0, max_value=24, help_text="Duration - hours")
+    minutes = forms.IntegerField(min_value=0, max_value=59, help_text="Duration - minutes")
     location = forms.CharField(max_length=60, help_text='Where the event takes place')
     helpers_required = forms.IntegerField(min_value=1, help_text='Number of helpers wanted')
+
+    def clean_start(self):
+        start = self.cleaned_data['start']
+        if start < timezone.now():
+            raise ValidationError("This date/time is in the past. Events must start in the future!")
+        return start
+

@@ -123,10 +123,9 @@ def create_event(request):
 
         if form.is_valid():
 
-            start = datetime.combine(form.cleaned_data['date'], form.cleaned_data['time'])
             duration = timedelta(hours=form.cleaned_data['hours'], minutes=form.cleaned_data['minutes'])
 
-            event = Event.objects.create(start=start,
+            event = Event.objects.create(start=form.cleaned_data['start'],
                                  duration=duration,
                                  location=form.cleaned_data['location'],
                                  helpers_required=form.cleaned_data['helpers_required'],
