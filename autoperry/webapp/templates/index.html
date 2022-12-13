@@ -33,7 +33,7 @@
 <form method="POST">
   {% csrf_token %}
   {{ login_form.as_p }}
-  <input type="hidden" name="next_page" value="{{ next_page }}">
+  {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
   <button type="submit" name="login">Login</button>
 </form>
 
@@ -47,7 +47,7 @@
 <form method="POST" class="registration">
     {% csrf_token %}
     {{ registration_form.as_p }}
-    <input type="hidden" name="next_page" value="{{ next_page }}">
+    {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
     <button type="submit" name="register">Register</button>
 </form>
 

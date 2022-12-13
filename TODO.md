@@ -1,4 +1,4 @@
-TODO
+# TODO
 
 * [DONE] Alter Volunteer relation to use Django 'through'
 * [DONE] User dashboard (my events and my volunteering)  (auth rqd.) (use new component, see below)
