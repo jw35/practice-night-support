@@ -27,6 +27,7 @@ def index(request):
     registration_form = CustomUserCreationForm()
     login_form = AuthenticationForm()
     event_list = None
+    days = 14
 
     # Return from registering or logging in
     if request.method == 'POST':
@@ -55,9 +56,14 @@ def index(request):
 
     if user.is_authenticated:
 
+        try:
+            days = int(request.GET.get('days', 14))
+        except ValueError:
+            days = 14
+
         event_list = (Event.objects.all()
                       .filter(start__gte=timezone.now())
-                      .filter(start__lte=timezone.now()+timedelta(days=14))
+                      .filter(start__lte=timezone.now()+timedelta(days=days))
                       .filter(cancelled=None)
                       .annotate(helpers_available=Count('helpers'))
                       .filter(helpers_required__gt=F("helpers_available"))
@@ -65,6 +71,7 @@ def index(request):
 
     return render(request, "index.html",
         context={'events': event_list,
+                 'days': days,
                  'login_form': login_form,
                  'registration_form': registration_form,
                  'next_page': request.GET.get('next')})
