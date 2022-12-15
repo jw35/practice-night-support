@@ -32,25 +32,25 @@ def index(request):
     # Return from registering or logging in
     if request.method == 'POST':
       if 'login' in request.POST:
-          login_form = CustomUserCreationForm(request.POST)
-          username = request.POST.get('username')
-          password = request.POST.get('password')
-          user = authenticate(username=username, password=password)
-          if user:
-              if user.is_active:
-                  login(request,user)
-                  return redirect(request.POST.get('next_page', settings.LOGIN_URL))
-              else:
-                  return HttpResponse("Your account was inactive.")
-          else:
-              return HttpResponse("Invalid login details given")
+            login_form = CustomUserCreationForm(request.POST)
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                if user.is_active:
+                    login(request,user)
+                    return redirect(request.POST.get('next_page', settings.LOGIN_URL))
+                else:
+                    return HttpResponse("Your account was inactive.")
+            else:
+                return HttpResponse("Invalid login details given")
 
       elif 'register' in request.POST:
-          registration_form = CustomUserCreationForm(request.POST)
-          if registration_form.is_valid():
-              user = registration_form.save()
-              login(request, user)
-              return redirect(request.POST.get('next_page', settings.LOGIN_URL))
+            registration_form = CustomUserCreationForm(request.POST)
+            if registration_form.is_valid():
+                user = registration_form.save()
+                login(request, user)
+                return redirect(request.POST.get('next_page', settings.LOGIN_URL))
 
     user = request.user
 
