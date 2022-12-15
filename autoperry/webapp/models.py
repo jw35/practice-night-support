@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.urls import reverse
 
 from custom_user.models import User
 
@@ -28,9 +29,12 @@ class Event(models.Model):
     def helpers_needed(self):
         return self.helpers_required > len(self.helpers.all()) and not self.cancelled and not self.past
 
+    def get_absolute_url(self):
+        return reverse('event-details', args=[self.pk])
+
     def __str__(self):
     	return (self.location +
-    		    ' ' +
+    		    ': ' +
     		    self.start.strftime('%A %d %B %Y') +
     		    ' (' +
     		    self.start.strftime('%H:%M') +
@@ -40,6 +44,7 @@ class Event(models.Model):
 
     class Meta:
         ordering = ["start"]
+
 
 class Volunteer(models.Model):
     event = models.ForeignKey(Event, models.DO_NOTHING)

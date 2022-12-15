@@ -160,7 +160,7 @@ def create_event(request):
                                  owner=request.user)
             messages.success(request, 'Event created')
 
-            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     else:
         form = EventForm()
@@ -190,7 +190,7 @@ def cancel_event(request, event_id):
 
             messages.success(request, 'Event cancelled')
 
-            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'cancel-event.html', {'event': event, 'errors': errors})
 
@@ -218,7 +218,7 @@ def volunteer(request, event_id):
 
                 messages.success(request, 'You have been added as a volunteer for this event')
 
-            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'volunteer.html', {'event': event, 'errors': errors})
 
@@ -245,7 +245,7 @@ def unvolunteer(request, event_id):
 
                 messages.success(request, 'You are no longer a volunteer for this event')
 
-            return HttpResponseRedirect(reverse('event_details', args=[event.pk]))
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'unvolunteer.html', {'event': event, 'errors': errors})
 
