@@ -1,6 +1,6 @@
-from settings import *
+from autoperry.settings import *
 
-from production_secrets import *
+from autoperry.production_secrets import *
 
 DEBUG = False
 
