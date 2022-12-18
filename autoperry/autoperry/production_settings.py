@@ -6,28 +6,26 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['autoperry.cambridgeringing.info']
 
+STATIC_ROOT = '/home/jonw/www/autoperry-static.cambridgeringing.info/static/'
+STATIC_URL = 'http://autoperry-static.cambridgeringing.info/static/'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'mydatabaseuser',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'jonw',
+        'USER': 'jonw',
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'PORT': '3306',
     }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-#host: EMAIL_HOST
-#port: EMAIL_PORT
-#username: EMAIL_HOST_USER
-#password: EMAIL_HOST_PASSWORD
-#use_tls: EMAIL_USE_TLS
-#use_ssl: EMAIL_USE_SSL
-#timeout: EMAIL_TIMEOUT
-#ssl_keyfile: EMAIL_SSL_KEYFILE
-#ssl_certfile: EMAIL_SSL_CERTFILE
-
+host: 'smtp-auth.mythic-beasts.com'
+port: '587'
+username: 'autoperry@cambridgeringing.info'
+password: EMAIL_PASSWORD
+use_tls: True
+use_ssl: True
 
