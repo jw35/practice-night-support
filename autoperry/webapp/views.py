@@ -11,6 +11,8 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.conf import settings
 
+import logging
+
 from pprint import pprint
 from datetime import datetime, timedelta
 
@@ -28,6 +30,13 @@ def index(request):
     login_form = AuthenticationForm()
     event_list = None
     days = 14
+
+    logger = logging.getLogger(__name__)
+    logger.critical('CRITICAL')
+    logger.error('ERROR')
+    logger.warning('WARNING')
+    logger.info('INFO')
+    logger.debug('DEBUG')
 
     # Return from registering or logging in
     if request.method == 'POST':
