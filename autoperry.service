@@ -1,0 +1,12 @@
+[Unit]
+Description=AutoPerry Gunicorn service
+
+[Service]
+Type=simple
+StandardOutput=journal
+ExecStart=/bin/bash %h/practice-night-support/run_autoperry.sh
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=default.target
