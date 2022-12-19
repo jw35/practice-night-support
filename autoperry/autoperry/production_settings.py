@@ -7,7 +7,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['autoperry.cambridgeringing.info']
 
 STATIC_ROOT = '/home/jonw/www/autoperry-static.cambridgeringing.info/static/'
-STATIC_URL = 'http://autoperry-static.cambridgeringing.info/static/'
+STATIC_URL = '//autoperry-static.cambridgeringing.info/static/'
 
 DATABASES = {
     'default': {
