@@ -139,3 +139,27 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Needs '$ python -m smtpd -n -c DebuggingServer localhost:1025'
 #EMAIL_HOST = "localhost"
 #EMAIL_PORT = 1025
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    }}
