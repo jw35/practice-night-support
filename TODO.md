@@ -25,8 +25,8 @@
 * [DONE] Require authentication, put login/register on index page
 * [DONE] Validate start when creating events
 * [DONE] Improve Admin display of objects
+* [DONE]Error handling on new user registration
 
-* Error handling on new user registration
 * User details page (auth rqd.)
 * User edit page (auth rqd.)
 * User cancellation page (auth rqd.)
