@@ -30,6 +30,14 @@
 
 <h2>EITHER Login:</h2>
 
+{% if error_messages %}
+<ul class="errorlist">
+    {% for message in error_messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <form method="POST">
   {% csrf_token %}
   {{ login_form.as_p }}

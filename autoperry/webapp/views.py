@@ -29,12 +29,13 @@ def index(request):
     registration_form = CustomUserCreationForm()
     login_form = AuthenticationForm()
     event_list = None
+    error_messages = []
     days = 14
 
     # Return from registering or logging in
     if request.method == 'POST':
       if 'login' in request.POST:
-            login_form = CustomUserCreationForm(request.POST)
+            login_form = AuthenticationForm(request.POST)
             username = request.POST.get('username')
             password = request.POST.get('password')
             user = authenticate(username=username, password=password)
@@ -44,10 +45,10 @@ def index(request):
                     logger.info(f'"{user}" logged in')
                     return redirect(request.POST.get('next_page', settings.LOGIN_URL))
                 else:
-                    logger.info(f'Login attempt by inactive user "{user}"')
-                    return HttpResponse("Your account was inactive.")
+                    logger.info(f'Login attempt by suspended user "{user}"')
+                    error_messages.append("Your account has been suspended.")
             else:
-                return HttpResponse("Invalid login details given")
+                error_messages.append("Invalid login details")
 
       elif 'register' in request.POST:
             registration_form = CustomUserCreationForm(request.POST)
@@ -79,6 +80,7 @@ def index(request):
                  'days': days,
                  'login_form': login_form,
                  'registration_form': registration_form,
+                 'error_messages': error_messages,
                  'next_page': request.GET.get('next')})
 
 
