@@ -22,6 +22,9 @@
 * [DONE] Rename 'set' relations in Event
 * [DONE] In Event create, split start into date and time, and duration i H and M
 * [DONE] Add transaction protection to update views
+* [DONE] Require authentication, put login/register on index page
+* [DONE] Validate start when creating events
+* [DONE] Improve Admin display of objects
 
 * Error handling on new user registration
 * User details page (auth rqd.)
@@ -29,7 +32,10 @@
 * User cancellation page (auth rqd.)
          * Need to cancel any events first
          * Need to cancel any volunteering first
-* [DONE] Require authentication, put login/register on index page
-* User cancellation and user suspension
-* Improve Admin display of objects
-* [DONE] Validate start when creating events
+* Honour user cancellation and user suspension
+* Support for un-cancelling
+* Privacy policy
+* Better descriptive text on Index page
+* Re-style all pages
+
+
