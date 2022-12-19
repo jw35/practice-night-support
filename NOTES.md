@@ -4,9 +4,44 @@ Home: `~jon/Ringing/practice_night_support`
 
 Activate Python environment with: `. venv/bin/activate`
 
-Dummy SMTP server for development: `python -m smtpd -n -c DebuggingServer localhost:1025`
+Dummy SMTP server for development: `python -m smtpd -n -c DebuggingServer localhost:1025` (no longer needed)
 
 Development server on http://127.0.0.1:8000/: `cd autoperry/; ./manage.py runserver`
 
+Installed in ~/practice-night-support on caracal.
 
-USer registration: `http://127.0.0.1:8000/register/`
+Create, activate and populate Python virtual environment with:
+
+    cd ~/practice-night-support
+    python3 -mvenv venv
+    . venv/bin/activate 
+    pip install -r production-requirements.txt
+
+Set the web server to proxy to Gunicorn:
+
+    touch ~/www/autoperry.cambridgeringing.info/.proxy-to-socket
+
+The script run_autoperry.sh will start up the app under Gunicorn interactively using settings from `~/practice-night-support/autoperry/autoperry/production_settings.py`
+
+Copy the systemd unit file `autoperry.service` to ~/.config/systemd/user
+
+To start:
+
+    systemctl --user daemon-reload
+    systemctl --user start autoperry
+
+To stop 
+
+    systemctl --user stop autoperry
+
+To restart
+
+    systemctl --user restart autoperry
+
+To make persistent
+
+    systemctl --user enable autoperry
+
+To view logs
+
+    journalctl --user
