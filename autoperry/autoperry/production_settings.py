@@ -22,10 +22,35 @@ DATABASES = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+DEFAULT_FROM_EMAIL = 'autoperry@cambridgeringing.info'
+SERVER_EMAIL = 'autoperry@cambridgeringing.info'
+
 host: 'smtp-auth.mythic-beasts.com'
 port: '587'
 username: 'autoperry@cambridgeringing.info'
 password: EMAIL_PASSWORD
 use_tls: True
-use_ssl: True
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }}
