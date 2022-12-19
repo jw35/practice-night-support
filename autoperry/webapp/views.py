@@ -11,18 +11,18 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.conf import settings
 
-import logging
-
 from pprint import pprint
 from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Create your views here.
 
 from django.http import HttpResponse
-
 
 def index(request):
 
@@ -30,13 +30,6 @@ def index(request):
     login_form = AuthenticationForm()
     event_list = None
     days = 14
-
-    logger = logging.getLogger(__name__)
-    logger.critical('CRITICAL')
-    logger.error('ERROR')
-    logger.warning('WARNING')
-    logger.info('INFO')
-    logger.debug('DEBUG')
 
     # Return from registering or logging in
     if request.method == 'POST':
@@ -48,8 +41,10 @@ def index(request):
             if user:
                 if user.is_active:
                     login(request,user)
+                    logger.info(f'"{user}" logged in')
                     return redirect(request.POST.get('next_page', settings.LOGIN_URL))
                 else:
+                    logger.info(f'Login attempt by inactive user "{user}"')
                     return HttpResponse("Your account was inactive.")
             else:
                 return HttpResponse("Invalid login details given")
@@ -59,6 +54,7 @@ def index(request):
             if registration_form.is_valid():
                 user = registration_form.save()
                 login(request, user)
+                logger.info(f'"{user}" registered and logged in')
                 return redirect(request.POST.get('next_page', settings.LOGIN_URL))
 
     user = request.user
@@ -156,6 +152,8 @@ def create_event(request):
 
     if request.method == 'POST':
 
+        user = request.user
+
         form = EventForm(request.POST)
 
         if form.is_valid():
@@ -166,7 +164,8 @@ def create_event(request):
                                  duration=duration,
                                  location=form.cleaned_data['location'],
                                  helpers_required=form.cleaned_data['helpers_required'],
-                                 owner=request.user)
+                                 owner=user)
+            logger.info(f'Event id {event.id} "{event}" created by "{user}"')
             messages.success(request, 'Event created')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
@@ -194,10 +193,12 @@ def cancel_event(request, event_id):
             errors.append('This event has already been cancelled')
 
         if not errors and request.method == 'POST':
-            event.cancelled = timezone.now()
-            event.save()
+            if 'confirm' in request.POST:
+                event.cancelled = timezone.now()
+                event.save()
 
-            messages.success(request, 'Event cancelled')
+                logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
+                messages.success(request, 'Event cancelled')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -225,6 +226,7 @@ def volunteer(request, event_id):
                 event.helpers.add(user)
                 event.save()
 
+                logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You have been added as a volunteer for this event')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
@@ -252,6 +254,7 @@ def unvolunteer(request, event_id):
                 event.helpers.remove(request.user)
                 event.save()
 
+                logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You are no longer a volunteer for this event')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))

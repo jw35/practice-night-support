@@ -52,8 +52,10 @@
 
 <form method="post">
     {% csrf_token %}
-    <input type="submit" value="Cancel event">
+    <input type="submit" name="confirm" value="Yes, cancel the event">
+    <input type="submit" name="cancel" value="No, I have changed my mind">
 </form>
+
 
 {% endif %}
 
