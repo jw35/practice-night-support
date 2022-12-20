@@ -26,9 +26,9 @@
 * [DONE] Validate start when creating events
 * [DONE] Improve Admin display of objects
 * [DONE] Error handling on new user registration
+* [DONE] User details page (auth rqd.)
+* [DONE] User edit page (auth rqd.)
 
-* User details page (auth rqd.)
-* User edit page (auth rqd.)
 * User cancellation page (auth rqd.)
          * Need to cancel any events first
          * Need to cancel any volunteering first

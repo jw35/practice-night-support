@@ -30,3 +30,7 @@ class EventForm(forms.Form):
             raise ValidationError("This date/time is in the past. Events must start in the future!")
         return start
 
+class UserEditForm(forms.Form):
+    email = forms.EmailField()
+    first_name = forms.CharField(max_length=150)
+    last_name = forms.CharField(max_length=150)

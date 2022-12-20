@@ -15,7 +15,7 @@ from pprint import pprint
 from datetime import datetime, timedelta
 
 from .models import Event
-from .forms import EventForm, CustomUserCreationForm
+from .forms import EventForm, CustomUserCreationForm, UserEditForm
 
 import logging
 logger = logging.getLogger(__name__)
@@ -150,6 +150,11 @@ def my_events(request):
                              'events_as_voluteer': events_as_voluteer})
 
 @login_required()
+def account(request):
+
+    return render(request, "account.html")
+
+@login_required()
 def create_event(request):
 
     if request.method == 'POST':
@@ -263,5 +268,23 @@ def unvolunteer(request, event_id):
 
     return render(request, 'unvolunteer.html', {'event': event, 'errors': errors})
 
+login_required()
+def account_edit(request):
 
+    user = request.user
+    form = UserEditForm({'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name})
+
+    if request.method == 'POST':
+
+        form = UserEditForm(request.POST)
+        if form.is_valid():
+            user.email = form.cleaned_data['email']
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.save()
+            logger.info(f'"{user}" updated account details')
+            messages.success(request, 'Account details successfully updated')
+            return HttpResponseRedirect(reverse('account'))
+
+    return render(request, 'account-edit.html', {'form': form})
 
