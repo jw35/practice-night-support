@@ -1,9 +1,11 @@
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path(r'privacy', TemplateView.as_view(template_name="privacy.html"), name='privacy'),
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"account/", views.account, name="account"),
     path(r"account/edit", views.account_edit, name="account-edit"),
