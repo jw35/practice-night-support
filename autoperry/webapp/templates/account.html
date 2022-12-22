@@ -1,0 +1,26 @@
+
+{% extends 'authn.html' %}
+
+{% block heading %}Auto-Perry: My Account{% endblock %}
+
+{% block content %}
+
+<dl>
+    <dt>Email address</dt>
+    <dd>{{ user.email|urlize }}</dd>
+
+    <dt>Name</dt>
+    <dd>{{ user.get_full_name }}</dd>
+
+    <dt>Date joined</dt>
+    <dd>{{ user.date_joined|date:"l, j M Y g:i a"}}</dd>
+</dd>
+
+<p>
+    <a href="{% url 'logout' %}">Logout</a> -
+    <a href="{% url 'password_change' %}">Change password</a> -
+    <a href="{% url 'account-edit' %}">Edit details</a> -
+    <a href="{% url 'account-cancel' %}">Cancel account</a>
+</p>
+
+{% endblock %}
