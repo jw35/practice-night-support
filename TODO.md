@@ -28,13 +28,13 @@
 * [DONE] Error handling on new user registration
 * [DONE] User details page (auth rqd.)
 * [DONE] User edit page (auth rqd.)
+* [DONE] User cancellation page (auth rqd.)
+         * [DONE] Need to cancel any events first
+         * [DONE] Need to cancel any volunteering first
+* [DONE] Honour user cancellation and user suspension
+* [NOT DOING] Support for un-cancelling
+* [DONE] Privacy policy
 
-* User cancellation page (auth rqd.)
-         * Need to cancel any events first
-         * Need to cancel any volunteering first
-* Honour user cancellation and user suspension
-* Support for un-cancelling
-* Privacy policy
 * Better descriptive text on Index page
 * Re-style all pages
 
