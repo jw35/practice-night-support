@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -288,3 +288,52 @@ def account_edit(request):
 
     return render(request, 'account-edit.html', {'form': form})
 
+
+@login_required
+def account_cancel(request):
+
+    user = request.user
+    errors = []
+
+    with transaction.atomic():
+
+        events_as_organiser = (Event.objects.all()
+                               .filter(owner=user)
+                               .filter(start__gte=timezone.now())
+                               .filter(cancelled=None))
+
+        events_as_volunteer = (Event.objects.all()
+                               .filter(helpers=user)
+                               .filter(start__gte=timezone.now())
+                               .filter(cancelled=None))
+
+        if events_as_organiser.all():
+            errors.append('You are the organiser of events that have yet to happen.'
+                          'You must cancel them or wait for them to happen before you can cancel your account.')
+        if events_as_volunteer.all():
+            errors.append('You have volunteered for events that have yet to happen.'
+                          'You must un-volunteer or wait for them to happen before you can cancel your account.')
+
+        if user.is_superuser:
+            errors.append("You have a superuser account. Superuser accounts can't be cancelled here.")
+
+        if not errors and request.method == 'POST':
+            if 'confirm' in request.POST:
+                # Do this now before destroying user.first_name and user.last_name!
+                log_message = f'"{user}" cancelled'
+                user.cancelled = timezone.now()
+                user.is_active = False
+                user.set_unusable_password()
+                user.email = f'canceled_{user.pk}'
+                user.first_name = ''
+                user.last_name = f'Cancelled user #{user.pk}'
+                user.save()
+                logout(request)
+                logger.info(log_message)
+                messages.success(request, 'Your account has been cancelled')
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                return HttpResponseRedirect(reverse('account'))
+
+    return render(request, 'account-cancel.html',
+                          {'errors': errors})

@@ -7,6 +7,7 @@ urlpatterns = [
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"account/", views.account, name="account"),
     path(r"account/edit", views.account_edit, name="account-edit"),
+    path(r"account/cancel", views.account_cancel, name="account-cancel"),
     path(r"events/", views.events, name="events"),
     path(r"events/mine/", views.my_events, name="my-events"),
     path(r"event/create/", views.create_event, name="create-event"),
