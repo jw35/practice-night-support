@@ -2,13 +2,15 @@
 
 {% extends 'authn.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block heading %}Auto-Perry: Edit account{% endblock %}
 
 {% block content %}
 
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <input type="submit" value="Save">
 </form>
 
