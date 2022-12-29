@@ -38,4 +38,21 @@
 * Better descriptive text on Index page
 * Re-style all pages
 
+* Rework 'Canel event' into 'Cancel help request for event'
+* Add 'Reminder' and 'Other' email opt-in to User model and sign-up form
+* Rework events to store start/end, not start/duration 
+* Add contact email address for events (default owner's) [#31]
+* Re-work event list pages into a single page with query params
+    * Incl events by location [#27]
+    * Incl 'Omit cancelled' [#33]
+    * Incl pagination
+* Add a description/requirements/notes field to events [#7, #29, #30]
+* Allow events to be cloned [#28]
+* Validate email address supplied on registration (and don't let it be subsequently edited) [#13]
+* Allow events with no volunteers to be edited/deleted [#9]
+* Add reminders to volunteers and event owners [#3, #5]
+* Detect clashing events [#34] and volunteering offers [#35]
+* Add notification of cancelled events [#2]
+
+
 
