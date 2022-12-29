@@ -1,0 +1,35 @@
+
+<nav class="navbar navbar-expand-md bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'index' %}">AutoPerry</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <li class="nav-item">
+          {% url 'index' as url %}
+          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Home</a>
+        </li>
+        <li class="nav-item">
+          {% url 'events' as url %}
+          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Event List</a>
+        </li>
+        <li class="nav-item">
+          {% url 'create-event' as url %}
+          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Create Event</a>
+        </li>
+        <li class="nav-item">
+          {% url 'about' as url %}
+          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">About</a>
+        </li>
+      </ul>
+      <span class="navbar-text">
+      {% if user.is_authenticated %}
+         {{ user.email }} - <a href="{% url 'logout' %}">Logout</a> - <a href="{% url 'account' %}">Account</a>
+      {% endif %}
+      </span>
+    </div>
+  </div>
+</nav>
+

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.dateformat import format
 from django.urls import reverse
 
 from custom_user.models import User
@@ -28,6 +29,20 @@ class Event(models.Model):
     @property
     def helpers_needed(self):
         return self.helpers_required > len(self.helpers.all()) and not self.cancelled and not self.past
+
+    @property
+    def when(self):
+        start = self.start
+        end = start + self.duration
+        if start.hour <12 and end.hour >= 12:
+            # Either side of midday
+            return (format(start, "D, j M Y, g:i a") +
+                    ' to ' +
+                    format(end, "g:i a"))
+        else:
+            return (format(start, "D, j M Y, g:i") +
+                    ' to ' +
+                    format(end, "g:i a"))
 
     def get_absolute_url(self):
         return reverse('event-details', args=[self.pk])

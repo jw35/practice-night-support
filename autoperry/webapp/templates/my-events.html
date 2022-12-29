@@ -2,9 +2,9 @@
 
 {% extends 'authn.html' %}
 
-{% block heading %}Auto-Perry: Your Events{% endblock %}
-
 {% block content %}
+
+<h2>Your events</h2>
 
 {% if request.session.include_past %}
 <p><a href="{% url 'my-events' %}?past=n">Omit past events</a></p>

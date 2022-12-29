@@ -2,11 +2,9 @@
 
 {% extends 'authn.html' %}
 
-{% block heading %}Auto-Perry: Volunteer for an Event{% endblock %}
-
 {% block content %}
 
-<h2>Volunteer for an Event</h2>
+<h2>Volunteer to help at an event</h2>
 
 <dl>
     <dt>Date</dt>
@@ -34,7 +32,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input type="submit" name="confirm" value="Volunteer">  <input type="submit" name="cancel" value="Cancel">
+    <input class="btn btn-primary" type="submit" name="confirm" value="Volunteer"> 
 </form>
 
 {% endif %}

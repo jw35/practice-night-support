@@ -1,9 +1,9 @@
 
 {% extends 'authn.html' %}
 
-{% block heading %}Auto-Perry: Account Cancellation{% endblock %}
-
 {% block content %}
+
+<h2>Cancel your account</h2>
 
 {% if errors %}
 <ul class="errors">
@@ -18,7 +18,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input type="submit" name="confirm" value="Yes, cancel my account">
+    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel my account">
 </form>
 
 {% endif %}

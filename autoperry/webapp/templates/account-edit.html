@@ -4,14 +4,14 @@
 
 {% load crispy_forms_tags %}
 
-{% block heading %}Auto-Perry: Edit account{% endblock %}
-
 {% block content %}
+
+<h2>Edit your account</h2>
 
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" value="Save">
+    <input class="btn btn-primary" type="submit" value="Save">
 </form>
 
 <p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>

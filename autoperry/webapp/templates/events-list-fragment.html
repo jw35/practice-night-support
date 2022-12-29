@@ -1,34 +1,27 @@
 <table border=1>
 
-   <tr padding=5>
-      <th>Location</th>
-      <th>Date</th>
-      <th>Start</th>
-      <th>End</th>
-      <th>Requested helpers</th>
-      <th>Current helpers</th>
+   <tr padding=3>
+      <th>Where</th>
+      <th>When</th>
+      <th>Helpers</th>
       <th></th>
    </tr>
 
    {% for event in events %}
-       <tr padding=5>
+       <tr padding=3>
          <td>
-           {{event.location}}
+           <strong>{{event.location}}</strong>
            {% if event.cancelled %}<br><b>*Cancelled*</b>{% endif %}
          </td>
-         <td>{{event.start|date:"D, j M Y"}}</td>
-         <td>{{event.start|date:"g:i a"}}</td>
-         <td>{{event.end|date:"g:i a"}}</td>
-         <td>{{event.helpers_required}}</td>
-         <td>{{event.helpers_available}}</td>
+         <td>{{event.start|date:"D, j M Y"}}, {{event.start|date:"g:i"}}-{{event.end|date:"g:i a"}}</td>
+         <td>{{event.helpers_available}} of {{event.helpers_required}}</td>
          <td>
             {% if event.helpers_needed and user not in event.helpers.all %}
-              <a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>
+              <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm">volunteer</a>
             {% else %}
-              ---
+              <a class="btn btn-outline-primary btn-sm disabled" aria-disabled="true">volunteer</a>
             {% endif %}
-         </td>
-         <td><a href="{% url 'event-details'  event_id=event.pk %}">details</a>
+            <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm">details</a>
       </tr>
    {% endfor %}
 

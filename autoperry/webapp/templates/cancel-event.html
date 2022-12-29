@@ -2,11 +2,9 @@
 
 {% extends 'authn.html' %}
 
-{% block heading %}Auto-Perry: Event Cancellation{% endblock %}
-
 {% block content %}
 
-<h2>Event Cancellation</h2>
+<h2>Cancel event</h2>
 
 <dl>
     <dt>Date</dt>
@@ -44,8 +42,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input type="submit" name="confirm" value="Yes, cancel the event">
-    <input type="submit" name="cancel" value="No, I have changed my mind">
+    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel the event">
 </form>
 
 

@@ -8,18 +8,19 @@
 
 {% block content %}
 
-<p>This is the Bellringing Practice Night Support service of the Cambridge District of the Ely Diocesan Association of Church Bell Ringers.</p>
+  <div class="px-4 py-2 my-3 text-center">
+    <h1>Welcome to AutoPerry</h1>
+    <div class="col-lg-8 mx-auto">
+      <p >This is the BellRinging Support service of the
+        <a href="https://cambridgeringing.info/">Cambridge District</a> of the
+        <a href="https://www.elyda.org.uk/">Ely Diocesan Association of Church Bell Ringers</a>.
+        See the <A href="{% url 'about' %}">about page</A> for more information.</p>
+    </div>
+  </div>
 
 {% if user.is_authenticated %}
 
-<ul>
-    <li><a href="{% url 'events' %}">All events</a></li>
-    <li><a href="{% url 'my-events' %}">Your events</a></li>
-    <li><a href="{% url 'create-event' %}">Create a new event</a></li>
-
-</ul>
-
-<h2>Events in the next {{ days }} day{{ days|pluralize }} needing volunteers</h2>
+<h2>Events needing helpers in the next {{ days }} day{{ days|pluralize }}</h2>
 
 {% include 'events-list-fragment.html' %}
 

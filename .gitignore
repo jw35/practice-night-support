@@ -3,3 +3,5 @@ venv
 __pycache__
 db.sqlite3
 autoperry/autoperry/*_secrets.py
+bootstrap-5.2.3-dist.zip
+bootstrap-5.2.3-dist/

@@ -2,11 +2,9 @@
 
 {% extends 'authn.html' %}
 
-{% block heading %}Auto-Perry: Un-volunteer for an Event{% endblock %}
-
 {% block content %}
 
-<h2>Un-volunteer for an Event</h2>
+<h2>Un-volunteer for an event</h2>
 
 <dl>
     <dt>Date</dt>
@@ -34,7 +32,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input type="submit" name="confirm" value="Un-volunteer">  <input type="submit" name="cancel" value="Cancel">
+    <input class="btn btn-primary" type="submit" name="confirm" value="Un-volunteer">
 </form>
 
 {% endif %}

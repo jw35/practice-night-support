@@ -5,14 +5,14 @@
 
 {% load crispy_forms_tags %}
 
-{% block heading %}Auto-Perry: Create an event{% endblock %}
-
 {% block content %}
+
+<h2>Create an event</h2>
 
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" value="Create">
+    <input class="btn btn-primary" type="submit" value="Create">
 </form>
 
 {% endblock %}

@@ -19,10 +19,10 @@ class EventForm(forms.Form):
     start = forms.SplitDateTimeField(help_text='Event start date ("YYY-MM-DD") & time (HH:MM)',
         initial=timezone.now().replace(hour=19, minute=30, second=0),
         widget=forms.SplitDateTimeWidget(time_format='%H:%M'))
-    hours = forms.IntegerField(min_value=0, max_value=24, help_text="Duration - hours")
-    minutes = forms.IntegerField(min_value=0, max_value=59, help_text="Duration - minutes")
+    hours = forms.IntegerField(min_value=0, max_value=24, help_text="Duration - hours", initial=1)
+    minutes = forms.IntegerField(min_value=0, max_value=59, help_text="Duration - minutes", initial=30)
     location = forms.CharField(max_length=60, help_text='Where the event takes place')
-    helpers_required = forms.IntegerField(min_value=1, help_text='Number of helpers wanted')
+    helpers_required = forms.IntegerField(min_value=1, help_text='Number of helpers wanted', initial=1)
 
     def clean_start(self):
         start = self.cleaned_data['start']
