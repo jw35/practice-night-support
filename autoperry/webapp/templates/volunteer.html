@@ -18,7 +18,12 @@
 
     <dt>Location</dt>
     <dd>{{event.location}}</dd>
+
+    <dt>Notes</dt>
+    <dd>{{event.notes|default:"[none]"}}</dd>
 </dl>
+
+
 
 {% if errors %}
 <ul>
@@ -28,7 +33,8 @@
 </ul>
 {% else %}
 
-<p>Please confirm this is the event you want to volunteer for.</p>
+<p>Please confirm this is the event you want to volunteer for{% if event.notes %} and 
+that you meet any helper requirements in the notes above{% endif %}.</p>
 
 <form method="post">
     {% csrf_token %}

@@ -157,21 +157,28 @@ def account(request):
 @login_required()
 def create_event(request):
 
-    if request.method == 'POST':
+    user = request.user
 
-        user = request.user
+    if request.method == 'POST':
 
         form = EventForm(request.POST)
 
         if form.is_valid():
 
-            duration = timedelta(hours=form.cleaned_data['hours'], minutes=form.cleaned_data['minutes'])
+            date = form.cleaned_data.get("date")
+            start_time = form.cleaned_data.get("start_time")
+            end_time = form.cleaned_data.get("end_time")
 
-            event = Event.objects.create(start=form.cleaned_data['start'],
-                                 duration=duration,
+            start = timezone.make_aware(datetime.combine(date, start_time))
+            end = timezone.make_aware(datetime.combine(date, end_time))
+
+            event = Event.objects.create(start=start,
+                                 end=end,
                                  location=form.cleaned_data['location'],
                                  helpers_required=form.cleaned_data['helpers_required'],
-                                 owner=user)
+                                 owner=user,
+                                 contact_address=form.cleaned_data['contact_address'],
+                                 notes=form.cleaned_data['notes'])
             logger.info(f'Event id {event.id} "{event}" created by "{user}"')
             messages.success(request, 'Event successfully created')
 

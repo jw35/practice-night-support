@@ -17,6 +17,14 @@ class Event(models.Model):
     helpers = models.ManyToManyField(User, through="Volunteer", related_name='events_volunteered')
     created = models.DateTimeField(auto_now_add=True)
     cancelled = models.DateTimeField(null=True, blank=True)
+    contact_address = models.EmailField(blank=True, null=True, help_text="Contact email address for the event, defaults to owner's address")
+    notes = models.CharField(max_length=128, blank=True, null=True, help_text="Purpose of the event, helper skills required, etc.")
+
+    @property
+    def contact(self):
+        if self.contact_address:
+            return self.contact_address
+        return self.owner.email
 
     @property
     def past(self):
