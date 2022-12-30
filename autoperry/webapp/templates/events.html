@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<div class="text-center">
+
 <h2>Events</h2>
 
 {% if request.session.include_past %}
@@ -13,5 +15,7 @@
 {% endif %}
 
 {% include 'events-list-fragment.html' %}
+
+</div>
 
 {% endblock %}

@@ -1,6 +1,8 @@
-<table border=1>
+<div class="row justify-content-center">
+    <div class="col-auto">
+      <table class="table table-responsive">
 
-   <tr padding=3>
+   <tr>
       <th>Where</th>
       <th>When</th>
       <th>Helpers</th>
@@ -8,12 +10,12 @@
    </tr>
 
    {% for event in events %}
-       <tr padding=3>
+       <tr class="text-start">
          <td>
            <strong>{{event.location}}</strong>
            {% if event.cancelled %}<br><b>*Cancelled*</b>{% endif %}
          </td>
-         <td>{{event.start|date:"D, j M Y"}}, {{event.start|date:"g:i"}}-{{event.end|date:"g:i a"}}</td>
+         <td>{{event.when}}</td>
          <td>{{event.helpers_available}} of {{event.helpers_required}}</td>
          <td>
             {% if event.helpers_needed and user not in event.helpers.all %}
@@ -22,7 +24,12 @@
               <a class="btn btn-outline-primary btn-sm disabled" aria-disabled="true">volunteer</a>
             {% endif %}
             <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm">details</a>
+          </td>
       </tr>
    {% endfor %}
 
 </table>
+
+</div>
+
+</div>

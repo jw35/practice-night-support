@@ -1,5 +1,5 @@
 
-<nav class="navbar navbar-expand-md bg-light">
+<nav class="navbar navbar-expand-md bg-light mb-4">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'index' %}">AutoPerry</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -13,7 +13,7 @@
         </li>
         <li class="nav-item">
           {% url 'events' as url %}
-          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Event List</a>
+          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">List Events</a>
         </li>
         <li class="nav-item">
           {% url 'create-event' as url %}

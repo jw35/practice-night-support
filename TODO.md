@@ -35,8 +35,8 @@
 * [NOT DOING] Support for un-cancelling
 * [DONE] Privacy policy
 
-* Better descriptive text on Index page
-* Re-style all pages
+* [DONE] Better descriptive text on Index page
+* [DONE] Re-style all pages
 
 * Rework 'Canel event' into 'Cancel help request for event'
 * Add 'Reminder' and 'Other' email opt-in to User model and sign-up form

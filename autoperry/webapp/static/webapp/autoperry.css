@@ -1,0 +1,22 @@
+label, input {
+    display: block;
+}
+span.helptext {
+    display: inline;
+}
+.registration .helptext {
+    display: none;
+}
+.errorlist {
+    color: red;
+}
+body {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.running {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}

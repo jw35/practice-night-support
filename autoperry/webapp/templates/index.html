@@ -4,25 +4,34 @@
 
 {% load crispy_forms_tags %}
 
-{% block heading %}Welcome to Auto-Perry{% endblock %}
-
 {% block content %}
 
-  <div class="px-4 py-2 my-3 text-center">
-    <h1>Welcome to AutoPerry</h1>
-    <div class="col-lg-8 mx-auto">
-      <p >This is the BellRinging Support service of the
-        <a href="https://cambridgeringing.info/">Cambridge District</a> of the
-        <a href="https://www.elyda.org.uk/">Ely Diocesan Association of Church Bell Ringers</a>.
-        See the <A href="{% url 'about' %}">about page</A> for more information.</p>
-    </div>
+<div class="px-4 py-2 my-3 text-center">
+  <h1>Welcome to AutoPerry</h1>
+  <div class="col-lg-8 mx-auto">
+    <p >This is the BellRinging Support service of the
+      <a href="https://cambridgeringing.info/">Cambridge District</a> of the
+      <a href="https://www.elyda.org.uk/">Ely Diocesan Association of Church Bell Ringers</a>.
+      See the <A href="{% url 'about' %}">about page</A> for more information.</p>
   </div>
+</div>
 
 {% if user.is_authenticated %}
 
-<h2>Events needing helpers in the next {{ days }} day{{ days|pluralize }}</h2>
+<div class="text-center">
 
-{% include 'events-list-fragment.html' %}
+  {% if events.all %}
+
+  <h2>Events needing helpers in the next {{ days }} day{{ days|pluralize }}</h2>
+  {% include 'events-list-fragment.html' %}
+
+  {% else %}
+
+  <h2>There are no events needing helpers in the next {{ days }} day{{ days|pluralize }}</h2>
+
+  {% endif %}
+
+</div>
 
 {% else %}
 
@@ -45,7 +54,7 @@
   {% csrf_token %}
   {{ login_form|crispy }}
   {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
-  <button type="submit" name="login">Login</button>
+  <button class="btn btn-primary" type="submit" name="login">Login</button>
 </form>
 
 <p><a href="{% url 'password_reset' %}">Forgotten password?</a></p>
@@ -59,7 +68,7 @@
     {% csrf_token %}
     {{ registration_form|crispy }}
     {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
-    <button type="submit" name="register">Register</button>
+    <button class="btn btn-primary" type="submit" name="register">Register</button>
 </form>
 
 <p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>

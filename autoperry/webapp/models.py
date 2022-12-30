@@ -34,15 +34,17 @@ class Event(models.Model):
     def when(self):
         start = self.start
         end = start + self.duration
+        # Only include year for December and January
+        include_year = ''
+        if start.month == 1 or start.month == 12:
+            include_year = ' Y'
+        # Only include AM on start if event spans midday
+        include_am = ''
         if start.hour <12 and end.hour >= 12:
-            # Either side of midday
-            return (format(start, "D, j M Y, g:i a") +
-                    ' to ' +
-                    format(end, "g:i a"))
-        else:
-            return (format(start, "D, j M Y, g:i") +
-                    ' to ' +
-                    format(end, "g:i a"))
+            include_am = ' a'
+        return (format(start, f"D, j M{include_year}, g:i{include_am}") +
+                ' to ' +
+                format(end, "g:i a"))
 
     def get_absolute_url(self):
         return reverse('event-details', args=[self.pk])
