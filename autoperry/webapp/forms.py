@@ -10,7 +10,7 @@ from datetime import timedelta
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        fields = list(UserCreationForm.Meta.fields) + ["email", "first_name", "last_name"]
+        fields = list(UserCreationForm.Meta.fields) + ["email", "first_name", "last_name", "send_notifications"]
         fields.remove("username")
         model = get_user_model()
 
@@ -34,3 +34,4 @@ class UserEditForm(forms.Form):
     email = forms.EmailField()
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
+    send_notifications = forms.BooleanField(required=False)

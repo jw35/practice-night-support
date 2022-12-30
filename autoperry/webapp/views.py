@@ -272,7 +272,7 @@ login_required()
 def account_edit(request):
 
     user = request.user
-    form = UserEditForm({'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name})
+    form = UserEditForm({'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name, 'send_notifications': user.send_notifications})
 
     if request.method == 'POST':
 
@@ -281,6 +281,7 @@ def account_edit(request):
             user.email = form.cleaned_data['email']
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
+            user.send_notifications = form.cleaned_data['send_notifications']
             user.save()
             logger.info(f'"{user}" updated account details')
             messages.success(request, 'Your account details have been successfully updated')

@@ -4,7 +4,9 @@ from django.db import models
 class User(BaseUser):
     objects = BaseUserManager()
 
-    cancelled = models.DateTimeField(null=True, blank=True)
+    cancelled = models.DateTimeField(null=True, blank=True, help_text="Timestamp of account cancellation")
+    send_notifications = models.BooleanField(null=False, default=True, help_text="Send email reminders and other messages")
+    email_validated = models.DateTimeField(null=True, blank=True, help_text="Timestamp of email address validation")
 
     def __str__(self):
         return self.get_full_name()

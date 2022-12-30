@@ -12,6 +12,9 @@
     <dt>Name</dt>
     <dd>{{ user.get_full_name }}</dd>
 
+    <dt>Send email notifications?</dt>
+    <dd>{{ user.send_notifications }}</dd>
+
     <dt>Date joined</dt>
     <dd>{{ user.date_joined|date:"l, j M Y g:i a"}}</dd>
 </dd>
