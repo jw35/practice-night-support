@@ -6,7 +6,8 @@ from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
-from datetime import timedelta
+
+from datetime import date, time, datetime
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
@@ -16,22 +17,29 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class EventForm(forms.Form):
-    start = forms.SplitDateTimeField(help_text='Event start date ("YYY-MM-DD") & time (HH:MM)',
-        initial=timezone.now().replace(hour=19, minute=30, second=0),
-        widget=forms.SplitDateTimeWidget(time_format='%H:%M'))
-    hours = forms.IntegerField(min_value=0, max_value=24, help_text="Duration - hours", initial=1)
-    minutes = forms.IntegerField(min_value=0, max_value=59, help_text="Duration - minutes", initial=30)
+    date = forms.DateField(help_text='Event date', initial=date.today())
+    start_time = forms.TimeField(help_text='Event start time', initial="19:30")
+    end_time = forms.TimeField(help_text='Event finish time', initial="21:00")
     location = forms.CharField(max_length=60, help_text='Where the event takes place')
     helpers_required = forms.IntegerField(min_value=1, help_text='Number of helpers wanted', initial=1)
 
-    def clean_start(self):
-        start = self.cleaned_data['start']
-        if start < timezone.now():
-            raise ValidationError("This date/time is in the past. Events must start in the future!")
-        return start
+    def clean(self):
+        cleaned_data = super().clean()
+        date = cleaned_data.get("date")
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+
+        if date and start_time and end_time:
+
+            if start_time >= end_time:
+                raise ValidationError("End time must be later than start time!")
+
+            start = timezone.make_aware(datetime.combine(date, start_time))
+            if start < timezone.now():
+                raise ValidationError("Event start is in the past. Events must start in the future!")
 
 class UserEditForm(forms.Form):
     email = forms.EmailField()
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
-    send_notifications = forms.BooleanField(required=False)
+    send_notifications = forms.BooleanField(required=False,label="Send email notifications")

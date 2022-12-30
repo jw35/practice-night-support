@@ -10,17 +10,13 @@ from custom_user.models import User
 
 class Event(models.Model):
     start = models.DateTimeField(blank=False)
-    duration = models.DurationField(blank=False)
+    end = models.DateTimeField(blank=False, null=True)
     location = models.CharField(max_length=128, blank=False)
     helpers_required = models.IntegerField(blank=False)
     owner = models.ForeignKey(User, models.DO_NOTHING, related_name='events_owned')
     helpers = models.ManyToManyField(User, through="Volunteer", related_name='events_volunteered')
     created = models.DateTimeField(auto_now_add=True)
     cancelled = models.DateTimeField(null=True, blank=True)
-
-    @property
-    def end(self):
-        return self.start + self.duration
 
     @property
     def past(self):
@@ -33,7 +29,7 @@ class Event(models.Model):
     @property
     def when(self):
         start = self.start
-        end = start + self.duration
+        end = self.end
         # Only include year for December and January
         include_year = ''
         if start.month == 1 or start.month == 12:
@@ -56,7 +52,7 @@ class Event(models.Model):
     		    ' (' +
     		    self.start.strftime('%H:%M') +
     		    '-' +
-    		    (self.start + self.duration).strftime('%H:%M') +
+    		    self.end.strftime('%H:%M') +
     		    ')')
 
     class Meta:

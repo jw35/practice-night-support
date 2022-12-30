@@ -15,7 +15,7 @@ class EventAdmin(admin.ModelAdmin):
     inlines = [
         HelpersInline,
     ]
-    fields = ['start', 'duration', 'location', 'helpers_required', 'owner', 'created', 'cancelled']
+    fields = ['start', 'end', 'location', 'helpers_required', 'owner', 'created', 'cancelled']
     readonly_fields = ['created']
     view_on_site = True
 
