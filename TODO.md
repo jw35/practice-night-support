@@ -40,7 +40,7 @@
 
 * [DONE] Rework 'Cancel event' into 'Cancel help request for event'
 * [DONE - just one field] Add 'Reminder' and 'Other' email opt-in to User model and sign-up form
-* Rework events to store start/end, not start/duration 
+* [DONE] Rework events to store start/end, not start/duration 
 * Add contact email address for events (default owner's) [#31]
 * Re-work event list pages into a single page with query params
     * Incl events by location [#27]
