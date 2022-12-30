@@ -10,12 +10,13 @@
    </tr>
 
    {% for event in events %}
-       <tr class="text-start">
+       <tr class="text-start {% if event.cancelled %}text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
          <td>
-           <strong>{{event.location}}</strong>
-           {% if event.cancelled %}<br><b>*Cancelled*</b>{% endif %}
+            <strong>{{event.location}}</strong>
+          </td>
+         <td>
+           {{event.when}}
          </td>
-         <td>{{event.when}}</td>
          <td>{{event.helpers_available}} of {{event.helpers_required}}</td>
          <td>
             {% if event.helpers_needed and user not in event.helpers.all %}

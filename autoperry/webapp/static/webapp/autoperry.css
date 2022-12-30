@@ -20,3 +20,6 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+dd {
+    margin-left: 1em;
+}

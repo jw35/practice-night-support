@@ -38,7 +38,7 @@
 * [DONE] Better descriptive text on Index page
 * [DONE] Re-style all pages
 
-* Rework 'Canel event' into 'Cancel help request for event'
+* [DONE] Rework 'Cancel event' into 'Cancel help request for event'
 * Add 'Reminder' and 'Other' email opt-in to User model and sign-up form
 * Rework events to store start/end, not start/duration 
 * Add contact email address for events (default owner's) [#31]

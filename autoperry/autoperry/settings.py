@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+from django.contrib.messages import constants as messages
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -140,6 +142,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Needs '$ python -m smtpd -n -c DebuggingServer localhost:1025'
 #EMAIL_HOST = "localhost"
 #EMAIL_PORT = 1025
+
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert-secondary',
+        messages.INFO: 'alert-info',
+        messages.SUCCESS: 'alert-success',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'alert-danger',
+ }
 
 LOGGING = {
     'version': 1,

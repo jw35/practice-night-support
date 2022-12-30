@@ -46,7 +46,7 @@ def index(request):
                     return redirect(request.POST.get('next_page', settings.LOGIN_URL))
                 else:
                     logger.info(f'Login attempt by suspended user "{user}"')
-                    error_messages.append("Your account has been suspended.")
+                    error_messages.append("Your account is suspended.")
             else:
                 error_messages.append("Invalid login details")
 
@@ -173,7 +173,7 @@ def create_event(request):
                                  helpers_required=form.cleaned_data['helpers_required'],
                                  owner=user)
             logger.info(f'Event id {event.id} "{event}" created by "{user}"')
-            messages.success(request, 'Event created')
+            messages.success(request, 'Event successfully created')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -197,7 +197,7 @@ def cancel_event(request, event_id):
         if event.past:
             errors.append('This event has already happened')
         elif event.cancelled:
-            errors.append('This event has already been cancelled')
+            errors.append('The request for help at this event has already been cancelled')
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
@@ -205,7 +205,7 @@ def cancel_event(request, event_id):
                 event.save()
 
                 logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
-                messages.success(request, 'Event cancelled')
+                messages.success(request, 'The request for help at this event has been cancelled')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -222,7 +222,7 @@ def volunteer(request, event_id):
         if event.past:
             errors.append('This event has already happened')
         elif event.cancelled:
-            errors.append('This event has been cancelled')
+            errors.append('The request for help at this event has been cancelled')
 
         user = request.user
         if user in event.helpers.all():
@@ -234,7 +234,7 @@ def volunteer(request, event_id):
                 event.save()
 
                 logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
-                messages.success(request, 'You have been added as a volunteer for this event')
+                messages.success(request, 'You have been added as a helper for this event')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -254,7 +254,7 @@ def unvolunteer(request, event_id):
 
         user = request.user
         if user not in event.helpers.all():
-            errors.append('You are not a volunteer for this event')
+            errors.append('You are not a helper for this event')
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
@@ -262,7 +262,7 @@ def unvolunteer(request, event_id):
                 event.save()
 
                 logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
-                messages.success(request, 'You are no longer a volunteer for this event')
+                messages.success(request, 'You are no longer a helper for this event')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -283,7 +283,7 @@ def account_edit(request):
             user.last_name = form.cleaned_data['last_name']
             user.save()
             logger.info(f'"{user}" updated account details')
-            messages.success(request, 'Account details successfully updated')
+            messages.success(request, 'Your account details have been successfully updated')
             return HttpResponseRedirect(reverse('account'))
 
     return render(request, 'account-edit.html', {'form': form})
@@ -311,7 +311,7 @@ def account_cancel(request):
             errors.append('You are the organiser of events that have yet to happen.'
                           'You must cancel them or wait for them to happen before you can cancel your account.')
         if events_as_volunteer.all():
-            errors.append('You have volunteered for events that have yet to happen.'
+            errors.append('You are a helper for events that have yet to happen.'
                           'You must un-volunteer or wait for them to happen before you can cancel your account.')
 
         if user.is_superuser:

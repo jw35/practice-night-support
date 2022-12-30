@@ -7,9 +7,9 @@
 <h2>Event details</h2>
 
 {% if event.past %}
-   <p><b>*** This event has already happened ***</b></p>
+   <h3><span class="badge text-bg-warning">This event has already happened</span></h3>
 {% elif event.cancelled %}
-   <p><b>*** This event has been cancelled ***</b></p>
+   <h3><span class="badge text-bg-warning">Requests for help at this event have been cancelled</span></h3>
 {% endif %}
 
 <dl>
@@ -35,47 +35,37 @@
     <dd>{{event.created|date:"l, j M Y g:i a"}}</dd>
 
     {% if event.cancelled %}
-    <dt>Event cancelled</dt>
+    <dt>Request for help cancelled</dt>
     <dd>{{event.cancelled|date:"l, j M Y g:i a"}}</dd>
     {% endif %}
 
 </dd>
 
-{% if user.is_authenticated %}
-
-    {% if user_is_owner %}
-    <p>You are the organiser of this event:<p>
-        <ul>
-        {% if event.helpers.all %}
-    <li>The helpers for this event are currently:
+{% if user_is_owner %}
+<p>You are the organiser of this event:<p>
     <ul>
-          {% for helper in event.helpers.all %}
-        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
-          {% endfor %}
-    </ul></li>
-        {% else %}
-    <li>This event currently has no helpers.</li>
-        {% endif %}
-        {% if not event.cancelled %}
-    <li>You can <a href="{% url 'cancel-event'  event_id=event.pk %}">cancel</a> this event.</li>
-        {% endif %}
-    </ul>
+    {% if event.helpers.all %}
+<li>The helpers for this event are currently:
+<ul>
+      {% for helper in event.helpers.all %}
+    <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+      {% endfor %}
+</ul></li>
     {% else %}
-    <p>You are not the organiser of this event.</p>
+<li>This event currently has no helpers.</li>
     {% endif %}
-
-    {% if user_is_helper %}
-    <p>You are a helper for this event (<a href="{% url 'unvolunteer'  event_id=event.pk %}">un-volunteer</a>). {% if not user_is_owner %}The event is being organised by {{ event.owner.get_full_name }} ({{ event.owner.email|urlize }}){% endif %}.
-    {% else %}
-    <p>You are not a helper for this event{% if event.helpers_needed %} (<a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>){% endif %}.</p>
+    {% if not event.cancelled and not event.past %}
+<li>You can <a href="{% url 'cancel-event'  event_id=event.pk %}">cancel</a> your request for help at this event.</li>
     {% endif %}
-
+</ul>
 {% else %}
-
-<p><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a> to see more information for events you are organising or have volunteered to help with, or to volunteer for this one.</p>
-
+<p>You are not the organiser of this event.</p>
 {% endif %}
 
-<p><a href="{% url 'events' %}">Event list</a></p>
+{% if user_is_helper %}
+<p>You are a helper for this event (<a href="{% url 'unvolunteer'  event_id=event.pk %}">un-volunteer</a>). {% if not user_is_owner %}The event is being organised by {{ event.owner.get_full_name }} ({{ event.owner.email|urlize }}){% endif %}.
+{% else %}
+<p>You are not a helper for this event{% if event.helpers_needed %} (<a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>){% endif %}.</p>
+{% endif %}
 
 {% endblock %}
