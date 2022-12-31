@@ -117,7 +117,7 @@ def events(request):
     events_as_organiser = event_list.filter(owner=user) if flags['mine'] else None
     events_as_voluteer = event_list.filter(helpers=user) if flags['mine'] else None
 
-    paginator = Paginator(event_list, 2, orphans=2)
+    paginator = Paginator(event_list, 20, orphans=2)
     paginator.ELLIPSIS = "X"
     try:
         page_number = int(request.GET.get('page'))
@@ -188,7 +188,86 @@ def event_create(request):
     else:
         form = EventForm()
 
-    return render(request, 'create-event.html', {'form': form})
+    return render(request, 'event-create.html', {'form': form })
+
+@login_required()
+def event_clone(request, event_id):
+
+    event = get_object_or_404(Event, pk=event_id)
+    event.pk = None
+
+    form =EventForm(initial=
+        { 'date': event.start.date(),
+          'start_time': event.start.time(),
+          'end_time': event.end.time(),
+          'location': event.location,
+          'helpers_required': event.helpers_required,
+          'contact_address': event.contact_address,
+          'notes': event.notes})
+
+    return render(request, 'event-create.html', {'form': form })
+
+@login_required()
+def event_edit(request, event_id):
+
+    with transaction.atomic():
+
+        event = get_object_or_404(Event, pk=event_id)
+        errors = []
+
+        user = request.user
+        if user != event.owner:
+            errors.append('You are not the owner of this event - only the owner can edit it.')
+
+        if len(event.helpers.all()) > 0:
+            errors.append("This event has helpers - details of events with helpers can't be edited. Consider cancelling it.")
+
+        if event.past:
+            errors.append("This event has already happened - events in the past can't be edited.")
+        elif event.cancelled:
+            errors.append("The request for help at this event has already been cancelled - cancelled events can't be edited.")
+
+        form = None
+        if not errors:
+
+            if request.method == 'POST':
+
+                form = EventForm(request.POST)
+
+                if form.is_valid():
+
+                    date = form.cleaned_data.get("date")
+                    start_time = form.cleaned_data.get("start_time")
+                    end_time = form.cleaned_data.get("end_time")
+
+                    start = timezone.make_aware(datetime.combine(date, start_time))
+                    end = timezone.make_aware(datetime.combine(date, end_time))
+
+                    event.start = start
+                    event.end = end
+                    event.location = form.cleaned_data['location']
+                    event.helpers_required = form.cleaned_data['helpers_required']
+                    event.contact_address = form.cleaned_data['contact_address']
+                    event.notes = form.cleaned_data['notes']
+                    event.save()
+                    logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
+                    messages.success(request, 'Event successfully updated')
+
+                    return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
+
+            else:
+
+                form =EventForm(
+                { 'date': event.start.date(),
+                  'start_time': event.start.time().strftime('%H:%M'),
+                  'end_time': event.end.time().strftime('%H:%M'),
+                  'location': event.location,
+                  'helpers_required': event.helpers_required,
+                  'contact_address': event.contact_address,
+                  'notes': event.notes})
+
+    return render(request, 'event-edit.html', {'form': form, 'errors': errors })
+
 
 @login_required()
 def event_cancel(request, event_id):
@@ -218,6 +297,10 @@ def event_cancel(request, event_id):
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'event-cancel.html', {'event': event, 'errors': errors})
+
+
+
+
 
 @login_required
 def volunteer(request, event_id):

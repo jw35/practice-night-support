@@ -57,19 +57,28 @@
     {% else %}
 <li>This event currently has no helpers.</li>
     {% endif %}
-<li>The email conatct address for this event is {{ event.contact|urlize }}</li>
-    {% if not event.cancelled and not event.past %}
-<li>You can <a href="{% url 'event-cancel'  event_id=event.pk %}">cancel</a> your request for help at this event.</li>
+<li>The email contact address for this event is {{ event.contact|urlize }}.</li>
+    {% if not event.cancelled and not event.past and not event.helpers.all %}
+<li>You can <a href="{% url 'event-edit' event_id=event.pk %}">Update</a> the event's details.</li>
+    {% else %}
+<li>Details of this event can no longer be updated.</li>
     {% endif %}
+    {% if not event.cancelled and not event.past %}
+<li>You can <a href="{% url 'event-cancel' event_id=event.pk %}">Cancel</a> your request for help at this event.</li>
+    {% endif %}
+
+
 </ul>
 {% else %}
 <p>You are not the organiser of this event.</p>
 {% endif %}
 
 {% if user_is_helper %}
-<p>You are a helper for this event (<a href="{% url 'unvolunteer'  event_id=event.pk %}">un-volunteer</a>). {% if not user_is_owner %}The event is being organised by {{ event.owner.get_full_name }} ({{ event.contact|urlize }}).{% endif %}
+<p>You are a helper for this event (<a href="{% url 'unvolunteer'  event_id=event.pk %}">Un-volunteer</a>). {% if not user_is_owner %}The event is being organised by {{ event.owner.get_full_name }} ({{ event.contact|urlize }}).{% endif %}
 {% else %}
-<p>You are not a helper for this event{% if event.helpers_needed %} (<a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a>){% endif %}.</p>
+<p>You are not a helper for this event{% if event.helpers_needed %} (<a href="{% url 'volunteer'  event_id=event.pk %}">Volunteer</a>){% endif %}.</p>
 {% endif %}
+
+<p>You can <a href="{% url 'event-clone' event_id=event.pk %}">Create a new event</a> based on this one.</p>
 
 {% endblock %}

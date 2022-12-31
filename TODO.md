@@ -47,8 +47,8 @@
     * [DONE] Incl 'Omit cancelled' [#33]
     * [DONE] Incl pagination
 * [DONE] Add a description/requirements/notes field to events [#7, #29, #30]
-* Allow events to be cloned [#28]
-* Allow events with no volunteers to be edited/deleted [#9]
+* [DONE] Allow events to be cloned [#28]
+* [DONE] Allow events with no volunteers to be edited/deleted [#9]
 * Validate email address supplied on registration (and don't let it be subsequently edited) [#13]
 * Add reminders to volunteers and event owners [#3, #5]
 * Detect clashing events [#34] and volunteering offers [#35]

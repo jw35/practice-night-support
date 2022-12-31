@@ -70,6 +70,8 @@
 
 {% include 'events-list-fragment.html' %}
 
+{% if events.paginator.num_pages > 1 %}
+
 <nav>
     <ul class="pagination justify-content-center">
     	{% for page in page_range %}
@@ -81,6 +83,8 @@
         {% endfor %}
     </ul>
 </nav>
+
+{% endif %}
 
 {% endif %}
 
