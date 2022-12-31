@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.conf import settings
+from django.core.paginator import Paginator
 
 from pprint import pprint
 from datetime import datetime, timedelta
@@ -87,21 +88,53 @@ def index(request):
 @login_required()
 def events(request):
 
-    if 'past' in request.GET:
-        if request.GET['past'] == 'y':
-            request.session['include_past'] = True
-        else:
-            request.session['include_past'] = False
-    elif 'include_past' not in request.session:
-        request.session['include_past'] = False
+    user = request.user
 
-    event_list = Event.objects.all().annotate(helpers_available=Count('volunteer')).order_by('start')
+    # Make search flags 'sticky', overridden by GET args
+    if 'f' in request.GET:
+        flags = {}
+        for flag in ('past', 'cancelled', 'mine', 'location'):
+            flags[flag] = flag in request.GET
+    elif 'search_flags' in request.session:
+        flags = request.session['search_flags']
+    else:
+        flags = {'past': False, 'cancelled': True, 'mine': False, 'location': False}
+    request.session['search_flags'] = flags
 
-    if not request.session['include_past']:
+    event_list = Event.objects.all().annotate(helpers_available=Count('volunteer'))
+
+    if not flags['past']:
         event_list = event_list.filter(start__gte=timezone.now())
 
+    if not flags['cancelled']:
+        event_list = event_list.filter(cancelled=None)
+
+    if flags['location']:
+        event_list = event_list.order_by('location')
+    else:
+        event_list = event_list.order_by('start')
+
+    events_as_organiser = event_list.filter(owner=user) if flags['mine'] else None
+    events_as_voluteer = event_list.filter(helpers=user) if flags['mine'] else None
+
+    paginator = Paginator(event_list, 2, orphans=2)
+    paginator.ELLIPSIS = "X"
+    try:
+        page_number = int(request.GET.get('page'))
+    except (ValueError, TypeError) as e:
+        page_number = 1
+    if page_number < 1 or page_number > paginator.num_pages:
+        page_number = 1
+
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(page_number, on_each_side=3, on_ends=1)
+
     return render(request, "events.html",
-        context={'events': event_list})
+        context={'events': page_obj,
+                 'page_range': page_range,
+                 'events_as_organiser': events_as_organiser,
+                 'events_as_voluteer': events_as_voluteer,
+                 'flags': flags})
 
 
 @login_required()

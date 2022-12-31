@@ -4,6 +4,12 @@
 
 {% block content %}
 
+{% if request.GET.back %}
+<div class="mb-4">
+<a href="{{ request.GET.back }}" class="btn btn-outline-primary btn-sm">&lt;&lt; Back</a>
+</div>
+{% endif %}
+
 <h2>Volunteer to help at an event</h2>
 
 <dl>
@@ -23,8 +29,6 @@
     <dd>{{event.notes|default:"[none]"}}</dd>
 </dl>
 
-
-
 {% if errors %}
 <ul>
 {% for error in errors %}
@@ -33,12 +37,12 @@
 </ul>
 {% else %}
 
-<p>Please confirm this is the event you want to volunteer for{% if event.notes %} and 
+<p>Please confirm this is the event you want to volunteer for{% if event.notes %} and
 that you meet any helper requirements in the notes above{% endif %}.</p>
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-primary" type="submit" name="confirm" value="Volunteer"> 
+    <input class="btn btn-primary" type="submit" name="confirm" value="Volunteer">
 </form>
 
 {% endif %}

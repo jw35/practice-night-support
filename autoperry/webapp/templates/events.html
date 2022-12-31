@@ -4,18 +4,84 @@
 
 {% block content %}
 
-<div class="text-center">
+<h2 class="text-center">Events</h2>
 
-<h2>Events</h2>
+<form>
 
-{% if request.session.include_past %}
-<p><a href="{% url 'events' %}?past=n">Omit past events</a></p>
+  <input type="hidden" name="f" value="1">
+
+  <div class="row align-items-center justify-content-center">
+
+	<div class="col-auto">
+      <div class="form-check">
+	    <input class="form-check-input" id="past" name="past" type="checkbox" value="yes" {% if flags.past %}checked{% endif %}>
+	    <label class="form-check-label" for="past">Include past?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <div class="form-check">
+	    <input class="form-check-input" id="cancelled" name="cancelled" type="checkbox" value="yes"{% if flags.cancelled %}checked{% endif %}>
+	    <label class="form-check-label" for="cancelled">Include cancelled?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <div class="form-check">
+        <input class="form-check-input" id="mine" name="mine" type="checkbox" value="yes"{% if flags.mine %}checked{% endif %}>
+        <label class="form-check-label" for="mine">Just mine?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <div class="form-check">
+        <input class="form-check-input" id="location" name="location" type="checkbox" value="yes"{% if flags.location %}checked{% endif %}>
+        <label class="form-check-label" for="location">Sort by location?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <input class="btn btn-primary" type="submit" value="Filter">
+    </div>
+
+  </div>
+
+</form>
+
+{% if flags.mine %}
+
+<h3 class="text-center mt-4">Events you have volunteered for:</h3>
+
+{% if events_as_voluteer %}
+{% include 'events-list-fragment.html' with events=events_as_voluteer %}
 {% else %}
-<p><a href="{% url 'events' %}?past=y">Include past events</a></p>
+<p class="text-center">No events</p>
 {% endif %}
+
+<h3 class="text-center mt-4">Events you are organising:</h3>
+
+{% if events_as_organiser %}
+{% include 'events-list-fragment.html' with events=events_as_organiser %}
+{% else %}
+<p class="text-center">No events</p>
+{% endif %}
+
+{% else %}
 
 {% include 'events-list-fragment.html' %}
 
-</div>
+<nav>
+    <ul class="pagination justify-content-center">
+    	{% for page in page_range %}
+    	  {% if page == 'X' %}
+    	  <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+    	  {% else %}
+          <li class="page-item{% if page == events.number %} active{% endif %}"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+          {% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+
+{% endif %}
 
 {% endblock %}
