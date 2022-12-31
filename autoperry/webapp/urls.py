@@ -12,7 +12,6 @@ urlpatterns = [
     path(r"account/edit", views.account_edit, name="account-edit"),
     path(r"account/cancel", views.account_cancel, name="account-cancel"),
     path(r"events/", views.events, name="events"),
-    path(r"events/mine/", views.my_events, name="my-events"),
     path(r"event/create/", views.create_event, name="create-event"),
     path(r"event/<int:event_id>/", views.event_details, name="event-details"),
     path(r"event/<int:event_id>/cancel", views.cancel_event, name="cancel-event"),

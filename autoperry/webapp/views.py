@@ -149,38 +149,6 @@ def event_details(request, event_id):
                  'user_is_helper': user in event.helpers.all()
                 })
 
-@login_required()
-def my_events(request):
-
-    user = request.user
-
-    if 'past' in request.GET:
-        if request.GET['past'] == 'y':
-            request.session['include_past'] = True
-        else:
-            request.session['include_past'] = False
-    elif 'include_past' not in request.session:
-        request.session['include_past'] = False
-
-    events_as_organiser = (Event.objects.all()
-                           .filter(owner=user)
-                           .annotate(helpers_available=Count('volunteer'))
-                           .order_by('start'))
-
-    if not request.session['include_past']:
-        events_as_organiser = events_as_organiser.filter(start__gte=timezone.now())
-
-    events_as_voluteer = (Event.objects.all()
-                           .filter(helpers=user)
-                           .annotate(helpers_available=Count('volunteer'))
-                           .order_by('start'))
-
-    if not request.session['include_past']:
-        events_as_voluteer = events_as_voluteer.filter(start__gte=timezone.now())
-
-    return render(request, "my-events.html",
-                  context={ 'events_as_organiser': events_as_organiser,
-                             'events_as_voluteer': events_as_voluteer})
 
 @login_required()
 def account(request):
