@@ -156,7 +156,7 @@ def account(request):
     return render(request, "account.html")
 
 @login_required()
-def create_event(request):
+def event_create(request):
 
     user = request.user
 
@@ -191,7 +191,7 @@ def create_event(request):
     return render(request, 'create-event.html', {'form': form})
 
 @login_required()
-def cancel_event(request, event_id):
+def event_cancel(request, event_id):
 
     with transaction.atomic():
 
@@ -217,7 +217,7 @@ def cancel_event(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'cancel-event.html', {'event': event, 'errors': errors})
+    return render(request, 'event-cancel.html', {'event': event, 'errors': errors})
 
 @login_required
 def volunteer(request, event_id):

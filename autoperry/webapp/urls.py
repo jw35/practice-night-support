@@ -12,9 +12,9 @@ urlpatterns = [
     path(r"account/edit", views.account_edit, name="account-edit"),
     path(r"account/cancel", views.account_cancel, name="account-cancel"),
     path(r"events/", views.events, name="events"),
-    path(r"event/create/", views.create_event, name="create-event"),
+    path(r"event/create/", views.event_create, name="event-create"),
     path(r"event/<int:event_id>/", views.event_details, name="event-details"),
-    path(r"event/<int:event_id>/cancel", views.cancel_event, name="cancel-event"),
+    path(r"event/<int:event_id>/cancel", views.event_cancel, name="event-cancel"),
     path(r"event/<int:event_id>/volunteer/", views.volunteer, name="volunteer"),
     path(r"event/<int:event_id>/unvolunteer/", views.unvolunteer, name="unvolunteer")
 ]

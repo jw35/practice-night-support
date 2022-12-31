@@ -59,7 +59,7 @@
     {% endif %}
 <li>The email conatct address for this event is {{ event.contact|urlize }}</li>
     {% if not event.cancelled and not event.past %}
-<li>You can <a href="{% url 'cancel-event'  event_id=event.pk %}">cancel</a> your request for help at this event.</li>
+<li>You can <a href="{% url 'event-cancel'  event_id=event.pk %}">cancel</a> your request for help at this event.</li>
     {% endif %}
 </ul>
 {% else %}
