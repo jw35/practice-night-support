@@ -54,10 +54,16 @@ def index(request):
 
     if user.is_authenticated:
 
+        print(request.GET.get('days', 0))
+
         try:
             days = int(request.GET.get('days', 14))
         except ValueError:
             days = 14
+        print(days)
+        if days not in [14, 28, 56]:
+            days=14
+        print(days)
 
         event_list = (Event.objects.all()
                       .filter(start__gte=timezone.now())

@@ -55,12 +55,13 @@
 * [DONE] Detect clashing events [#34] and volunteering offers [#35]
 * Add notification of cancelled events [#2]
 * [DONE] Re-work all form errors to use message framework
-* Select days on front page
+* [DONE] Select days on front page
 * [DONE] Date time pickers
 * [DONE] Auto suggest location
 * [DONE] Ely DA logo in nav bar
 * [DONE] Page footer
-* Check on iPhone
+* Check on 
+* Auto-trigger filtering o change
 
 
 
