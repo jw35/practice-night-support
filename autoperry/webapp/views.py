@@ -1,16 +1,17 @@
-from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from django.urls import reverse
-from django.contrib.auth.decorators import login_required
-from django.db.models import Count, F
-from django.utils import timezone
-from django.http import HttpResponseRedirect
-from django.contrib import messages
-from django.core.exceptions import PermissionDenied
-from django.db import transaction
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
+from django.db import transaction
+from django.db.models import Count, F
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render, get_object_or_404
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils import timezone
 
 from pprint import pprint
 from datetime import datetime, timedelta
@@ -159,6 +160,8 @@ def account(request):
 def event_create(request):
 
     user = request.user
+    errors = []
+    clashes = None
 
     if request.method == 'POST':
 
@@ -173,17 +176,30 @@ def event_create(request):
             start = timezone.make_aware(datetime.combine(date, start_time))
             end = timezone.make_aware(datetime.combine(date, end_time))
 
-            event = Event.objects.create(start=start,
-                                 end=end,
-                                 location=form.cleaned_data['location'],
-                                 helpers_required=form.cleaned_data['helpers_required'],
-                                 owner=user,
-                                 contact_address=form.cleaned_data['contact_address'],
-                                 notes=form.cleaned_data['notes'])
-            logger.info(f'Event id {event.id} "{event}" created by "{user}"')
-            messages.success(request, 'Event successfully created')
+            # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
+            clashes = (Event.objects.all()
+                       .filter(cancelled=None)
+                       .filter(location=form.cleaned_data['location'])
+                       .filter(start__lt=end)
+                       .filter(end__gt=start))
 
-            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
+                            # If there are, redisplay the form with a message
+            if clashes.all():
+                message = render_to_string("clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                form.add_error(None, message)
+
+            else:
+                event = Event.objects.create(start=start,
+                                     end=end,
+                                     location=form.cleaned_data['location'],
+                                     helpers_required=form.cleaned_data['helpers_required'],
+                                     owner=user,
+                                     contact_address=form.cleaned_data['contact_address'],
+                                     notes=form.cleaned_data['notes'])
+                logger.info(f'Event id {event.id} "{event}" created by "{user}"')
+                messages.success(request, 'Event successfully created')
+
+                return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     else:
         form = EventForm()
@@ -194,12 +210,12 @@ def event_create(request):
 def event_clone(request, event_id):
 
     event = get_object_or_404(Event, pk=event_id)
-    event.pk = None
 
+    # Populate a new form from the event
     form =EventForm(initial=
         { 'date': event.start.date(),
-          'start_time': event.start.time(),
-          'end_time': event.end.time(),
+          'start_time': event.start.time().strftime('%H:%M'),
+          'end_time': event.end.time().strftime('%H:%M'),
           'location': event.location,
           'helpers_required': event.helpers_required,
           'contact_address': event.contact_address,
@@ -213,35 +229,60 @@ def event_edit(request, event_id):
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
-        errors = []
+        errors = 0
+        clashes = None
+        form = None
+
+        # Check if editing is actually possible
 
         user = request.user
         if user != event.owner:
-            errors.append('You are not the owner of this event - only the owner can edit it.')
+            messages.error(request, 'You are not the owner of this event - only the owner can edit it.')
+            errors += 1
 
         if len(event.helpers.all()) > 0:
-            errors.append("This event has helpers - details of events with helpers can't be edited. Consider cancelling it.")
+            messages.error(request, "This event has helpers - details of events with helpers can't be edited. Consider cancelling it.")
+            errors += 1
 
         if event.past:
-            errors.append("This event has already happened - events in the past can't be edited.")
+            messages.error(request, "This event has already happened - events in the past can't be edited.")
+            errors += 1
         elif event.cancelled:
-            errors.append("The request for help at this event has already been cancelled - cancelled events can't be edited.")
+            messages.error(request, "The request for help at this event has already been cancelled - cancelled events can't be edited.")
+            errors == 1
 
-        form = None
-        if not errors:
+        if errors:
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-            if request.method == 'POST':
+        # If the is a form submission
+        if request.method == 'POST':
 
-                form = EventForm(request.POST)
+            form = EventForm(request.POST)
 
-                if form.is_valid():
+            if form.is_valid():
 
-                    date = form.cleaned_data.get("date")
-                    start_time = form.cleaned_data.get("start_time")
-                    end_time = form.cleaned_data.get("end_time")
+                date = form.cleaned_data.get("date")
+                start_time = form.cleaned_data.get("start_time")
+                end_time = form.cleaned_data.get("end_time")
 
-                    start = timezone.make_aware(datetime.combine(date, start_time))
-                    end = timezone.make_aware(datetime.combine(date, end_time))
+                start = timezone.make_aware(datetime.combine(date, start_time))
+                end = timezone.make_aware(datetime.combine(date, end_time))
+
+                # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
+                clashes = (Event.objects.all()
+                           .exclude(pk=event.pk)
+                           .filter(cancelled=None)
+                           .filter(location=form.cleaned_data['location'])
+                           .filter(start__lt=end)
+                           .filter(end__gt=start))
+
+                # If there are, redisplay the form with a message
+                if clashes.all():
+                    message = render_to_string("clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                    form.add_error(None, message)
+
+                # Otherwise success: update the event
+                else:
 
                     event.start = start
                     event.end = end
@@ -255,18 +296,20 @@ def event_edit(request, event_id):
 
                     return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-            else:
+        # Otherwise populate the form
+        else:
 
-                form =EventForm(
-                { 'date': event.start.date(),
-                  'start_time': event.start.time().strftime('%H:%M'),
-                  'end_time': event.end.time().strftime('%H:%M'),
-                  'location': event.location,
-                  'helpers_required': event.helpers_required,
-                  'contact_address': event.contact_address,
-                  'notes': event.notes})
+            form =EventForm(
+            { 'date': event.start.date(),
+              'start_time': event.start.time().strftime('%H:%M'),
+              'end_time': event.end.time().strftime('%H:%M'),
+              'location': event.location,
+              'helpers_required': event.helpers_required,
+              'contact_address': event.contact_address,
+              'notes': event.notes})
 
-    return render(request, 'event-edit.html', {'form': form, 'errors': errors })
+    # ... and display it
+    return render(request, 'event-edit.html', {'form': form })
 
 
 @login_required()

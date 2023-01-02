@@ -16,7 +16,7 @@
           <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">List Events</a>
         </li>
         <li class="nav-item">
-          {% url 'create-event' as url %}
+          {% url 'event-create' as url %}
           <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Create Event</a>
         </li>
         <li class="nav-item">

@@ -1,0 +1,6 @@
+<p>This event overlaps with {% if clashes|length == 1 %}an existing event{% else %}existing events{% endif %} at {{ location }}:</p>
+<ul>
+    {% for clash in clashes %}
+    <li>{{ clash.start|date:"l, j M Y" }}, {{clash.start|date:"H:i" }} - {{ clash.end|date:"H:i" }}</li>
+    {% endfor %}
+</ul>
