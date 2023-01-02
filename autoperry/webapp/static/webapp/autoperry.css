@@ -1,15 +1,6 @@
 label, input {
     display: block;
 }
-span.helptext {
-    display: inline;
-}
-.registration .helptext {
-    display: none;
-}
-.errorlist {
-    color: red;
-}
 body {
     max-width: 1000px;
     margin-left: auto;
@@ -22,4 +13,8 @@ body {
 }
 dd {
     margin-left: 1em;
+}
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
 }

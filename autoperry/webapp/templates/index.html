@@ -8,7 +8,7 @@
 
 <div class="px-4 py-2 my-3 text-center">
   <h1>Welcome to AutoPerry</h1>
-  <div class="col-lg-8 mx-auto">
+  <div class="col-md-6 mx-auto">
     <p >This is the BellRinging Support service of the
       <a href="https://cambridgeringing.info/">Cambridge District</a> of the
       <a href="https://www.elyda.org.uk/">Ely Diocesan Association of Church Bell Ringers</a>.
@@ -35,48 +35,30 @@
 
 {% else %}
 
-<table>
+<main class="form-signin w-100 m-auto text-center">
 
-    <tr valign="top">
-        <td valign="top" width="50%">
+<h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-<h2>EITHER Login:</h2>
-
-{% if error_messages %}
-<ul class="errorlist">
-    {% for message in error_messages %}
-    <li>{{ message }}</li>
+{% if errors %}
+<div class="alert alert-danger" role="alert">
+    {% for error in errors %}
+    <p>{{ error }}</p>
     {% endfor %}
-</ul>
+</div>
 {% endif %}
 
-<form method="POST">
+<form method="POST" class="mb-3">
   {% csrf_token %}
   {{ login_form|crispy }}
   {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
-  <button class="btn btn-primary" type="submit" name="login">Login</button>
+  <button class="btn btn-primary" type="submit" name="login">Sign in</button>
 </form>
 
 <p><a href="{% url 'password_reset' %}">Forgotten password?</a></p>
 
-       </td>
-       <td  width="50%">
+<p><a href="{% url 'account-create' %}">Register for an account</a></p>
 
-<h2>OR Register:</h2>
-
-<form method="POST" class="registration">
-    {% csrf_token %}
-    {{ registration_form|crispy }}
-    {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
-    <button class="btn btn-primary" type="submit" name="register">Register</button>
-</form>
-
-<p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>
-
-</td>
-</tr>
-
-</table>
+</main>
 
 {% endif %}
 

@@ -1,0 +1,24 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'authn.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="col-md-8 mx-auto">
+
+<h2>Register</h2>
+
+<form method="POST" class="registration mb-3">
+    {% csrf_token %}
+    {{ registration_form|crispy }}
+    {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
+    <button class="btn btn-primary" type="submit" name="register">Register</button>
+</form>
+
+<p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>
+
+</div>
+
+{% endblock %}

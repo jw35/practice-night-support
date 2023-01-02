@@ -28,37 +28,27 @@ from django.http import HttpResponse
 
 def index(request):
 
-    registration_form = CustomUserCreationForm()
     login_form = AuthenticationForm()
+    errors = []
     event_list = None
-    error_messages = []
     days = 14
 
     # Return from registering or logging in
     if request.method == 'POST':
-      if 'login' in request.POST:
-            login_form = AuthenticationForm(request.POST)
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            user = authenticate(username=username, password=password)
-            if user:
-                if user.is_active:
-                    login(request,user)
-                    logger.info(f'"{user}" logged in')
-                    return redirect(request.POST.get('next_page', settings.LOGIN_URL))
-                else:
-                    logger.info(f'Login attempt by suspended user "{user}"')
-                    error_messages.append("Your account is suspended.")
-            else:
-                error_messages.append("Invalid login details")
-
-      elif 'register' in request.POST:
-            registration_form = CustomUserCreationForm(request.POST)
-            if registration_form.is_valid():
-                user = registration_form.save()
-                login(request, user)
-                logger.info(f'"{user}" registered and logged in')
+        login_form = AuthenticationForm(request.POST)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            if user.is_active:
+                login(request,user)
+                logger.info(f'"{user}" logged in')
                 return redirect(request.POST.get('next_page', settings.LOGIN_URL))
+            else:
+                logger.info(f'Login attempt by suspended user "{user}"')
+                errors.append('Your account is suspended - please contact <a href="mailto:autoperry@cambridgeringing.info">autoperry@cambridgeringing.info</a>')
+        else:
+            errors.append("Bad email address or password")
 
     user = request.user
 
@@ -81,10 +71,8 @@ def index(request):
         context={'events': event_list,
                  'days': days,
                  'login_form': login_form,
-                 'registration_form': registration_form,
-                 'error_messages': error_messages,
+                 'errors': errors,
                  'next_page': request.GET.get('next')})
-
 
 @login_required()
 def events(request):
@@ -421,6 +409,23 @@ def unvolunteer(request, event_id):
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'unvolunteer.html', {'event': event, 'errors': errors})
+
+def account_create(request):
+
+    registration_form = CustomUserCreationForm()
+
+    # Return from registering or logging in
+    if request.method == 'POST':
+        registration_form = CustomUserCreationForm(request.POST)
+        if registration_form.is_valid():
+            user = registration_form.save()
+            login(request, user)
+            logger.info(f'"{user}" registered and logged in')
+            return redirect(request.POST.get('next_page', settings.LOGIN_URL))
+
+    return render(request, "account-create.html",
+        context={'registration_form': registration_form})
+
 
 login_required()
 def account_edit(request):
