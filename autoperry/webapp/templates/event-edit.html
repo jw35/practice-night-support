@@ -16,5 +16,15 @@
     <input class="btn btn-primary" type="submit" value="Update">
 </form>
 
+<script  type="text/javascript">
+$( "#id_location" ).autocomplete({
+  delay: 0.
+  source: [
+  {% for location in locations %}
+  "{{location}}",
+  {% endfor %}
+  ]
+});
+</script>
 
 {% endblock %}

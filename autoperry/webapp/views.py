@@ -191,7 +191,10 @@ def event_create(request):
     else:
         form = EventForm()
 
-    return render(request, 'event-create.html', {'form': form })
+    # Get a list of Locations
+    locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
+
+    return render(request, 'event-create.html', {'form': form, 'locations': locations })
 
 @login_required()
 def event_clone(request, event_id):
@@ -295,8 +298,11 @@ def event_edit(request, event_id):
               'contact_address': event.contact_address,
               'notes': event.notes})
 
+    # Get a list of Locations
+    locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
+
     # ... and display it
-    return render(request, 'event-edit.html', {'form': form })
+    return render(request, 'event-edit.html', {'form': form, 'locations': locations })
 
 
 @login_required()

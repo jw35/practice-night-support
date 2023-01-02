@@ -56,8 +56,8 @@
 * Add notification of cancelled events [#2]
 * [DONE] Re-work all form errors to use message framework
 * Select days on front page
-* Date time pickers
-* Auto suggest location
+* [DONE] Date time pickers
+* [DONE] Auto suggest location
 * [DONE] Ely DA logo in nav bar
 * [DONE] Page footer
 * Check on iPhone
