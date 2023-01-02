@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='user',
+            model_name='User',
             name='cancelled',
             field=models.DateTimeField(blank=True, null=True),
         ),
