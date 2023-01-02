@@ -14,34 +14,30 @@
 
 	<div class="col-auto">
       <div class="form-check">
-	    <input class="form-check-input" id="past" name="past" type="checkbox" value="yes" {% if flags.past %}checked{% endif %}>
+	    <input class="form-check-input" id="past" name="past" onchange="this.form.submit()" type="checkbox" value="yes" {% if flags.past %}checked{% endif %}>
 	    <label class="form-check-label" for="past">Include past?</label>
       </div>
     </div>
 
     <div class="col-auto">
       <div class="form-check">
-	    <input class="form-check-input" id="cancelled" name="cancelled" type="checkbox" value="yes"{% if flags.cancelled %}checked{% endif %}>
+	    <input class="form-check-input" id="cancelled" name="cancelled" onchange="this.form.submit()" type="checkbox" value="yes"{% if flags.cancelled %}checked{% endif %}>
 	    <label class="form-check-label" for="cancelled">Include cancelled?</label>
       </div>
     </div>
 
     <div class="col-auto">
       <div class="form-check">
-        <input class="form-check-input" id="mine" name="mine" type="checkbox" value="yes"{% if flags.mine %}checked{% endif %}>
+        <input class="form-check-input" id="mine" name="mine" onchange="this.form.submit()" type="checkbox" value="yes"{% if flags.mine %}checked{% endif %}>
         <label class="form-check-label" for="mine">Just mine?</label>
       </div>
     </div>
 
     <div class="col-auto">
       <div class="form-check">
-        <input class="form-check-input" id="location" name="location" type="checkbox" value="yes"{% if flags.location %}checked{% endif %}>
+        <input class="form-check-input" id="location" name="location" onchange="this.form.submit()" type="checkbox" value="yes"{% if flags.location %}checked{% endif %}>
         <label class="form-check-label" for="location">Sort by location?</label>
       </div>
-    </div>
-
-    <div class="col-auto">
-      <input class="btn btn-primary" type="submit" value="Filter">
     </div>
 
   </div>
