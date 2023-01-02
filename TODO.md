@@ -53,6 +53,13 @@
 * Add reminders to volunteers and event owners [#3, #5]
 * Detect clashing events [#34] and volunteering offers [#35]
 * Add notification of cancelled events [#2]
+* Re-work all form errors to use message framework
+* Select days on front page
+* Push register to separate page
+* Date time pickers
+* Auto suggest location
+* Ely DA logo in nav bar
+* Page footer
 
 
 
