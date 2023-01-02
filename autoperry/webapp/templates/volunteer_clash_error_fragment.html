@@ -1,0 +1,6 @@
+<p>You have already volunteered to help with {% if clashes|length == 1 %}an event{% else %}events{% endif %} at the same time as this one:</p>
+<ul>
+    {% for clash in clashes %}
+    <li>{{ clash.location }} - {{ clash.when }}</li>
+    {% endfor %}
+</ul>

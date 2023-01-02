@@ -277,7 +277,7 @@ def event_edit(request, event_id):
 
                 # If there are, redisplay the form with a message
                 if clashes.all():
-                    message = render_to_string("clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                    message = render_to_string("event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
                     form.add_error(None, message)
 
                 # Otherwise success: update the event
@@ -350,6 +350,8 @@ def volunteer(request, event_id):
 
     with transaction.atomic():
 
+        user = request.user
+
         event = get_object_or_404(Event, pk=event_id)
         errors = 0
 
@@ -360,9 +362,22 @@ def volunteer(request, event_id):
             messages.error(request, "The request for help at this event has been cancelled so you can't volunteer to help with it")
             errors += 1
 
-        user = request.user
         if user in event.helpers.all():
             messages.error(request, 'You have already volunteered to help at this event ')
+            errors += 1
+
+        # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
+        clashes = (Event.objects.all()
+                   .exclude(pk=event.pk)
+                   .filter(cancelled=None)
+                   .filter(helpers=user)
+                   .filter(start__lt=event.end)
+                   .filter(end__gt=event.start))
+
+        # If there are, redisplay the form with a message
+        if clashes.all():
+            message = render_to_string("volunteer_clash_error_fragment.html", { "clashes": clashes })
+            messages.error(request, message)
             errors += 1
 
         if not errors and request.method == 'POST':

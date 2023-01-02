@@ -51,9 +51,9 @@
 * [DONE] Allow events with no volunteers to be edited/deleted [#9]
 * Validate email address supplied on registration (and don't let it be subsequently edited) [#13]
 * Add reminders to volunteers and event owners [#3, #5]
-* Detect clashing events [#34] and volunteering offers [#35]
+* [DONE] Detect clashing events [#34] and volunteering offers [#35]
 * Add notification of cancelled events [#2]
-* Re-work all form errors to use message framework
+* [DONE] Re-work all form errors to use message framework
 * Select days on front page
 * Push register to separate page
 * Date time pickers
