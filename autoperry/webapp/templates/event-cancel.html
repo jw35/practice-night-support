@@ -6,6 +6,12 @@
 
 <h2>Cancel request for help</h2>
 
+{% if event.past %}
+   <h3><span class="badge text-bg-warning">This event has already happened</span></h3>
+{% elif event.cancelled %}
+   <h3><span class="badge text-bg-warning">Requests for help at this event have been cancelled</span></h3>
+{% endif %}
+
 <dl>
     <dt>Date</dt>
     <dd>{{event.start|date:"l, j M Y"}}</dd>
@@ -20,15 +26,6 @@
     <dd>{{event.location}}</dd>
 </dl>
 
-{% if errors %}
-<ul>
-{% for error in errors %}
-  <li>{{ error }}</li>
-{% endfor %}
-</ul>
-
-{% else %}
-
 {% if event.helpers.all %}
 <p>There are currently helpers for this event. If you no longer need them then you need to let them know:</p>
     <ul>
@@ -42,10 +39,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel request">
+    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel request"{% if errors %}disabled{% endif %}>
 </form>
-
-
-{% endif %}
 
 {% endblock %}

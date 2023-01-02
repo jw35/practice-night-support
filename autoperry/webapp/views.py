@@ -160,7 +160,6 @@ def account(request):
 def event_create(request):
 
     user = request.user
-    errors = []
     clashes = None
 
     if request.method == 'POST':
@@ -318,16 +317,19 @@ def event_cancel(request, event_id):
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
-        errors = []
+        errors = 0
 
         user = request.user
         if user != event.owner:
-            errors.append('You are not the owner of this event')
+            messages.error(request,'You are not the owner of this event - only the owner can cancel it')
+            errors += 1
 
         if event.past:
-            errors.append('This event has already happened')
+            messages.error(request, "This event has already happened can so can't now be cancelled")
+            errors += 1
         elif event.cancelled:
-            errors.append('The request for help at this event has already been cancelled')
+            messages.error(request, 'The request for help at this event has already been cancelled')
+            errors += 1
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
@@ -343,24 +345,25 @@ def event_cancel(request, event_id):
 
 
 
-
-
 @login_required
 def volunteer(request, event_id):
 
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
-        errors = []
+        errors = 0
 
         if event.past:
-            errors.append('This event has already happened')
+            messages.error(request, "This event has already happened so you can't volunteer to help with it")
+            errors += 1
         elif event.cancelled:
-            errors.append('The request for help at this event has been cancelled')
+            messages.error(request, "The request for help at this event has been cancelled so you can't volunteer to help with it")
+            errors += 1
 
         user = request.user
         if user in event.helpers.all():
-            errors.append('You have already volunteered to help at this event')
+            messages.error(request, 'You have already volunteered to help at this event ')
+            errors += 1
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
@@ -381,14 +384,16 @@ def unvolunteer(request, event_id):
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
-        errors = []
+        errors = 0
 
         if event.past:
-            errors.append('This event has already happened')
+            messages.error(request, "This event has already happened so you can't withdraw your offer to help")
+            errors += 1
 
         user = request.user
         if user not in event.helpers.all():
-            errors.append('You are not a helper for this event')
+            messages.error(request, "You are not already a helper for this event so you can't withdraw your offer to help")
+            errors += 1
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
@@ -428,7 +433,7 @@ def account_edit(request):
 def account_cancel(request):
 
     user = request.user
-    errors = []
+    errors = 0
 
     with transaction.atomic():
 
@@ -443,14 +448,17 @@ def account_cancel(request):
                                .filter(cancelled=None))
 
         if events_as_organiser.all():
-            errors.append('You are the organiser of events that have yet to happen.'
+            messages.error(request, 'You are the organiser of events that have yet to happen. '
                           'You must cancel them or wait for them to happen before you can cancel your account.')
+            errors += 1
         if events_as_volunteer.all():
-            errors.append('You are a helper for events that have yet to happen.'
-                          'You must un-volunteer or wait for them to happen before you can cancel your account.')
+            messages.error(request, 'You have volunteered to help with events that have yet to happen. '
+                          'You must withdraw your offer or wait for them to happen before you can cancel your account.')
+            errors += 1
 
         if user.is_superuser:
-            errors.append("You have a superuser account. Superuser accounts can't be cancelled here.")
+            messages.error(request, "You have a superuser account. Superuser accounts can't be cancelled here.")
+            errors += 1
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
