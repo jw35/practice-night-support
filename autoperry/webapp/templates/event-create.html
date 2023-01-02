@@ -9,6 +9,7 @@
 
 <h2>Create an event</h2>
 
+{{ form.media }}
 <form method="post" action="{% url 'event-create' %}">
     {% csrf_token %}
     {{ form|crispy }}

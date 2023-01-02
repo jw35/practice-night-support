@@ -9,6 +9,7 @@
 
 <h2>Update event</h2>
 
+{{ form.media }}
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
