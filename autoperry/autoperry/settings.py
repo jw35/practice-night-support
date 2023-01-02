@@ -141,6 +141,10 @@ LOGOUT_REDIRECT_URL = "index"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+DEFAULT_FROM_EMAIL = 'AutoPerry <autoperry@cambridgeringing.info>'
+ADMINS = ['autoperry-admin@cambridgeringing.info']
+EMAIL_SUBJECT_PREFIX = '[AutoPerry] '
+
 # Needs '$ python -m smtpd -n -c DebuggingServer localhost:1025'
 #EMAIL_HOST = "localhost"
 #EMAIL_PORT = 1025
@@ -156,6 +160,8 @@ MESSAGE_TAGS = {
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+ADMINS = ['autoperry-admin@cambridgeringing.info']
 
 LOGGING = {
     'version': 1,

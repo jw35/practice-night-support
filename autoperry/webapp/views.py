@@ -337,6 +337,16 @@ def event_cancel(request, event_id):
                 event.save()
 
                 logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
+
+                for helper in event.helpers.all():
+                    message = render_to_string("event_cancel_email_message.html", { "event": event })
+                    subject = render_to_string("event_cancel_email_subject.html", { "event": event })
+                    success = helper.email_user(subject, message)
+                    if success:
+                        logger.info(f'Notified {user} that event id {event.id} "{event}" has been cancelled')
+                    else:
+                        logger.error(f'Failed to notify {user} that event id {event.id} "{event}" has been cancelled')
+
                 messages.success(request, 'The request for help at this event has been cancelled')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
