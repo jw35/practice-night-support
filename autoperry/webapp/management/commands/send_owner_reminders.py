@@ -8,7 +8,7 @@ import datetime
 from webapp.models import Event
 
 class Command(BaseCommand):
-    help = 'Send pending email reminders to event owners'
+    help = 'Send email reminders to event owners'
 
     def add_arguments(self, parser):
 

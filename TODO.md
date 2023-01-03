@@ -51,7 +51,7 @@
 * [DONE] Allow events with no volunteers to be edited/deleted [#9]
 * [DONE] Push register to separate page
 * [NOT DOING] Validate email address supplied on registration (and don't let it be subsequently edited) [#13]
-* Add reminders to volunteers and event owners [#3, #5]
+* [DONE] Add reminders to volunteers and event owners [#3, #5]
 * [DONE] Detect clashing events [#34] and volunteering offers [#35]
 * [DONE] Add notification of cancelled events [#2]
 * [DONE] Re-work all form errors to use message framework
@@ -61,7 +61,9 @@
 * [DONE] Ely DA logo in nav bar
 * [DONE] Page footer
 * Check on iPhone
-* [DONE] Auto-trigger filtering o change
+* [DONE] Auto-trigger filtering o 
+* Local jQuery
+* Better date and time pickers
 
 
 

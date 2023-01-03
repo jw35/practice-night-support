@@ -8,7 +8,8 @@ class CustomBaseUserAdmin(BaseUserAdmin):
 
 	fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "send_notifications",)}),
+        (_("Important dates"), {"fields": ("date_joined", "last_login", "email_validated", "reminded_upto", "cancelled")}),
         (
             _("Permissions"),
             {
@@ -21,7 +22,6 @@ class CustomBaseUserAdmin(BaseUserAdmin):
                 )
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined", "cancelled")}),
     )
 
 admin.site.register(User, CustomBaseUserAdmin)
