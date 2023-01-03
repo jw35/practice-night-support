@@ -22,8 +22,6 @@
 
   {% if events.all %}
 
-  <p>{{ days }}</p>
-
   <h2>Events needing helpers in the next <select name="days" id="id-days" onchange='location.href="{% url 'index' %}?days=" + this.value'>
     <option value="14"{% if  days == 14 %}selected{% endif %}>14</option>
     <option value="28"{% if  days == 28 %}selected{% endif %}>28</option>
