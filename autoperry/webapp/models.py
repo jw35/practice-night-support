@@ -19,6 +19,7 @@ class Event(models.Model):
     cancelled = models.DateTimeField(null=True, blank=True)
     contact_address = models.EmailField(blank=True, null=True, help_text="Contact email address for the event, defaults to owner's address")
     notes = models.CharField(max_length=128, blank=True, null=True, help_text="Purpose of the event, helper skills required, etc.")
+    owner_reminded = models.DateTimeField(null=True, blank=True)
 
     @property
     def contact(self):

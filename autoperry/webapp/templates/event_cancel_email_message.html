@@ -1,12 +1,15 @@
-You volunteered to help with an  event:
+You volunteered to help with an AutoPerry event:
 
     Where: {{ event.location }}
-
-    When: {{ event.when }}
+    When:  {{ event.when }}
 
 The organiser of this event {{ event.owner }} has just cancelled their
 request for help so there is no need for you to turn up. If you have any
 questions about this, please contact them at {{ event.contact }}.
+
+You can find more details of this event at:
+
+    https://autoperry.cambridgeringing.info{% url 'event-details' event_id=event.pk %}
 
 Thanks very much for helping to support ringing in the Cambridge District.
 

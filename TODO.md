@@ -53,7 +53,7 @@
 * [NOT DOING] Validate email address supplied on registration (and don't let it be subsequently edited) [#13]
 * Add reminders to volunteers and event owners [#3, #5]
 * [DONE] Detect clashing events [#34] and volunteering offers [#35]
-* Add notification of cancelled events [#2]
+* [DONE] Add notification of cancelled events [#2]
 * [DONE] Re-work all form errors to use message framework
 * [DONE] Select days on front page
 * [DONE] Date time pickers
