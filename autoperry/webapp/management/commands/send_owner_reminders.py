@@ -40,8 +40,8 @@ class Command(BaseCommand):
         for event in events:
 
             if options['really']:
-                message = render_to_string("webapp/email/event_reminder_message.txt", { "event": event })
-                subject = render_to_string("webapp/email/event_reminder_subject.txt", { "event": event })
+                message = render_to_string("webapp/email/event-reminder-message.txt", { "event": event })
+                subject = render_to_string("webapp/email/event-reminder-subject.txt", { "event": event })
                 success = send_mail(subject, message, None, [event.contact])
                 if success:
                     self.stdout.write(self.style.SUCCESS(f'Reminded {event.contact} about {event}'))

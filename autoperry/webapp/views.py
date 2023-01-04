@@ -173,7 +173,7 @@ def event_create(request):
 
                             # If there are, redisplay the form with a message
             if clashes.all():
-                message = render_to_string("webapp/event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                message = render_to_string("webapp/event-clash-error-fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
                 form.add_error(None, message)
 
             else:
@@ -269,7 +269,7 @@ def event_edit(request, event_id):
 
                 # If there are, redisplay the form with a message
                 if clashes.all():
-                    message = render_to_string("webapp/event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                    message = render_to_string("webapp/event-clash-error-fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
                     form.add_error(None, message)
 
                 # Otherwise success: update the event
@@ -379,7 +379,7 @@ def volunteer(request, event_id):
 
         # If there are, redisplay the form with a message
         if clashes.all():
-            message = render_to_string("webapp/volunteer_clash_error_fragment.html", { "clashes": clashes })
+            message = render_to_string("webapp/volunteer-clash-error-fragment.html", { "clashes": clashes })
             messages.error(request, message)
             errors += 1
 

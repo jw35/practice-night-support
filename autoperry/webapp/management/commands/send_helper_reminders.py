@@ -62,9 +62,9 @@ class Command(BaseCommand):
             if events:
 
                 if options['really']:
-                    message = render_to_string("webapp/email/helper_reminder_message.txt",
+                    message = render_to_string("webapp/email/helper-reminder-message.txt",
                         { "events": events, 'start': start,'last_day': last_day, 'this_week': options['thisweek'] })
-                    subject = render_to_string("webapp/email/helper_reminder_subject.txt",
+                    subject = render_to_string("webapp/email/helper-reminder-subject.txt",
                         { "events": events, 'start': start,'last_day': last_day, 'this_week': options['thisweek'] })
                     user.email_user(subject, message)
                     # User.email_user doesn't return status information...
