@@ -66,11 +66,9 @@ class Command(BaseCommand):
                         { "events": events, 'start': start,'last_day': last_day, 'this_week': options['thisweek'] })
                     subject = render_to_string("helper_reminder_email_subject.html",
                         { "events": events, 'start': start,'last_day': last_day, 'this_week': options['thisweek'] })
-                    success = user.email_user(subject, message)
-                    if success:
-                        self.stdout.write(self.style.SUCCESS(f'Reminded {user} about {len(events)} events from {start} to {cutoff}'))
-                    else:
-                        self.stdout.write(self.style.ERROR(f'Failed to remind {user} about {len(events)} events from {start} to {cutoff}'))
+                    user.email_user(subject, message)
+                    # User.email_user doesn't return status information...
+                    self.stdout.write(self.style.SUCCESS(f'Reminded {user} about {len(events)} events from {start} to {cutoff}'))
 
                     user.reminded_upto = cutoff
                     user.save()
