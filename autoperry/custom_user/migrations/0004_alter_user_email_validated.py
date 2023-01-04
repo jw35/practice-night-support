@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='User',
+            model_name='user',
             name='email_validated',
             field=models.DateTimeField(blank=True, help_text='Timestamp of email address validation', null=True),
         ),

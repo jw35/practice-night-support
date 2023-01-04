@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='User',
+            model_name='user',
             name='send_notifications',
             field=models.BooleanField(default=True, help_text='Send email reminders and other messages', verbose_name='send email notifications'),
         ),

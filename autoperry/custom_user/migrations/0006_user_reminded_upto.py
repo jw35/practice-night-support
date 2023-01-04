@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='User',
+            model_name='user',
             name='reminded_upto',
             field=models.DateTimeField(blank=True, help_text='End date of most recent reminder run', null=True),
         ),

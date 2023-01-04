@@ -11,17 +11,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='User',
+            model_name='user',
             name='email_validated',
             field=models.DateTimeField(blank=True, help_text='Timestanp of email address validation', null=True),
         ),
         migrations.AddField(
-            model_name='User',
+            model_name='user',
             name='send_notifications',
             field=models.BooleanField(default=True, help_text='Send email reminders and other messages'),
         ),
         migrations.AlterField(
-            model_name='User',
+            model_name='user',
             name='cancelled',
             field=models.DateTimeField(blank=True, help_text='Timestamp of account cancellation', null=True),
         ),
