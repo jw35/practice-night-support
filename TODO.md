@@ -62,8 +62,10 @@
 * [DONE] Page footer
 * Check on iPhone
 * [DONE] Auto-trigger filtering o 
-* Local jQuery
+* [DONE] Local jQuery
 * Better date and time pickers
+* Database dumper
+* Cron for notifications
 
 
 

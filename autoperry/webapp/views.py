@@ -173,7 +173,7 @@ def event_create(request):
 
                             # If there are, redisplay the form with a message
             if clashes.all():
-                message = render_to_string("clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                message = render_to_string("event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
                 form.add_error(None, message)
 
             else:
