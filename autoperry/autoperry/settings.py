@@ -141,6 +141,7 @@ LOGOUT_REDIRECT_URL = "index"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+SERVER_EMAIL = 'autoperry@cambridgeringing.info'
 DEFAULT_FROM_EMAIL = 'AutoPerry <autoperry@cambridgeringing.info>'
 ADMINS = ['autoperry-admin@cambridgeringing.info']
 EMAIL_SUBJECT_PREFIX = '[AutoPerry] '

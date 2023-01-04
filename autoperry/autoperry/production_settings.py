@@ -22,9 +22,6 @@ DATABASES = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-DEFAULT_FROM_EMAIL = 'autoperry@cambridgeringing.info'
-SERVER_EMAIL = 'autoperry@cambridgeringing.info'
-
 host: 'smtp-auth.mythic-beasts.com'
 port: '587'
 username: 'autoperry@cambridgeringing.info'
