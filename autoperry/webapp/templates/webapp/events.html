@@ -1,6 +1,6 @@
 <!--webapp/templates/index.html-->
 
-{% extends 'authn.html' %}
+{% extends 'webapp/authn.html' %}
 
 {% block content %}
 
@@ -49,7 +49,7 @@
 <h3 class="text-center mt-4">Events you have volunteered for:</h3>
 
 {% if events_as_voluteer %}
-{% include 'events-list-fragment.html' with events=events_as_voluteer %}
+{% include 'webapp/events-list-fragment.html' with events=events_as_voluteer %}
 {% else %}
 <p class="text-center">No events</p>
 {% endif %}
@@ -57,14 +57,14 @@
 <h3 class="text-center mt-4">Events you are organising:</h3>
 
 {% if events_as_organiser %}
-{% include 'events-list-fragment.html' with events=events_as_organiser %}
+{% include 'webapp/events-list-fragment.html' with events=events_as_organiser %}
 {% else %}
 <p class="text-center">No events</p>
 {% endif %}
 
 {% else %}
 
-{% include 'events-list-fragment.html' %}
+{% include 'webapp/events-list-fragment.html' %}
 
 {% if events.paginator.num_pages > 1 %}
 

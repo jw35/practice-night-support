@@ -68,7 +68,7 @@ def index(request):
                       .filter(helpers_required__gt=F("helpers_available"))
                       .order_by('start'))
 
-    return render(request, "index.html",
+    return render(request, "webapp/index.html",
         context={'events': event_list,
                  'days': days,
                  'login_form': login_form,
@@ -119,7 +119,7 @@ def events(request):
     page_obj = paginator.get_page(page_number)
     page_range = paginator.get_elided_page_range(page_number, on_each_side=3, on_ends=1)
 
-    return render(request, "events.html",
+    return render(request, "webapp/events.html",
         context={'events': page_obj,
                  'page_range': page_range,
                  'events_as_organiser': events_as_organiser,
@@ -133,7 +133,7 @@ def event_details(request, event_id):
 
     user = request.user
 
-    return render(request, "event.html",
+    return render(request, "webapp/event.html",
         context={'event': event,
                  'user_is_owner': user == event.owner,
                  'user_is_helper': user in event.helpers.all()
@@ -143,7 +143,7 @@ def event_details(request, event_id):
 @login_required()
 def account(request):
 
-    return render(request, "account.html")
+    return render(request, "webapp/account.html")
 
 @login_required()
 def event_create(request):
@@ -173,7 +173,7 @@ def event_create(request):
 
                             # If there are, redisplay the form with a message
             if clashes.all():
-                message = render_to_string("event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                message = render_to_string("webapp/event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
                 form.add_error(None, message)
 
             else:
@@ -195,7 +195,7 @@ def event_create(request):
     # Get a list of Locations
     locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
 
-    return render(request, 'event-create.html', {'form': form, 'locations': locations })
+    return render(request, 'webapp/event-create.html', {'form': form, 'locations': locations })
 
 @login_required()
 def event_clone(request, event_id):
@@ -212,7 +212,7 @@ def event_clone(request, event_id):
           'contact_address': event.contact_address,
           'notes': event.notes})
 
-    return render(request, 'event-create.html', {'form': form })
+    return render(request, 'webapp/event-create.html', {'form': form })
 
 @login_required()
 def event_edit(request, event_id):
@@ -269,7 +269,7 @@ def event_edit(request, event_id):
 
                 # If there are, redisplay the form with a message
                 if clashes.all():
-                    message = render_to_string("event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                    message = render_to_string("webapp/event_clash_error_fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
                     form.add_error(None, message)
 
                 # Otherwise success: update the event
@@ -303,7 +303,7 @@ def event_edit(request, event_id):
     locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
 
     # ... and display it
-    return render(request, 'event-edit.html', {'form': form, 'locations': locations })
+    return render(request, 'webapp/event-edit.html', {'form': form, 'locations': locations })
 
 
 @login_required()
@@ -334,8 +334,8 @@ def event_cancel(request, event_id):
                 logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
 
                 for helper in event.helpers.all():
-                    message = render_to_string("event_cancel_email_message.html", { "event": event })
-                    subject = render_to_string("event_cancel_email_subject.html", { "event": event })
+                    message = render_to_string("webapp/email/event_cancel_message.txt", { "event": event })
+                    subject = render_to_string("webapp/email/event_cancel_subject.txt", { "event": event })
                     helper.email_user(subject, message)
                     # User.email_user doesn't return status information...
                     logger.info(f'Notified {user} that event id {event.id} "{event}" has been cancelled')
@@ -344,7 +344,7 @@ def event_cancel(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'event-cancel.html', {'event': event, 'errors': errors})
+    return render(request, 'webapp/event-cancel.html', {'event': event, 'errors': errors})
 
 
 
@@ -379,7 +379,7 @@ def volunteer(request, event_id):
 
         # If there are, redisplay the form with a message
         if clashes.all():
-            message = render_to_string("volunteer_clash_error_fragment.html", { "clashes": clashes })
+            message = render_to_string("webapp/volunteer_clash_error_fragment.html", { "clashes": clashes })
             messages.error(request, message)
             errors += 1
 
@@ -393,7 +393,7 @@ def volunteer(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'volunteer.html', {'event': event, 'errors': errors})
+    return render(request, 'webapp/volunteer.html', {'event': event, 'errors': errors})
 
 
 @login_required
@@ -423,7 +423,7 @@ def unvolunteer(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'unvolunteer.html', {'event': event, 'errors': errors})
+    return render(request, 'webapp/unvolunteer.html', {'event': event, 'errors': errors})
 
 def account_create(request):
 
@@ -438,7 +438,7 @@ def account_create(request):
             logger.info(f'"{user}" registered and logged in')
             return redirect(request.POST.get('next_page', settings.LOGIN_URL))
 
-    return render(request, "account-create.html",
+    return render(request, "webapp/account-create.html",
         context={'registration_form': registration_form})
 
 
@@ -461,7 +461,7 @@ def account_edit(request):
             messages.success(request, 'Your account details have been successfully updated')
             return HttpResponseRedirect(reverse('account'))
 
-    return render(request, 'account-edit.html', {'form': form})
+    return render(request, 'webapp/account-edit.html', {'form': form})
 
 
 @login_required
@@ -513,5 +513,5 @@ def account_cancel(request):
             else:
                 return HttpResponseRedirect(reverse('account'))
 
-    return render(request, 'account-cancel.html',
+    return render(request, 'webapp/account-cancel.html',
                           {'errors': errors})

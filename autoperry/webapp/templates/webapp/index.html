@@ -1,6 +1,6 @@
 <!--webapp/templates/index.html-->
 
-{% extends 'authn.html' %}
+{% extends 'webapp/authn.html' %}
 
 {% load crispy_forms_tags %}
 
@@ -27,7 +27,7 @@
     <option value="28"{% if  days == 28 %}selected{% endif %}>28</option>
     <option value="56"{% if  days == 56 %}selected{% endif %}>56</option>
   </select> days</h2>
-  {% include 'events-list-fragment.html' %}
+  {% include 'webapp/events-list-fragment.html' %}
 
   {% else %}
 
