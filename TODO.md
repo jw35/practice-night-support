@@ -60,12 +60,12 @@
 * [DONE] Auto suggest location
 * [DONE] Ely DA logo in nav bar
 * [DONE] Page footer
-* Check on iPhone
+* [DONE] Check on iPhone
 * [DONE] Auto-trigger filtering o 
 * [DONE] Local jQuery
 * Better date and time pickers
-* Database dumper
-* Cron for notifications
+* [DONE] Database dumper
+* [DONE] Cron for notifications
 
 
 
