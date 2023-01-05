@@ -1,7 +1,5 @@
 # AutoPerry - Notes
 
-Home: `~jon/Ringing/practice_night_support`
-
 Activate Python environment with: `. venv/bin/activate`
 
 Dummy SMTP server for development: `python -m smtpd -n -c DebuggingServer localhost:1025` (no longer needed)
@@ -45,3 +43,24 @@ To make persistent
 To view logs
 
     journalctl --user
+
+Cronjobs to send reminders:
+
+    crontab -e
+
+and add
+
+    00 05 * * * practice-night-support/run_backup.sh
+    00 06 * * * practice-night-support/run_owner_reminders.sh
+    00 07 * * 7 practice-night-support/run_helper_reminders.sh
+
+## Deploying a new version
+
+    export DJANGO_SETTINGS_MODULE=autoperry.production_settings
+    cd ~/practice-night-support
+    systemctl --user stop autoperry
+    git pull
+    cd autoperry
+    ./manage.py collectstatic
+    ./manage.py migrate
+    systemctl --user start autoperry
