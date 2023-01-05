@@ -66,7 +66,7 @@ def index(request):
                       .filter(cancelled=None)
                       .annotate(helpers_available=Count('helpers'))
                       .filter(helpers_required__gt=F("helpers_available"))
-                      .order_by('start'))
+                      .order_by('start', 'location'))
 
     return render(request, "webapp/index.html",
         context={'events': event_list,
@@ -100,9 +100,9 @@ def events(request):
         event_list = event_list.filter(cancelled=None)
 
     if flags['location']:
-        event_list = event_list.order_by('location')
+        event_list = event_list.order_by('location', 'start')
     else:
-        event_list = event_list.order_by('start')
+        event_list = event_list.order_by('start', 'location')
 
     events_as_organiser = event_list.filter(owner=user) if flags['mine'] else None
     events_as_voluteer = event_list.filter(helpers=user) if flags['mine'] else None
