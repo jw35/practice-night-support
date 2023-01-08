@@ -22,11 +22,16 @@
 
   {% if events.all %}
 
-  <h2>Events needing helpers in the next <select name="days" id="id-days" onchange='location.href="{% url 'index' %}?days=" + this.value'>
-    <option value="14"{% if  days == 14 %}selected{% endif %}>14</option>
-    <option value="28"{% if  days == 28 %}selected{% endif %}>28</option>
-    <option value="56"{% if  days == 56 %}selected{% endif %}>56</option>
-  </select> days</h2>
+  <h2>Events needing helpers in the next
+    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ days }}
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url 'index' %}?days=14">14</a></li>
+    <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
+    <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
+  </ul>
+  days</h2>
   {% include 'webapp/events-list-fragment.html' %}
 
   {% else %}

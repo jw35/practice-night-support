@@ -2,13 +2,6 @@
     <div class="col-auto">
       <table class="table table-responsive">
 
-   <tr>
-      <th></th>
-      <th class="d-none d-md-table-cell"></th>
-      <th>Helpers</th>
-      <th></th>
-   </tr>
-
    {% for event in events %}
        <tr class="text-start {% if event.cancelled %}text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
          <td class="d-none d-md-table-cell">
