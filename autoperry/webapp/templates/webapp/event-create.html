@@ -21,9 +21,7 @@
 <script  type="text/javascript">
 $( "#id_location" ).autocomplete({
   source: [
-  {% for location in locations %}
-  "{{location}}",
-  {% endfor %}
+  {% for location in locations %}"{{location|escapejs}}",{% endfor %}
   ]
 });
 </script>
