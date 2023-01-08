@@ -39,6 +39,12 @@ class EventForm(forms.Form):
             if start < timezone.now():
                 raise ValidationError("Event start is in the past. Events must start in the future!")
 
+    class Media:
+        css = {
+            'all': ('webapp/jquery-ui.min.css',)
+        }
+        js = ('webapp/jquery.min.js', 'webapp/jquery-ui.min.js')
+
 class UserEditForm(forms.Form):
     email = forms.EmailField()
     first_name = forms.CharField(max_length=150)
