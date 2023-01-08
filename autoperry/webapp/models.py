@@ -39,6 +39,18 @@ class Event(models.Model):
     def when(self):
         start = self.start
         end = self.end
+        # Only include AM on start if event spans midday
+        include_am = ''
+        if start.hour <12 and end.hour >= 12:
+            include_am = ' a'
+        return (format(start, f"l, j F Y, g:i{include_am}") +
+                ' to ' +
+                format(end, "g:i a"))
+
+    @property
+    def short_when(self):
+        start = self.start
+        end = self.end
         # Only include year for December and January
         include_year = ''
         if start.month == 1 or start.month == 12:
