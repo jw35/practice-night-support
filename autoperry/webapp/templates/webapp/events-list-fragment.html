@@ -15,7 +15,7 @@
          <br>
            <nobr>{{event.short_when}}</nobr>
          </td>
-         <td>{{event.helpers_available}} of {{event.helpers_required}}</td>
+         <td><nobr>{{event.helpers_available}} of {{event.helpers_required}}</nobr></td>
          <td class="text-center">
             {% if event.helpers_needed and user not in event.helpers.all %}
               <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">volunteer</a>
