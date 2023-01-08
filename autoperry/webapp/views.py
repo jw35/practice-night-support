@@ -161,8 +161,8 @@ def event_create(request):
             start_time = form.cleaned_data.get("start_time")
             end_time = form.cleaned_data.get("end_time")
 
-            start = timezone.make_aware(datetime.combine(date, start_time))
-            end = timezone.make_aware(datetime.combine(date, end_time))
+            start = datetime.combine(date, start_time)
+            end = datetime.combine(date, end_time)
 
             # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
             clashes = (Event.objects.all()
@@ -256,8 +256,8 @@ def event_edit(request, event_id):
                 start_time = form.cleaned_data.get("start_time")
                 end_time = form.cleaned_data.get("end_time")
 
-                start = timezone.make_aware(datetime.combine(date, start_time))
-                end = timezone.make_aware(datetime.combine(date, end_time))
+                start = datetime.combine(date, start_time)
+                end = datetime.combine(date, end_time)
 
                 # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
                 clashes = (Event.objects.all()

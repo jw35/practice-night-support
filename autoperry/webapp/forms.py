@@ -37,7 +37,7 @@ class EventForm(forms.Form):
             if start_time >= end_time:
                 raise ValidationError("End time must be later than start time!")
 
-            start = timezone.make_aware(datetime.combine(date, start_time))
+            start = datetime.combine(date, start_time)
             if start < timezone.now():
                 raise ValidationError("Event start is in the past. Events must start in the future!")
 
