@@ -3,28 +3,36 @@
       <table class="table table-responsive">
 
    <tr>
-      <th>Where</th>
-      <th>When</th>
+      <th></th>
+      <th class="d-none d-md-table-cell"></th>
       <th>Helpers</th>
       <th></th>
    </tr>
 
    {% for event in events %}
        <tr class="text-start {% if event.cancelled %}text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
-         <td>
+         <td class="d-none d-md-table-cell">
             <strong>{{event.location}}</strong>
-          </td>
-         <td>
+         </td>
+         <td class="d-none d-md-table-cell">
            {{event.short_when}}
          </td>
+         <td class="d-md-none">
+            <strong>{{event.location}}</strong>
+         <br>
+           <nobr>{{event.short_when}}</nobr>
+         </td>
          <td>{{event.helpers_available}} of {{event.helpers_required}}</td>
-         <td>
+         <td class="text-center">
             {% if event.helpers_needed and user not in event.helpers.all %}
-              <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm">volunteer</a>
+              <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">volunteer</a>
+              <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none">V</a>
             {% else %}
-              <a class="btn btn-outline-primary btn-sm disabled" aria-disabled="true">volunteer</a>
+              <a class="btn btn-outline-primary btn-sm disabled d-none d-md-inline" aria-disabled="true">volunteer</a>
+              <a class="btn btn-outline-primary btn-sm disabled d-md-none" aria-disabled="true">V</a>
             {% endif %}
-            <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm">details</a>
+            <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">details</a>
+            <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none">?</a>
           </td>
       </tr>
    {% endfor %}

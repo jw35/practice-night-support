@@ -60,8 +60,8 @@ class Event(models.Model):
         if start.hour <12 and end.hour >= 12:
             include_am = ' a'
         return (format(start, f"D, j M{include_year}, g:i{include_am}") +
-                ' to ' +
-                format(end, "g:i a"))
+                '-' +
+                format(end, f"g:i{include_am}"))
 
     def get_absolute_url(self):
         return reverse('event-details', args=[self.pk])
