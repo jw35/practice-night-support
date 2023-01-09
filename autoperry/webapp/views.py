@@ -338,7 +338,7 @@ def event_cancel(request, event_id):
                     subject = render_to_string("webapp/email/event-cancel-subject.txt", { "event": event })
                     helper.email_user(subject, message)
                     # User.email_user doesn't return status information...
-                    logger.info(f'Notified {user} that event id {event.id} "{event}" has been cancelled')
+                    logger.info(f'Notified {helper} that event id {event.id} "{event}" has been cancelled')
 
                 messages.success(request, 'The request for help at this event has been cancelled')
 
