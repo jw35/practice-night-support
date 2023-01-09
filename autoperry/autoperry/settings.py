@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -140,9 +139,9 @@ LOGOUT_REDIRECT_URL = "index"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-SERVER_EMAIL = 'autoperry@cambridgeringing.info'
+SERVER_EMAIL = 'AutoPerry <autoperry@cambridgeringing.info>'
 DEFAULT_FROM_EMAIL = 'AutoPerry <autoperry@cambridgeringing.info>'
-ADMINS = ['autoperry-admin@cambridgeringing.info']
+ADMINS = [('AutoPerry Admin', 'autoperry-admin@cambridgeringing.info')]
 EMAIL_SUBJECT_PREFIX = '[AutoPerry] '
 
 # Needs '$ python -m smtpd -n -c DebuggingServer localhost:1025'
@@ -161,28 +160,28 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-ADMINS = ['autoperry-admin@cambridgeringing.info']
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
+
+    'formatters': {
+        'autoperry': {
+            'format': '[{asctime}] {name} {msg}',
+            'style': '{',
+        }
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'handlers': {
+        'autoperry': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'autoperry'
+        },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'WARNING',
+        '': {
+            'handlers': ['autoperry'],
+            'level': 'INFO',
         },
-        'django.server': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-    }}
+    }
+}
+
