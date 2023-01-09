@@ -19,13 +19,13 @@
          <td class="text-center">
             {% if event.helpers_needed and user not in event.helpers.all %}
               <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">volunteer</a>
-              <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none">V</a>
+              <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none" data-bs-toggle="tooltip" data-bs-title="Volunteer">V</a>
             {% else %}
               <a class="btn btn-outline-primary btn-sm disabled d-none d-md-inline" aria-disabled="true">volunteer</a>
               <a class="btn btn-outline-primary btn-sm disabled d-md-none" aria-disabled="true">V</a>
             {% endif %}
             <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">details</a>
-            <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none">?</a>
+            <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none" data-bs-toggle="tooltip" data-bs-title="Details">?</a>
           </td>
       </tr>
    {% endfor %}
