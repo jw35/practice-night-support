@@ -36,7 +36,14 @@
 
   {% else %}
 
-  <h2>There are no events needing helpers in the next {{ days }} day{{ days|pluralize }}</h2>
+  <h2>There are no events needing helpers in the next <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ days }}
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url 'index' %}?days=14">14</a></li>
+    <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
+    <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
+  </ul> day{{ days|pluralize }}</h2>
 
   {% endif %}
 
