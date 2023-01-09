@@ -11,3 +11,7 @@ withdraw your offer to help from the event's details page.
 Thanks very much for helping to support ringing in the Cambridge District.
 
 AutoPerry.
+
+-----------------------------------------------------------------------
+You can turn off messages from AutoPerry from your account edit page:
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}
