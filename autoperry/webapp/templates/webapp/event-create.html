@@ -12,11 +12,7 @@
 <h2>Create an event</h2>
 
 {{ form.media }}
-<form method="post" action="{% url 'event-create' %}">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input class="btn btn-primary" type="submit" value="Create">
-</form>
+{% crispy form %}
 
 <script  type="text/javascript">
 $( "#id_location" ).autocomplete({

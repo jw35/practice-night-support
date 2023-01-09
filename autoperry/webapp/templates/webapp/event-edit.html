@@ -12,11 +12,7 @@
 <h2>Update event</h2>
 
 {{ form.media }}
-<form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input class="btn btn-primary" type="submit" value="Update">
-</form>
+{% crispy form %}
 
 <script  type="text/javascript">
 $( "#id_location" ).autocomplete({
