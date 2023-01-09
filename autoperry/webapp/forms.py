@@ -30,8 +30,7 @@ class EventForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_action = 'event-create'
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Row(
                 Column('date', css_class='form-group col-md-4 mb-0'),
@@ -45,8 +44,7 @@ class EventForm(forms.Form):
                 css_class='form-row'
             ),
             'contact_address',
-            'notes',
-            Submit('submit', 'Create')
+            'notes'
         )
 
     def clean(self):
