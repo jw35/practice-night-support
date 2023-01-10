@@ -25,14 +25,14 @@
     <dt>Location</dt>
     <dd>{{event.location}}</dd>
 
-    <dt>Notes</dt>
-    <dd>{{event.notes|default:"[none]"}}</dd>
-
     <dt>Requested helpers</dt>
     <dd>{{event.helpers_required}}</dd>
 
     <dt>Current helpers</dt>
     <dd>{{event.helpers.all|length}}
+
+    <dt>Notes</dt>
+    <dd>{{event.notes|default:"[none]"}}</dd>
 
     <dt>Event created</dt>
     <dd>{{event.created|date:"D, j M Y g:i a"}}</dd>
