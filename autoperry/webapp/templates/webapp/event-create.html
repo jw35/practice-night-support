@@ -12,7 +12,7 @@
 <h2>Create an event</h2>
 
 {{ form.media }}
-<form method="post">
+<form method="post" action="{% url 'event-create' %}">
 {% crispy form %}
 <input class="btn btn-primary" type="submit" value="Create">
 </form>
