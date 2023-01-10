@@ -166,7 +166,7 @@ LOGGING = {
 
     'formatters': {
         'autoperry': {
-            'format': '[{asctime}] {name} {msg}',
+            'format': '{name} {message}',
             'style': '{',
         }
     },
@@ -178,7 +178,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
+        'webapp': {
             'handlers': ['autoperry'],
             'level': 'INFO',
         },
