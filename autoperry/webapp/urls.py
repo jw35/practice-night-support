@@ -1,10 +1,13 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path(r'favicon.ico', RedirectView.as_view(url=staticfiles_storage.url("webapp/favicon.ico"))),
     path(r'privacy', TemplateView.as_view(template_name="webapp/privacy.html"), name='privacy'),
     path(r'about', TemplateView.as_view(template_name="webapp/about.html"), name='about'),
     path(r"accounts/", include("django.contrib.auth.urls")),
