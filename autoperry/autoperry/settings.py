@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-x(6$#&$7wc4+^kgk+&1ni9!#xb(pe0lo1)5n8i47rtn0jigr1b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
 
@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'webapp.middleware.MyBrokenLinkEmailsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -142,6 +143,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SERVER_EMAIL = 'AutoPerry <autoperry@cambridgeringing.info>'
 DEFAULT_FROM_EMAIL = 'AutoPerry <autoperry@cambridgeringing.info>'
 ADMINS = [('AutoPerry Admin', 'autoperry-admin@cambridgeringing.info')]
+MANAGERS = [('AutoPerry Admin', 'autoperry-admin@cambridgeringing.info')]
 EMAIL_SUBJECT_PREFIX = '[AutoPerry] '
 
 # Needs '$ python -m smtpd -n -c DebuggingServer localhost:1025'
