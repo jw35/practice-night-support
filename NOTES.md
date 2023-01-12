@@ -58,6 +58,7 @@ and add
 
     export DJANGO_SETTINGS_MODULE=autoperry.production_settings
     cd ~/practice-night-support
+    . venv/bin/activate
     systemctl --user stop autoperry
     git pull
     cd autoperry
