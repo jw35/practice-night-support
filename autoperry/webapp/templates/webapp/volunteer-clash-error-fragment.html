@@ -1,5 +1,5 @@
 <p>You have already volunteered to help with {% if clashes|length == 1 %}an event{% else %}events{% endif %} at the same time as this one:</p>
-<ul>
+<ul class="m-0">
     {% for clash in clashes %}
     <li><a href="{% url 'event-details' event_id=clash.pk %}" class="alert-link">{{ clash.location }} - {{ clash.start|date:"g:i" }} to {{ clash.end|date:"g:i a" }}</a></li>
     {% endfor %}
