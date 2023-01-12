@@ -1,8 +1,14 @@
 from django_use_email_as_username.models import BaseUser, BaseUserManager
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 class User(BaseUser):
     objects = BaseUserManager()
+
+    # Copied from django.contrib.auth.models.AbstractUser so we can override
+    # blank to False
+    first_name = models.CharField(_("first name"), max_length=150, blank=False)
+    last_name = models.CharField(_("last name"), max_length=150, blank=False)
 
     cancelled = models.DateTimeField(null=True, blank=True, help_text="Timestamp of account cancellation")
     send_notifications = models.BooleanField(null=False, default=True, help_text="Send email reminders and other messages", verbose_name="send email notifications")
