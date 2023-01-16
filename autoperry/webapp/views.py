@@ -445,7 +445,7 @@ def account_create(request):
         context={'registration_form': registration_form})
 
 
-login_required()
+@login_required()
 def account_edit(request):
 
     user = request.user
