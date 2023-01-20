@@ -329,6 +329,9 @@ def event_cancel(request, event_id):
             messages.error(request, 'The request for help at this event has already been cancelled')
             errors += 1
 
+        if errors:
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
+
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
                 event.cancelled = timezone.now()
@@ -371,6 +374,9 @@ def volunteer(request, event_id):
         if user in event.helpers.all():
             messages.error(request, 'You have already volunteered to help at this event ')
             errors += 1
+
+        if errors:
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
         # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
         clashes = (Event.objects.all()
@@ -415,6 +421,9 @@ def unvolunteer(request, event_id):
         if user not in event.helpers.all():
             messages.error(request, "You are not already a helper for this event so you can't withdraw your offer to help")
             errors += 1
+
+        if errors:
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
@@ -497,6 +506,9 @@ def account_cancel(request):
         if user.is_superuser:
             messages.error(request, "You have a superuser account. Superuser accounts can't be cancelled here.")
             errors += 1
+
+        if errors:
+            return HttpResponseRedirect(reverse('account'))
 
         if not errors and request.method == 'POST':
             if 'confirm' in request.POST:
