@@ -45,8 +45,10 @@
 </dd>
 
 {% if user_is_owner %}
+
 <p>You are the organiser of this event:<p>
     <ul>
+
     {% if event.helpers.all %}
 <li>The helpers for this event are currently:
 <ul>
@@ -57,16 +59,20 @@
     {% else %}
 <li>This event currently has no helpers.</li>
     {% endif %}
+
+<li>You {% if event.alerts %}will{% else %}will not{% endif %} be alerted when the list of helpers chages.</li>
+
 <li>The email contact address for this event is {{ event.contact|urlize }}.</li>
+
     {% if not event.cancelled and not event.past and not event.helpers.all %}
 <li>You can <a href="{% url 'event-edit' event_id=event.pk %}">update</a> the event's details.</li>
     {% else %}
 <li>Details of this event can no longer be updated.</li>
     {% endif %}
+
     {% if not event.cancelled and not event.past %}
 <li>You can <a href="{% url 'event-cancel' event_id=event.pk %}">cancel</a> your request for help at this event.</li>
     {% endif %}
-
 
 </ul>
 {% else %}

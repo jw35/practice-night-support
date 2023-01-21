@@ -26,6 +26,7 @@ class EventForm(forms.Form):
     helpers_required = forms.IntegerField(min_value=1, help_text='Number of helpers wanted', initial=1)
     contact_address = forms.CharField(max_length=60, required=False, help_text="Email address for the event (yours if blank)")
     notes = forms.CharField(max_length=128, required=False, help_text="Purpose of the event, helper skills required, etc. (optional)")
+    alerts = forms.BooleanField(required=False, label="Send emails when helpers change")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -44,7 +45,8 @@ class EventForm(forms.Form):
                 css_class='form-row'
             ),
             'contact_address',
-            'notes'
+            'notes',
+            'alerts'
         )
 
     def clean(self):

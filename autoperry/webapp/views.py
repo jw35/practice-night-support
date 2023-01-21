@@ -183,7 +183,8 @@ def event_create(request):
                                      helpers_required=form.cleaned_data['helpers_required'],
                                      owner=user,
                                      contact_address=form.cleaned_data['contact_address'],
-                                     notes=form.cleaned_data['notes'])
+                                     notes=form.cleaned_data['notes'],
+                                     alerts=form.cleaned_data['alerts'])
                 logger.info(f'Event id {event.id} "{event}" created by "{user}"')
                 messages.success(request, 'Event successfully created')
 
@@ -210,7 +211,8 @@ def event_clone(request, event_id):
           'location': event.location,
           'helpers_required': event.helpers_required,
           'contact_address': event.contact_address,
-          'notes': event.notes})
+          'notes': event.notes,
+          'alerts': event.alerts})
 
     # Get a list of Locations
     locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
@@ -284,6 +286,7 @@ def event_edit(request, event_id):
                     event.helpers_required = form.cleaned_data['helpers_required']
                     event.contact_address = form.cleaned_data['contact_address']
                     event.notes = form.cleaned_data['notes']
+                    event.alerts = form.cleaned_data['alerts']
                     event.save()
                     logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
                     messages.success(request, 'Event successfully updated')
@@ -300,7 +303,8 @@ def event_edit(request, event_id):
               'location': event.location,
               'helpers_required': event.helpers_required,
               'contact_address': event.contact_address,
-              'notes': event.notes})
+              'notes': event.notes,
+              'alerts': event.alerts})
 
     # Get a list of Locations
     locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
@@ -399,6 +403,13 @@ def volunteer(request, event_id):
                 logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You have been added as a helper for this event')
 
+                if event.owner.send_notifications and event.alerts:
+                    message = render_to_string("webapp/email/volunteer-message.txt", { "event": event, "helper": user })
+                    subject = render_to_string("webapp/email/volunteer-subject.txt", { "event": event, "helper": user })
+                    event.owner.email_user(subject, message)
+                    # User.email_user doesn't return status information...
+                    logger.info(f'Notified {event.owner} that {user} just volunteered for event id {event.id} "{event}"')
+
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'webapp/volunteer.html', {'event': event})
@@ -431,6 +442,13 @@ def unvolunteer(request, event_id):
 
                 logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You are no longer a helper for this event')
+
+                if event.owner.send_notifications and event.alerts:
+                    message = render_to_string("webapp/email/unvolunteer-message.txt", { "event": event, "helper": user })
+                    subject = render_to_string("webapp/email/unvolunteer-subject.txt", { "event": event, "helper": user })
+                    event.owner.email_user(subject, message)
+                    # User.email_user doesn't return status information...
+                    logger.info(f'Notified {event.owner} that {user} just un-volunteered for event id {event.id} "{event}"')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 

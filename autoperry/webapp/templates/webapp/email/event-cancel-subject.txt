@@ -1,1 +1,1 @@
-[AutoPerry]: Help request CANCELLED - {{ event.location }}, {{ event.when }}
+[AutoPerry]: Help request CANCELLED - {{ event.location }}, {{ event.short_when }}

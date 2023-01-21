@@ -1,0 +1,1 @@
+[AutoPerry]: Withdrawn helper for {{ event.location }}, {{ event.short_when }}
