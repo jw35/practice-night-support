@@ -225,6 +225,16 @@ def event_edit(request, event_id):
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
+
+        initial_data = { 'date': event.start.date(),
+              'start_time': event.start.time(),
+              'end_time': event.end.time(),
+              'location': event.location,
+              'helpers_required': event.helpers_required,
+              'contact_address': event.contact_address,
+              'notes': event.notes,
+              'alerts': event.alerts }
+
         errors = 0
         clashes = None
         form = None
@@ -235,16 +245,11 @@ def event_edit(request, event_id):
         if user != event.owner:
             messages.error(request, 'You are not the owner of this event - only the owner can edit it.')
             errors += 1
-
-        if len(event.helpers.all()) > 0:
-            messages.error(request, "This event has helpers - details of events with helpers can't be edited. Consider cancelling it.")
-            errors += 1
-
         if event.past:
             messages.error(request, "This event has already happened - events in the past can't be edited.")
             errors += 1
         elif event.cancelled:
-            messages.error(request, "The request for help at this event has already been cancelled - cancelled events can't be edited.")
+            messages.error(request, "The request for help at this event has been cancelled - cancelled events can't be edited.")
             errors == 1
 
         if errors:
@@ -253,7 +258,7 @@ def event_edit(request, event_id):
         # If the is a form submission
         if request.method == 'POST':
 
-            form = EventForm(request.POST)
+            form = EventForm(request.POST, initial=initial_data)
 
             if form.is_valid():
 
@@ -280,37 +285,53 @@ def event_edit(request, event_id):
                 # Otherwise success: update the event
                 else:
 
-                    event.start = start
-                    event.end = end
-                    event.location = form.cleaned_data['location']
-                    event.helpers_required = form.cleaned_data['helpers_required']
-                    event.contact_address = form.cleaned_data['contact_address']
-                    event.notes = form.cleaned_data['notes']
-                    event.alerts = form.cleaned_data['alerts']
-                    event.save()
-                    logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
-                    messages.success(request, 'Event successfully updated')
+                    if form.has_changed():
+                        event.start = start
+                        event.end = end
+                        event.location = form.cleaned_data['location']
+                        event.helpers_required = form.cleaned_data['helpers_required']
+                        event.contact_address = form.cleaned_data['contact_address']
+                        event.notes = form.cleaned_data['notes']
+                        event.alerts = form.cleaned_data['alerts']
+                        event.save()
+
+                        send_email = False
+                        for field in ('date', 'start_time', 'end_time', 'location', 'helpers_required', 'notes'):
+                            if initial_data[field] != form.cleaned_data[field]:
+                                send_email = True
+
+                        if send_email:
+                            for helper in event.helpers.all():
+                                if helper.send_notifications:
+                                    message = render_to_string("webapp/email/event-edit-message.txt", { "event": event, "before": initial_data, "after": form.cleaned_data })
+                                    subject = render_to_string("webapp/email/event-edit-subject.txt", { "event": event, "before": initial_data, "after": form.cleaned_data })
+                                    helper.email_user(subject, message)
+                                    # User.email_user doesn't return status information...
+                                    logger.info(f'Notified {helper} that event id {event.id} "{event}" has been edited')
+                                else:
+                                    logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been edited')
+                        else:
+                            logger.info(f'No emailable changes to Event id {event.id} "{event}"')
+
+                        logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
+                        messages.success(request, 'Event successfully updated')
+
+                    else:
+                        logger.info(f'Event id {event.id} "{event}" unchanged by "{user}"')
+                        messages.success(request, 'No change made to the event')
 
                     return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
         # Otherwise populate the form
         else:
 
-            form =EventForm(
-            { 'date': event.start.date(),
-              'start_time': event.start.time().strftime('%H:%M'),
-              'end_time': event.end.time().strftime('%H:%M'),
-              'location': event.location,
-              'helpers_required': event.helpers_required,
-              'contact_address': event.contact_address,
-              'notes': event.notes,
-              'alerts': event.alerts})
+            form =EventForm(initial_data)
 
     # Get a list of Locations
     locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
 
     # ... and display it
-    return render(request, 'webapp/event-edit.html', {'form': form, 'locations': locations })
+    return render(request, 'webapp/event-edit.html', {'form': form, 'locations': locations, 'event': event })
 
 
 @login_required()
@@ -344,11 +365,14 @@ def event_cancel(request, event_id):
                 logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
 
                 for helper in event.helpers.all():
-                    message = render_to_string("webapp/email/event-cancel-message.txt", { "event": event })
-                    subject = render_to_string("webapp/email/event-cancel-subject.txt", { "event": event })
-                    helper.email_user(subject, message)
-                    # User.email_user doesn't return status information...
-                    logger.info(f'Notified {helper} that event id {event.id} "{event}" has been cancelled')
+                    if helper.send_notifications:
+                        message = render_to_string("webapp/email/event-cancel-message.txt", { "event": event })
+                        subject = render_to_string("webapp/email/event-cancel-subject.txt", { "event": event })
+                        helper.email_user(subject, message)
+                        # User.email_user doesn't return status information...
+                        logger.info(f'Notified {helper} that event id {event.id} "{event}" has been cancelled')
+                    else:
+                        logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been cancelled')
 
                 messages.success(request, 'The request for help at this event has been cancelled')
 

@@ -20,8 +20,8 @@ class CustomUserCreationForm(UserCreationForm):
 
 class EventForm(forms.Form):
     date = forms.DateField(help_text='Event date', initial=date.today, widget=forms.widgets.DateInput(attrs={'type': 'date'}))
-    start_time = forms.TimeField(help_text='Event start time', initial="19:30", widget=forms.widgets.DateInput(attrs={'type': 'time', 'step': 300}))
-    end_time = forms.TimeField(help_text='Event finish time', initial="21:00", widget=forms.widgets.DateInput(attrs={'type': 'time', 'step': 300}))
+    start_time = forms.TimeField(help_text='Event start time', initial="19:30", widget=forms.widgets.DateInput(format="%H:%M", attrs={'type': 'time', 'step': 300}))
+    end_time = forms.TimeField(help_text='Event finish time', initial="21:00", widget=forms.widgets.DateInput(format="%H:%M", attrs={'type': 'time', 'step': 300}))
     location = forms.CharField(max_length=60, help_text='Where the event takes place')
     helpers_required = forms.IntegerField(min_value=1, help_text='Number of helpers wanted', initial=1)
     contact_address = forms.CharField(max_length=60, required=False, help_text="Email address for the event (yours if blank)")

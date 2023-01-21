@@ -7,9 +7,29 @@
 
 {% block content %}
 
-<div class="col-md-8 mx-auto">
-
 <h2>Update event</h2>
+
+{% if event.helpers.all %}
+<div class="alert alert-block alert-warning">
+<p>There are helpers for this event.</p>
+
+<p>If you change it significantly (time, place, etc.) then these people may no
+longer be able to help. We will try to send them an email to let them know
+about any changes, but you might want to check with them that this arrived so
+that they don't for example turn up at the wrong time or place.</p>
+
+<p>The helpers are:</p>
+
+    <ul class="m-0">
+          {% for helper in event.helpers.all %}
+        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+          {% endfor %}
+    </ul>
+
+</div>
+{% endif %}
+
+<div class="col-md-8 mx-auto">
 
 {{ form.media }}
 <form method="post">

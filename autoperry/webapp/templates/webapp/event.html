@@ -64,7 +64,7 @@
 
 <li>The email contact address for this event is {{ event.contact|urlize }}.</li>
 
-    {% if not event.cancelled and not event.past and not event.helpers.all %}
+    {% if not event.cancelled and not event.past %}
 <li>You can <a href="{% url 'event-edit' event_id=event.pk %}">update</a> the event's details.</li>
     {% else %}
 <li>Details of this event can no longer be updated.</li>

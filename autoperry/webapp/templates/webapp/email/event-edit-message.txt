@@ -1,0 +1,26 @@
+The organiser of an AutoPerry event that you agreed to help with has just
+changed the details of the event:
+
+    Date:     {% if before.date == after.date %}{{ before.date|date:"l, j F Y" }}{% else %}Was {{ before.date|date:"l, j F Y" }}, now {{ after.date|date:"l, j F Y" }}{% endif %}
+    Start:    {% if before.start_time == after.start_time %}{{ before.start_time|date:"g:i a" }}{% else %}Was {{ before.start_time|date:"g:i a" }}, now {{ after.start_time|date:"g:i a" }}{% endif %}
+    End:      {% if before.end_time == after.end_time %}{{ before.end_time|date:"g:i a" }}{% else %}Was {{ before.end_time|date:"g:i a" }}, now {{ after.end_time|date:"g:i a" }}{% endif %}
+    Location: {% if before.location == after.location %}{{ before.location }}{% else %}Was {{ before.location }}, now {{ after.location }}{% endif %}
+    Helpers:  {% if before.helpers_required == after.helpers_required %}{{ before.helpers_required }}{% else %}Was {{ before.helpers_required }}, now {{ after.helpers_required }}{% endif %}
+    Notes:    {% if before.notes == after.notes %}{{ before.notes }}{% else %}Was "{{ before.notes }}", now "{{ after.notes }}"{% endif %}
+
+If you are no longer able to help with this event, please withdraw your
+offer to help from:
+
+    https://autoperry.cambridgeringing.info{% url 'event-details' event_id=event.pk %}
+
+If you have any questions about this, please contact the organiser at
+{{ event.contact }}.
+
+Thanks very much for helping to support ringing in the Cambridge District.
+
+AutoPerry.
+
+
+-----------------------------------------------------------------------
+You can turn off messages from AutoPerry from your account edit page:
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}
