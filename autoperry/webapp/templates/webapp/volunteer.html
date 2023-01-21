@@ -34,7 +34,7 @@ that you meet any helper requirements in the notes above{% endif %}.</p>
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-primary" type="submit" name="confirm" value="Volunteer"{% if errors %}disabled{% endif %}>
+    <input class="btn btn-primary" type="submit" name="confirm" value="Volunteer">
 </form>
 
 {% endblock %}

@@ -332,7 +332,7 @@ def event_cancel(request, event_id):
         if errors:
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-        if not errors and request.method == 'POST':
+        if request.method == 'POST':
             if 'confirm' in request.POST:
                 event.cancelled = timezone.now()
                 event.save()
@@ -350,7 +350,7 @@ def event_cancel(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'webapp/event-cancel.html', {'event': event, 'errors': errors})
+    return render(request, 'webapp/event-cancel.html', {'event': event})
 
 
 
@@ -375,9 +375,6 @@ def volunteer(request, event_id):
             messages.error(request, 'You have already volunteered to help at this event ')
             errors += 1
 
-        if errors:
-            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
-
         # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
         clashes = (Event.objects.all()
                    .exclude(pk=event.pk)
@@ -386,13 +383,15 @@ def volunteer(request, event_id):
                    .filter(start__lt=event.end)
                    .filter(end__gt=event.start))
 
-        # If there are, redisplay the form with a message
         if clashes.all():
             message = render_to_string("webapp/volunteer-clash-error-fragment.html", { "clashes": clashes })
             messages.error(request, message)
             errors += 1
 
-        if not errors and request.method == 'POST':
+        if errors:
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
+
+        if request.method == 'POST':
             if 'confirm' in request.POST:
                 event.helpers.add(user)
                 event.save()
@@ -402,7 +401,7 @@ def volunteer(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'webapp/volunteer.html', {'event': event, 'errors': errors})
+    return render(request, 'webapp/volunteer.html', {'event': event})
 
 
 @login_required
@@ -419,13 +418,13 @@ def unvolunteer(request, event_id):
 
         user = request.user
         if user not in event.helpers.all():
-            messages.error(request, "You are not already a helper for this event so you can't withdraw your offer to help")
+            messages.error(request, "You are not a helper for this event so you can't withdraw your offer to help")
             errors += 1
 
         if errors:
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-        if not errors and request.method == 'POST':
+        if request.method == 'POST':
             if 'confirm' in request.POST:
                 event.helpers.remove(request.user)
                 event.save()
@@ -435,7 +434,7 @@ def unvolunteer(request, event_id):
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
-    return render(request, 'webapp/unvolunteer.html', {'event': event, 'errors': errors})
+    return render(request, 'webapp/unvolunteer.html', {'event': event})
 
 def account_create(request):
 
@@ -510,7 +509,7 @@ def account_cancel(request):
         if errors:
             return HttpResponseRedirect(reverse('account'))
 
-        if not errors and request.method == 'POST':
+        if request.method == 'POST':
             if 'confirm' in request.POST:
                 # Do this now before destroying user.first_name and user.last_name!
                 log_message = f'"{user}" cancelled'
@@ -528,5 +527,4 @@ def account_cancel(request):
             else:
                 return HttpResponseRedirect(reverse('account'))
 
-    return render(request, 'webapp/account-cancel.html',
-                          {'errors': errors})
+    return render(request, 'webapp/account-cancel.html')

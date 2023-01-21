@@ -9,7 +9,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel my account"{% if errors %}disabled{% endif %}>
+    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel my account">
 </form>
 
 {% endblock %}

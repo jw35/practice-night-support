@@ -26,11 +26,11 @@
     <dd>{{event.location}}</dd>
 </dl>
 
-<p>Please confirm this is the event you no longer what to help with.</p>
+<p>Please confirm this is the event you no longer want to help with.</p>
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-primary" type="submit" name="confirm" value="Withdraw offer to help"{% if errors %}disabled{% endif %}>
+    <input class="btn btn-primary" type="submit" name="confirm" value="Withdraw offer to help">
 </form>
 
 {% endblock %}

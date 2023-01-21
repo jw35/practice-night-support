@@ -41,7 +41,7 @@ that this arrived and they know that they don't need to turn up:</p>
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel request"{% if errors %}disabled{% endif %}>
+    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, cancel request">
 </form>
 
 {% endblock %}
