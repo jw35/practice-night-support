@@ -427,7 +427,7 @@ def volunteer(request, event_id):
                 logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You have been added as a helper for this event')
 
-                if event.owner.send_notifications and event.alerts:
+                if event.alerts:
                     message = render_to_string("webapp/email/volunteer-message.txt", { "event": event, "helper": user })
                     subject = render_to_string("webapp/email/volunteer-subject.txt", { "event": event, "helper": user })
                     event.owner.email_user(subject, message)
@@ -467,7 +467,7 @@ def unvolunteer(request, event_id):
                 logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You are no longer a helper for this event')
 
-                if event.owner.send_notifications and event.alerts:
+                if event.alerts:
                     message = render_to_string("webapp/email/unvolunteer-message.txt", { "event": event, "helper": user })
                     subject = render_to_string("webapp/email/unvolunteer-subject.txt", { "event": event, "helper": user })
                     event.owner.email_user(subject, message)
