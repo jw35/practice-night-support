@@ -6,12 +6,6 @@
 
 <h2>Withdraw offer to help at an event</h2>
 
-{% if event.past %}
-   <h3><span class="badge text-bg-warning">This event has already happened</span></h3>
-{% elif event.cancelled %}
-   <h3><span class="badge text-bg-warning">Requests for help at this event have been cancelled</span></h3>
-{% endif %}
-
 <dl>
     <dt>Date</dt>
     <dd>{{event.start|date:"l, j F Y"}}</dd>
