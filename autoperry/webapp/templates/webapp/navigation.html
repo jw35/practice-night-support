@@ -1,7 +1,7 @@
 
 {% load static %}
 
-<nav class="navbar navbar-expand-lg bg-light mb-4">
+<nav class="navbar navbar-expand-md bg-light mb-4 sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'index' %}">
       <img src="{% static 'webapp/elyda_logo.png' %}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
@@ -24,16 +24,33 @@
           {% url 'event-create' as url %}
           <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Create Event</a>
         </li>
-        <li class="nav-item">
-          {% url 'about' as url %}
-          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">About</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Help
+          </a>
+          <ul class="dropdown-menu">
+            {% url 'about' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">About</a></li>
+            {% url 'guidelines-helpers' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for helpers</a></li>
+            {% url 'guidelines-organisers' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for event organisers</a></li>
+          </ul>
         </li>
       </ul>
-      <span class="navbar-text">
       {% if user.is_authenticated %}
-         {{ user.email }} - <a href="{% url 'logout' %}">Logout</a> - <a href="{% url 'account' %}">Account</a>
+      <ul class="navbar-nav ms-auto ms-2 ms-md-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.email }}
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'logout' %}" class="dropdown-item">Logout</a></li>
+            <li><a href="{% url 'account' %}" class="dropdown-item">Account</a></li>
+          </ul>
+        </li>
+      </ul>
       {% endif %}
-      </span>
     </div>
   </div>
 </nav>

@@ -11,6 +11,9 @@
 
 <h2>Create an event</h2>
 
+<p>Please make sure you have read the <a href="{% url 'guidelines-organisers' %}">guidelines
+for event organisers</a> before creating an event.</p>
+
 {{ form.media }}
 <form method="post" action="{% url 'event-create' %}">
 {% crispy form %}

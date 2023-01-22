@@ -6,11 +6,8 @@
 
 <h2>Volunteer to help at an event</h2>
 
-{% if event.past %}
-   <h3><span class="badge text-bg-warning">This event has already happened</span></h3>
-{% elif event.cancelled %}
-   <h3><span class="badge text-bg-warning">Requests for help at this event have been cancelled</span></h3>
-{% endif %}
+<p>Please make sure you have read the <a href="{% url 'guidelines-helpers' %}">guidelines
+for helpers</a> before volunteering to help.</p>
 
 <dl>
     <dt>Date</dt>
