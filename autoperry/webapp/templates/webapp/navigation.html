@@ -30,7 +30,7 @@
           </a>
           <ul class="dropdown-menu">
             {% url 'about' as url %}
-            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">About</a></li>
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">About AutoPerry</a></li>
             {% url 'guidelines-helpers' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for helpers</a></li>
             {% url 'guidelines-organisers' as url %}
