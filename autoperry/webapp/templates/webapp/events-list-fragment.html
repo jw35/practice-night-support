@@ -3,20 +3,47 @@
       <table class="table table-responsive">
 
    {% for event in events %}
-       <tr class="text-start {% if event.cancelled %}text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
-         <td class="d-none d-md-table-cell">
+       <tr class="text-start">
+
+        {% if flags.location %}
+
+          {% ifchanged %}
+         <td colspan="3">
             <strong>{{event.location}}</strong>
          </td>
-         <td class="d-none d-md-table-cell">
+        </tr>
+       <tr class="text-start">
+           {% endifchanged %}
+
+         <td class="d-none d-md-table-cell{% if event.past %} table-secondary{% endif %}">
+            &nbsp;
+         </td>
+
+        {% else %}
+
+         <td class="d-none d-md-table-cell{% if event.cancelled %} text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
+            <strong>{{event.location}}</strong>
+         </td>
+
+        {% endif %}
+
+         <td class="d-none d-md-table-cell{% if event.cancelled %} text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
            {{event.short_when}}
          </td>
-         <td class="d-md-none">
+
+         <td class="d-md-none{% if event.cancelled %} text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
+            {% if not flags.location %}
             <strong>{{event.location}}</strong>
          <br>
+            {% endif %}
            <nobr>{{event.short_when}}</nobr>
          </td>
-         <td><nobr>{{event.helpers_available}} of {{event.helpers_required}}</nobr></td>
-         <td class="text-center">
+
+         <td class="{% if event.cancelled %}text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
+           <nobr>{{event.helpers_available}} of {{event.helpers_required}}</nobr>
+         </td>
+
+         <td class="text-center{% if event.cancelled %} text-decoration-line-through{% endif %}{% if event.past %} table-secondary{% endif %}">
             {% if event.helpers_needed and user not in event.helpers.all %}
               <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">volunteer</a>
               <a href="{% url 'volunteer' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none">V</a>
@@ -27,7 +54,9 @@
             <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">details</a>
             <a href="{% url 'event-details' event_id=event.pk %}" class="btn btn-outline-primary btn-sm d-md-none">?</a>
           </td>
+
       </tr>
+
    {% endfor %}
 
 </table>
