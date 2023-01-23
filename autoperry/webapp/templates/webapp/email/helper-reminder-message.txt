@@ -1,4 +1,4 @@
-You have volunteered to help with AutoPerry events {% if this_week %}this week{% else %}next week{% endif %}:
+{% autoescape off %}You have volunteered to help with AutoPerry events {% if this_week %}this week{% else %}next week{% endif %}:
 {% for event in events %}
     When:      {{ event.when }}
     Where:     {{ event.location }}
@@ -14,4 +14,4 @@ AutoPerry.
 
 -----------------------------------------------------------------------
 You can turn off messages from AutoPerry from your account edit page:
-https://autoperry.cambridgeringing.info{% url 'account-edit' %}
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}

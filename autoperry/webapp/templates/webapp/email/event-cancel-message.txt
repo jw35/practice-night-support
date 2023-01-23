@@ -1,4 +1,4 @@
-You volunteered to help with an AutoPerry event:
+{% autoescape off %}You volunteered to help with an AutoPerry event:
 
     Where: {{ event.location }}
     When:  {{ event.when }}
@@ -18,4 +18,4 @@ AutoPerry.
 
 -----------------------------------------------------------------------
 You can turn off messages from AutoPerry from your account edit page:
-https://autoperry.cambridgeringing.info{% url 'account-edit' %}
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}

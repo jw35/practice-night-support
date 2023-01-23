@@ -1,4 +1,4 @@
-You are the contact for an AutoPerry event that happens shortly:
+{% autoescape off %}You are the contact for an AutoPerry event that happens shortly:
 
     Where: {{ event.location }}
     When:  {{ event.when }}
@@ -19,4 +19,4 @@ AutoPerry.
 
 -----------------------------------------------------------------------
 You can turn off messages from AutoPerry from your account edit page:
-https://autoperry.cambridgeringing.info{% url 'account-edit' %}
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}

@@ -1,4 +1,4 @@
-The organiser of an AutoPerry event that you agreed to help with has just
+{% autoescape off %}The organiser of an AutoPerry event that you agreed to help with has just
 changed the details of the event:
 
     Date:     {% if before.date == after.date %}{{ before.date|date:"l, j F Y" }}{% else %}Was {{ before.date|date:"l, j F Y" }}, now {{ after.date|date:"l, j F Y" }}{% endif %}
@@ -23,4 +23,4 @@ AutoPerry.
 
 -----------------------------------------------------------------------
 You can turn off messages from AutoPerry from your account edit page:
-https://autoperry.cambridgeringing.info{% url 'account-edit' %}
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}

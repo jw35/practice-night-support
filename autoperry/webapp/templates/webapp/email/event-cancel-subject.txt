@@ -1,1 +1,1 @@
-[AutoPerry]: Help request CANCELLED - {{ event.location }}, {{ event.short_when }}
+{% autoescape off %}[AutoPerry]: Help request CANCELLED - {{ event.location }}, {{ event.short_when }}{% endautoescape %}

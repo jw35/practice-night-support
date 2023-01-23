@@ -1,1 +1,1 @@
-[AutoPerry]: Event happening soon - {{ event.location }}, {{ event.short_when }}
+{% autoescape off %}[AutoPerry]: Event happening soon - {{ event.location }}, {{ event.short_when }}{% endautoescape %}
