@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm, UserEditForm
+from .util import send_template_email
 
 import logging
 logger = logging.getLogger(__name__)
@@ -303,11 +304,7 @@ def event_edit(request, event_id):
                         if send_email:
                             for helper in event.helpers.all():
                                 if helper.send_notifications:
-                                    message = render_to_string("webapp/email/event-edit-message.txt", { "event": event, "before": initial_data, "after": form.cleaned_data })
-                                    subject = render_to_string("webapp/email/event-edit-subject.txt", { "event": event, "before": initial_data, "after": form.cleaned_data })
-                                    helper.email_user(subject, message)
-                                    # User.email_user doesn't return status information...
-                                    logger.info(f'Notified {helper} that event id {event.id} "{event}" has been edited')
+                                    send_template_email(helper, "event-edit", { "event": event, "before": initial_data, "after": form.cleaned_data })
                                 else:
                                     logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been edited')
                         else:
@@ -366,11 +363,7 @@ def event_cancel(request, event_id):
 
                 for helper in event.helpers.all():
                     if helper.send_notifications:
-                        message = render_to_string("webapp/email/event-cancel-message.txt", { "event": event })
-                        subject = render_to_string("webapp/email/event-cancel-subject.txt", { "event": event })
-                        helper.email_user(subject, message)
-                        # User.email_user doesn't return status information...
-                        logger.info(f'Notified {helper} that event id {event.id} "{event}" has been cancelled')
+                        send_template_email(helper, "event-cancel", { "event": event })
                     else:
                         logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been cancelled')
 
@@ -426,11 +419,7 @@ def volunteer(request, event_id):
                 messages.success(request, 'You have been added as a helper for this event')
 
                 if event.alerts:
-                    message = render_to_string("webapp/email/volunteer-message.txt", { "event": event, "helper": user })
-                    subject = render_to_string("webapp/email/volunteer-subject.txt", { "event": event, "helper": user })
-                    event.owner.email_user(subject, message)
-                    # User.email_user doesn't return status information...
-                    logger.info(f'Notified {event.owner} that {user} just volunteered for event id {event.id} "{event}"')
+                    send_template_email(event.contact, "volunteer", { "event": event, "helper": user })
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -466,11 +455,7 @@ def unvolunteer(request, event_id):
                 messages.success(request, 'You are no longer a helper for this event')
 
                 if event.alerts:
-                    message = render_to_string("webapp/email/unvolunteer-message.txt", { "event": event, "helper": user })
-                    subject = render_to_string("webapp/email/unvolunteer-subject.txt", { "event": event, "helper": user })
-                    event.owner.email_user(subject, message)
-                    # User.email_user doesn't return status information...
-                    logger.info(f'Notified {event.owner} that {user} just un-volunteered for event id {event.id} "{event}"')
+                    send_template_email(event.contact, "unvolunteer", { "event": event, "helper": user })
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 

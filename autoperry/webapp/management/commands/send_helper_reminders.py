@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
-from django.template.loader import render_to_string
 from django.core.mail import send_mail
 
 import datetime
 
 from webapp.models import Event
 from custom_user.models import User
+from webapp.util import send_template_email
 
 class Command(BaseCommand):
     help = 'Send email reminders to event helpers'
@@ -62,13 +62,8 @@ class Command(BaseCommand):
             if events:
 
                 if options['really']:
-                    message = render_to_string("webapp/email/helper-reminder-message.txt",
+                    send_template_email(user, "helper-reminder",
                         { "events": events, 'start': start,'last_day': last_day, 'this_week': options['thisweek'] })
-                    subject = render_to_string("webapp/email/helper-reminder-subject.txt",
-                        { "events": events, 'start': start,'last_day': last_day, 'this_week': options['thisweek'] })
-                    user.email_user(subject, message)
-                    # User.email_user doesn't return status information...
-                    self.stdout.write(self.style.SUCCESS(f'Reminded {user} about {len(events)} events from {start} to {cutoff}'))
 
                     user.reminded_upto = cutoff
                     user.save()

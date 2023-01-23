@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
-from django.template.loader import render_to_string
 from django.core.mail import send_mail
 
 import datetime
 
 from webapp.models import Event
+from webapp.util import send_template_email
 
 class Command(BaseCommand):
     help = 'Send email reminders to event owners'
@@ -40,13 +40,7 @@ class Command(BaseCommand):
         for event in events:
 
             if options['really']:
-                message = render_to_string("webapp/email/event-reminder-message.txt", { "event": event })
-                subject = render_to_string("webapp/email/event-reminder-subject.txt", { "event": event })
-                success = send_mail(subject, message, None, [event.contact])
-                if success:
-                    self.stdout.write(self.style.SUCCESS(f'Reminded {event.contact} about {event}'))
-                else:
-                    self.stdout.write(self.style.ERROR(f'Failed to remind {event.contact} about {event}'))
+                send_template_email(event.contact, "event-reminder", { "event": event })
 
                 event.owner_reminded = now
                 event.save()
