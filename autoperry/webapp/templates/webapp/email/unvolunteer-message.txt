@@ -3,8 +3,7 @@
     Where: {{ event.location }}
     When:  {{ event.when }}
 
-{{ helper.get_full_name }} {{ helper.email }} has just withdrawn their
-offer to help with this event.
+{% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.email }} has just withdrawn their offer to help with this event.{% endfilter %}
 
 {% if event.helpers.all.count > 0 %}Your remaining helpers are:
       {% for helper in event.helpers.all %}

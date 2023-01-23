@@ -1,5 +1,5 @@
 {% autoescape off %}The organiser of an AutoPerry event that you agreed to help with has just
-changed the details of the event:
+altered the details of the event:
 
 Date:       {% if before.date == after.date %}{{ before.date|date:"l, j F Y" }}{% else %}Was {{ before.date|date:"l, j F Y" }}, now {{ after.date|date:"l, j F Y" }}{% endif %}
 Start:      {% if before.start_time == after.start_time %}{{ before.start_time|date:"g:i a" }}{% else %}Was {{ before.start_time|date:"g:i a" }}, now {{ after.start_time|date:"g:i a" }}{% endif %}

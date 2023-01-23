@@ -3,13 +3,13 @@
     Where: {{ event.location }}
     When:  {{ event.when }}
 
-{% if event.helpers.all %}{% if event.helpers_needed %}You currently have {{ event.helpers.all | length }} of the {{ event.helpers_required }} helpers you requested{% else %}You currently have the {{ event.helpers_required }} helper{{ event.helpers_required|pluralize}} that you requested{% endif %}. They are:
+{% if event.helpers.all %}{% filter wordwrap:72 %}{% if event.helpers_needed %}You currently have {{ event.helpers.all | length }} of the {{ event.helpers_required }} helpers you requested{% else %}You currently have the {{ event.helpers_required }} helper{{ event.helpers_required|pluralize}} that you requested{% endif %}. They are:{% endfilter %}
       {% for helper in event.helpers.all %}
     * {{ helper.get_full_name }} ({{ helper.email }}){% endfor %}
 {% else %}There are currently no helpers for this event.
 {% endif %}
-If you no longer need helpers for this event, please cancel
-your help request at:
+If you no longer need helpers for this event, please cancel your help
+request at:
 
     https://autoperry.cambridgeringing.info{% url 'event-cancel' event_id=event.pk %}
 

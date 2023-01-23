@@ -3,9 +3,7 @@
     Where: {{ event.location }}
     When:  {{ event.when }}
 
-The organiser of this event {{ event.owner }} has just cancelled their
-request for help so there is no need for you to turn up. If you have any
-questions about this, please contact them at {{ event.contact }}.
+{% filter wordwrap:72 %}The organiser of this event {{ event.owner }} has just cancelled their request for help so there is no need for you to turn up. If you have any questions about this, please contact them at {{ event.contact }}.{% endfilter %}
 
 You can find more details of this event at:
 
