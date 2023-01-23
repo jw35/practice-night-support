@@ -374,8 +374,6 @@ def event_cancel(request, event_id):
                     else:
                         logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been cancelled')
 
-                messages.success(request, 'The request for help at this event has been cancelled')
-
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
     return render(request, 'webapp/event-cancel.html', {'event': event})
