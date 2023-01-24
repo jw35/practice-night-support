@@ -1,0 +1,10 @@
+{% autoescape off %}{% filter wordwrap:60 %}Someone (probably you) created AutoPerry account for {{ email }} on https://autoperry.cambridgeringing.info/.{% endfilter %}
+
+To complete your account setup, please follow this link or cut-and-paste
+it into your web browser:
+
+    https://autoperry.cambridgeringing.info{% url 'account-confirm' uidb64=uid token=token %}
+
+If this wasn't you then please ignore this message.
+
+If you have any queries about this, please contact autoperry@cambridgeringing.info.{% endautoescape %}

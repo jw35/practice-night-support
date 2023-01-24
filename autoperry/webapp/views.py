@@ -1,23 +1,25 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.encoding import force_bytes, force_str
+from django.utils.safestring import mark_safe
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm, UserEditForm
-from .util import send_template_email
+from .util import send_template_email, login_required, EmailVerificationTokenGenerator
 
 import logging
 logger = logging.getLogger(__name__)
@@ -40,17 +42,27 @@ def index(request):
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user:
-            if user.is_active:
-                login(request,user)
-                logger.info(f'"{user}" logged in')
-                return redirect(request.POST.get('next_page', settings.LOGIN_URL))
-            else:
-                logger.info(f'Login attempt by suspended user "{user}"')
-                errors.append('Your account is suspended - please contact <a href="mailto:autoperry@cambridgeringing.info">autoperry@cambridgeringing.info</a>')
+            login(request,user)
+            logger.info(f'"{user}" logged in')
+            return redirect(request.POST.get('next_page', settings.LOGIN_URL))
         else:
             errors.append("Bad email address or password")
 
     user = request.user
+
+    if user.is_authenticated:
+
+        if user.suspended:
+            logger.info(f'Login attempt by suspended user "{user}"')
+            errors.append(mark_safe('Your account has been suspended.<br>Please contact <a href="mailto:autoperry@cambridgeringing.info">autoperry@cambridgeringing.info</a>'))
+            logout(request)
+        if not user.email_validated:
+            logger.info(f'Login attempt by user with unvalidated email "{user}"')
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            url = reverse('account-resend', args=[uid])
+            errors.append(mark_safe(f'You must confirm your email address before you can log in. '
+                f'<a href="{url}">Resend confirmation email</a>.'))
+            logout(request)
 
     if user.is_authenticated:
 
@@ -470,21 +482,85 @@ def account_create(request):
         registration_form = CustomUserCreationForm(request.POST)
         if registration_form.is_valid():
             user = registration_form.save()
-            login(request, user)
-            logger.info(f'"{user}" registered and logged in')
-            return redirect(request.POST.get('next_page', settings.LOGIN_URL))
+
+            # Email verification
+            email_verification_token = EmailVerificationTokenGenerator()
+
+            send_template_email(user, "email-validate", { 
+                'email': user.email,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': email_verification_token.make_token(user)
+                })
+
+            return render(request, "webapp/account-create-pending.html",
+                context={'sender': settings.DEFAULT_FROM_EMAIL,
+                         'uid': urlsafe_base64_encode(force_bytes(user.pk))})
 
     return render(request, "webapp/account-create.html",
         context={'registration_form': registration_form})
+
+
+def account_resend(request, uidb64):
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = get_user_model().objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        raise Http404;
+
+    email_verification_token = EmailVerificationTokenGenerator()
+
+    send_template_email(user, "email-validate", {
+        'email': user.email,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': email_verification_token.make_token(user)
+        })
+
+    messages.success(request, 'Email resent')
+
+    return render(request, "webapp/account-create-pending.html",
+        context={'sender': settings.DEFAULT_FROM_EMAIL,
+                 'uid': urlsafe_base64_encode(force_bytes(user.pk))})
+
+
+
+def account_confirm(request, uidb64, token):
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = get_user_model().objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        raise Http404;
+
+    email_verification_token = EmailVerificationTokenGenerator()
+    if email_verification_token.check_token(user, token):
+        user.email_validated = timezone.now()
+        user.save()
+        login(request, user)
+        logger.info(f'"{user}" email verified and logged in')
+        messages.success(request, 'Your email address has been confirmed and you are logged in')
+    else:
+        messages.success(request, 'Email address verification failed')
+        logger.error(f'"{user}" email verification failed')
+  
+    return redirect(reverse('index'))
+
 
 
 @login_required()
 def account_edit(request):
 
     user = request.user
-    form = UserEditForm({'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name, 'send_notifications': user.send_notifications})
+    form = UserEditForm(
+        {'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'send_notifications': user.send_notifications
+        })
 
     if request.method == 'POST':
+
+        original_email = user.email
 
         form = UserEditForm(request.POST)
         if form.is_valid():
@@ -494,7 +570,24 @@ def account_edit(request):
             user.send_notifications = form.cleaned_data['send_notifications']
             user.save()
             logger.info(f'"{user}" updated account details')
+
             messages.success(request, 'Your account details have been successfully updated')
+
+            if user.email != original_email:
+                user.email_validated =  None;
+                user.save()
+                logout(request)
+                messages.success(request, 'Your account details have been successfully updated')
+                email_verification_token = EmailVerificationTokenGenerator()
+                send_template_email(user, "email-validate", {
+                    'email': user.email,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': email_verification_token.make_token(user)
+                    })
+                return render(request, "webapp/account-create-pending.html",
+                    context={'sender': settings.DEFAULT_FROM_EMAIL,
+                             'uid': urlsafe_base64_encode(force_bytes(user.pk))})
+            
             return HttpResponseRedirect(reverse('account'))
 
     return render(request, 'webapp/account-edit.html', {'form': form})

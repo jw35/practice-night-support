@@ -1,0 +1,22 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<div class="col-md-8 mx-auto">
+
+<h2>Please confirm your email address</h2>
+
+<p>We have sent you an email containing instructions for completing your
+account setup.</p>
+
+<p>This email will have been from "{{ sender }}" with subject
+"[AutoPerry]: Please complete account setup". If you can't find it,
+please check you junk or spam folders.</p>
+
+<p>If you still can't find it, you can try <a href="{% url 'account-resend' uidb64=uid %}">sending it again</a>.
+
+</div>
+
+{% endblock %}
