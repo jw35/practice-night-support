@@ -18,7 +18,7 @@ class Event(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     cancelled = models.DateTimeField(null=True, blank=True)
     contact_address = models.EmailField(blank=True, null=True, help_text="Contact email address for the event, defaults to owner's address")
-    notes = models.CharField(max_length=128, blank=True, null=True, help_text="Purpose of the event, helper skills required, etc.")
+    notes = models.CharField(max_length=200, blank=True, null=True, help_text="Purpose of the event, helper skills required, etc.")
     owner_reminded = models.DateTimeField(null=True, blank=True)
     alerts = models.BooleanField(default=False)
 
