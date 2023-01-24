@@ -494,7 +494,8 @@ def account_create(request):
 
             return render(request, "webapp/account-create-pending.html",
                 context={'sender': settings.DEFAULT_FROM_EMAIL,
-                         'uid': urlsafe_base64_encode(force_bytes(user.pk))})
+                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                         'user': user })
 
     return render(request, "webapp/account-create.html",
         context={'registration_form': registration_form})
@@ -520,7 +521,8 @@ def account_resend(request, uidb64):
 
     return render(request, "webapp/account-create-pending.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
-                 'uid': urlsafe_base64_encode(force_bytes(user.pk))})
+                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                 'user': user })
 
 
 
@@ -586,7 +588,8 @@ def account_edit(request):
                     })
                 return render(request, "webapp/account-create-pending.html",
                     context={'sender': settings.DEFAULT_FROM_EMAIL,
-                             'uid': urlsafe_base64_encode(force_bytes(user.pk))})
+                             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                             'user': user })
             
             return HttpResponseRedirect(reverse('account'))
 
