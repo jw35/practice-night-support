@@ -16,7 +16,15 @@
   </div>
 </div>
 
-{% if user.is_authenticated %}
+{% if errors %}
+<div class="alert alert-danger" role="alert">
+    {% for error in errors %}
+    <p class="mb-0">{{ error }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if user.is_enabled %}
 
 <div class="text-center">
 
@@ -49,19 +57,11 @@
 
 </div>
 
-{% else %}
+{% elif not user.is_authenticated %}
 
 <main class="form-signin w-100 m-auto text-center">
 
 <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
-{% if errors %}
-<div class="alert alert-danger" role="alert">
-    {% for error in errors %}
-    <p class="mb-0">{{ error }}</p>
-    {% endfor %}
-</div>
-{% endif %}
 
 <form method="POST" class="mb-3">
   {% csrf_token %}

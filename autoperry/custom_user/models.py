@@ -19,3 +19,12 @@ class User(BaseUser):
     def __str__(self):
         return self.get_full_name()
 
+    @property
+    def is_enabled(self):
+        return (self.is_authenticated and
+                self.email_validated and
+                not self.suspended and
+                not self.cancelled)
+
+
+

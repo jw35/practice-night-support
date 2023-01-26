@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -19,7 +20,7 @@ from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm, UserEditForm
-from .util import send_template_email, login_required, EmailVerificationTokenGenerator
+from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator
 
 import logging
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def index(request):
     event_list = None
     days = 14
 
-    # Return from registering or logging in
+    # REturn from logging in
     if request.method == 'POST':
         login_form = AuthenticationForm(request.POST)
         username = request.POST.get('username')
@@ -50,21 +51,23 @@ def index(request):
 
     user = request.user
 
+    # IF the user is at least authenticated
     if user.is_authenticated:
 
         if user.suspended:
             logger.info(f'Login attempt by suspended user "{user}"')
-            errors.append(mark_safe('Your account has been suspended.<br>Please contact <a href="mailto:autoperry@cambridgeringing.info">autoperry@cambridgeringing.info</a>'))
-            logout(request)
-        if not user.email_validated:
-            logger.info(f'Login attempt by user with unvalidated email "{user}"')
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            url = reverse('account-resend', args=[uid])
-            errors.append(mark_safe(f'You must confirm your email address before you can log in. '
-                f'<a href="{url}">Resend confirmation email</a>.'))
+            errors.append(mark_safe('Your account has been suspended. Please contact <a href="mailto:autoperry@cambridgeringing.info">autoperry@cambridgeringing.info</a>'))
             logout(request)
 
-    if user.is_authenticated:
+        elif not user.email_validated:
+            logger.info(f'Login by user with unvalidated email "{user}"')
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            url = reverse('account-resend', args=[uid])
+            errors.append(mark_safe(f'You must confirm your email address before you can use AutoPerry. '
+                f'<a href="{url}">Resend confirmation email</a>.'))
+
+    # If they are still authenticated and enabled
+    if user.is_authenticated and user.is_enabled:
 
         try:
             days = int(request.GET.get('days', 14))
@@ -81,6 +84,7 @@ def index(request):
                       .filter(helpers_required__gt=F("helpers_available"))
                       .order_by('start', 'location'))
 
+    # Always
     return render(request, "webapp/index.html",
         context={'events': event_list,
                  'days': days,
@@ -88,7 +92,8 @@ def index(request):
                  'errors': errors,
                  'next_page': request.GET.get('next')})
 
-@login_required()
+
+@autoperry_login_required()
 def events(request):
 
     user = request.user
@@ -140,7 +145,7 @@ def events(request):
                  'flags': flags})
 
 
-@login_required()
+@autoperry_login_required()
 def event_details(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
 
@@ -153,12 +158,12 @@ def event_details(request, event_id):
                 })
 
 
-@login_required()
+@django_login_required()
 def account(request):
 
     return render(request, "webapp/account.html")
 
-@login_required()
+@autoperry_login_required()
 def event_create(request):
 
     user = request.user
@@ -211,7 +216,7 @@ def event_create(request):
 
     return render(request, 'webapp/event-create.html', {'form': form, 'locations': locations })
 
-@login_required()
+@autoperry_login_required()
 def event_clone(request, event_id):
 
     event = get_object_or_404(Event, pk=event_id)
@@ -232,7 +237,7 @@ def event_clone(request, event_id):
 
     return render(request, 'webapp/event-create.html', {'form': form, 'locations': locations })
 
-@login_required()
+@autoperry_login_required()
 def event_edit(request, event_id):
 
     with transaction.atomic():
@@ -343,7 +348,7 @@ def event_edit(request, event_id):
     return render(request, 'webapp/event-edit.html', {'form': form, 'locations': locations, 'event': event })
 
 
-@login_required()
+@autoperry_login_required()
 def event_cancel(request, event_id):
 
     with transaction.atomic():
@@ -385,7 +390,7 @@ def event_cancel(request, event_id):
 
 
 
-@login_required
+@autoperry_login_required
 def volunteer(request, event_id):
 
     with transaction.atomic():
@@ -438,7 +443,7 @@ def volunteer(request, event_id):
     return render(request, 'webapp/volunteer.html', {'event': event})
 
 
-@login_required
+@autoperry_login_required
 def unvolunteer(request, event_id):
 
     with transaction.atomic():
@@ -549,7 +554,7 @@ def account_confirm(request, uidb64, token):
 
 
 
-@login_required()
+@django_login_required()
 def account_edit(request):
 
     user = request.user
@@ -596,7 +601,7 @@ def account_edit(request):
     return render(request, 'webapp/account-edit.html', {'form': form})
 
 
-@login_required
+@django_login_required
 def account_cancel(request):
 
     user = request.user

@@ -26,7 +26,7 @@ def send_template_email(to,template,context):
         send_mail(subject, message, None, [to])
         logger.info(f'Emailed address {to} "{subject}"')
 
-def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+def autoperry_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
 
     """
     Copy of login_required from django.contrib.auth.decorators with condition
@@ -34,7 +34,7 @@ def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login
     """
 
     actual_decorator = user_passes_test(
-        lambda u: u.is_authenticated and u.email_validated and not u.suspended,
+        lambda u: (u.is_authenticated and u.is_enabled),
         login_url=login_url,
         redirect_field_name=redirect_field_name,
     )
