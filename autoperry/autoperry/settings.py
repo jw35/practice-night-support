@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from django.contrib.messages import constants as messages
 
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -166,11 +167,20 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
 
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
     'formatters': {
         'autoperry': {
             'format': '{name} {message}',
             'style': '{',
-        }
+        },
+        'autoperry-file': {
+            'format': '{asctime} {name} {message}',
+            'style': '{',
+        },
     },
     'handlers': {
         'autoperry': {
@@ -178,10 +188,20 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'autoperry'
         },
+        'autoperry-file': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': '../logs/autoperry.log',
+            'when': 'W0',
+            'atTime': datetime.time(),
+            'backupCount': 4,
+            'formatter': 'autoperry-file'
+        }
     },
     'loggers': {
         'webapp': {
-            'handlers': ['autoperry'],
+            'handlers': ['autoperry', 'autoperry-file'],
             'level': 'INFO',
         },
     }
