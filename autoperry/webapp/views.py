@@ -514,15 +514,18 @@ def account_resend(request, uidb64):
     except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
         raise Http404;
 
-    email_verification_token = EmailVerificationTokenGenerator()
+    # Only if the email address hasn't already been validated
+    if not user.email_validated:
 
-    send_template_email(user, "email-validate", {
-        'email': user.email,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': email_verification_token.make_token(user)
-        })
+        email_verification_token = EmailVerificationTokenGenerator()
 
-    messages.success(request, 'Email resent')
+        send_template_email(user, "email-validate", {
+            'email': user.email,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': email_verification_token.make_token(user)
+            })
+
+        messages.success(request, 'Email resent')
 
     return render(request, "webapp/account-create-pending.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
@@ -549,7 +552,7 @@ def account_confirm(request, uidb64, token):
     else:
         messages.success(request, 'Email address verification failed')
         logger.error(f'"{user}" email verification failed')
-  
+
     return redirect(reverse('index'))
 
 
