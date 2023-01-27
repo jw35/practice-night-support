@@ -16,6 +16,16 @@
 </div>
 {% endif %}
 
+<ul>
+{% if user_is_owner %}
+<li><strong>You are the organiser of this event</strong></li>
+{% endif %}
+{% if user_is_helper %}
+<li><strong>You have volounteered to help with this event</strong></li>
+{% endif %}
+</ul>
+
+
 <dl>
     <dt>Date</dt>
     <dd>{{event.start|date:"l, j F Y"}}</dd>
@@ -29,11 +39,47 @@
     <dt>Location</dt>
     <dd>{{event.location}}</dd>
 
+    {% if user_is_helper %}
+
+    <dt>Event organiser</dt>
+      {% if user_is_owner %}
+      <dd>You</dd>
+      {% else %}
+      <dd>{{ event.owner.get_full_name }} ({{ event.contact|urlize }})</dd>
+      {% endif %}
+
+    {% endif %}
+
     <dt>Requested helpers</dt>
     <dd>{{event.helpers_required}}</dd>
 
+    {% if user_is_owner %}
+
     <dt>Current helpers</dt>
-    <dd>{{event.helpers.all|length}}
+    <dd>
+    {% if event.helpers.all %}
+      <ul style="list-style: none; padding: 0; margin: 0">
+      {% for helper in event.helpers.all %}
+        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      This event currently has no helpers
+    {% endif %}
+    </dd>
+
+    <dt>Alert on changes to helpers</dt>
+    <dd>{{ event.alerts|yesno|capfirst}}</dd>
+
+    <dt>Event contact address</dt>
+    <dd>{{ event.contact_address|urlize|default:"[none]" }}</dd>
+
+    {% else %}
+
+    <dt>Current helpers</dt>
+    <dd>{{event.helpers.all|length}}</dd>
+
+    {% endif %}
 
     <dt>Notes</dt>
     <dd>{{event.notes|default:"[none]"}}</dd>
@@ -46,49 +92,89 @@
     <dd>{{event.cancelled|date:"D, j M Y g:i a"}}</dd>
     {% endif %}
 
-</dd>
+</dl>
+
+<p>
+
+    {% if user_is_helper %}
+
+    <a href="{% url 'unvolunteer'  event_id=event.pk %}" class="btn btn-outline-secondary btn-sm{% if event.cancelled or event.past %} disabled{% endif %}">Withdraw offer to help</a>
+
+{% else %}
+
+    {% if event.helpers_needed %}<a href="{% url 'volunteer'  event_id=event.pk %}" class="btn btn-outline-primary btn-sm"{% if event.cancelled or event.past %} disabled{% endif %}>Volunteer</a>{% endif %}
+
+{% endif %}
+
+</p>
 
 {% if user_is_owner %}
 
-<p>You are the organiser of this event:<p>
-    <ul>
+<p>
 
-    {% if event.helpers.all %}
-<li>The helpers for this event are currently:
-<ul>
-      {% for helper in event.helpers.all %}
-    <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
-      {% endfor %}
-</ul></li>
-    {% else %}
-<li>This event currently has no helpers.</li>
-    {% endif %}
+    <a href="{% url 'event-edit' event_id=event.pk %}" class="btn btn-outline-secondary btn-sm{% if event.cancelled or event.past %} disabled{% endif %}">Update details</a>
+    <a href="{% url 'event-cancel' event_id=event.pk %}" class="btn btn-outline-secondary btn-sm{% if event.cancelled or event.past %} disabled{% endif %}">Cancel help request</a>
 
-<li>You {% if event.alerts %}will{% else %}will not{% endif %} be alerted when the list of helpers chages.</li>
+</p>
 
-<li>The email contact address for this event is {{ event.contact|urlize }}.</li>
-
-    {% if not event.cancelled and not event.past %}
-<li>You can <a href="{% url 'event-edit' event_id=event.pk %}">update</a> the event's details.</li>
-    {% else %}
-<li>Details of this event can no longer be updated.</li>
-    {% endif %}
-
-    {% if not event.cancelled and not event.past %}
-<li>You can <a href="{% url 'event-cancel' event_id=event.pk %}">cancel</a> your request for help at this event.</li>
-    {% endif %}
-
-</ul>
-{% else %}
-<p>You are not the organiser of this event.</p>
 {% endif %}
 
-{% if user_is_helper %}
-<p>You are a helper for this event (<a href="{% url 'unvolunteer'  event_id=event.pk %}">withdraw</a> your offer to help). {% if not user_is_owner %}The event is being organised by {{ event.owner.get_full_name }} ({{ event.contact|urlize }}).{% endif %}
-{% else %}
-<p>You are not a helper for this event{% if event.helpers_needed %} (<a href="{% url 'volunteer'  event_id=event.pk %}">volunteer</a> to help){% endif %}.</p>
-{% endif %}
+<p>
 
-<p>You can <a href="{% url 'event-clone' event_id=event.pk %}">create a new event</a> based on this one.</p>
+    <a href="{% url 'event-clone' event_id=event.pk %}" class="btn btn-outline-secondary btn-sm">Duplicate event</a>
+
+</p>
+
+
+
+{% if perms.webauth.administrator %}
+
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Administrator Info.
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+
+      <dl>
+
+        <dt>Event owner</dt>
+        <dd>{{ event.owner.get_full_name }} ({{ event.contact|urlize }})</dd>
+
+        <dt>Event contact address</dt>
+        <dd>{{ event.contact_address|urlize|default:"[none]" }}</dd>
+
+        <dt>Alert on changes to helpers</dt>
+        <dd>{{ event.alerts|yesno|capfirst}}
+
+        <dt>Owner last reminded</dt>
+        <dd>{{ event.owner_reminded|date:"D, j M Y g:i a"|default:"Not yet reminded" }}</dd>
+
+        <dt>Helpers</dt>
+        <dd>
+        {% if event.helpers.all %}
+          <ul style="list-style: none; padding: 0; margin: 0">
+          {% for helper in event.helpers.all %}
+            <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+          {% endfor %}
+          </ul>
+        {% else %}
+        None
+        {% endif %}
+        </dd>
+ 
+      </dl>
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endif %}
 
 {% endblock %}
