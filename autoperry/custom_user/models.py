@@ -15,6 +15,7 @@ class User(BaseUser):
     email_validated = models.DateTimeField(null=True, blank=True, help_text="Timestamp of email address validation")
     reminded_upto = models.DateTimeField(null=True, blank=True, help_text="End date of most recent reminder run")
     suspended = models.DateTimeField(null=True, blank=True, help_text="Timestamp of suspension")
+    approved = models.DateTimeField(null=True, blank=True, help_text="Timestamp of approval")
 
     def __str__(self):
         return self.get_full_name()
