@@ -16,6 +16,7 @@ class User(BaseUser):
     reminded_upto = models.DateTimeField(null=True, blank=True, help_text="End date of most recent reminder run")
     suspended = models.DateTimeField(null=True, blank=True, help_text="Timestamp of suspension")
     approved = models.DateTimeField(null=True, blank=True, help_text="Timestamp of approval")
+    tower = models.CharField(max_length=50, blank=False, help_text="Where you normally ring")
 
     def __str__(self):
         return self.get_full_name()

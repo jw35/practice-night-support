@@ -1,0 +1,85 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<h2 class="text-center">Users</h2>
+
+<form>
+
+  <input type="hidden" name="f" value="1">
+
+  <div class="row align-items-center justify-content-center">
+
+	<div class="col-auto">
+      <div class="form-check">
+	    <input class="form-check-input" id="pending" name="pending" onchange="this.form.submit()" type="checkbox" value="yes" {% if flags.pending %}checked{% endif %}>
+	    <label class="form-check-label" for="past">Include pending?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <div class="form-check">
+	    <input class="form-check-input" id="current" name="current" onchange="this.form.submit()" type="checkbox" value="yes"{% if flags.current %}checked{% endif %}>
+	    <label class="form-check-label" for="cancelled">Include current?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <div class="form-check">
+        <input class="form-check-input" id="suspended" name="suspended" onchange="this.form.submit()" type="checkbox" value="yes"{% if flags.suspended %}checked{% endif %}>
+        <label class="form-check-label" for="suspended">Include suspended?</label>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <div class="form-check">
+        <input class="form-check-input" id="cancelled" name="cancelled" onchange="this.form.submit()" type="checkbox" value="yes"{% if flags.cancelled %}checked{% endif %}>
+        <label class="form-check-label" for="canceleld">Include cancelled?</label>
+      </div>
+    </div>
+
+  </div>
+
+</form>
+
+<div class="row align-items-center justify-content-center mt-2 mb-2">
+  <div class="col-auto">A = approved</div>
+  <div class="col-auto">E = email validated</div>
+  <div class="col-auto">S = suspended</div>
+  <div class="col-auto">C = cancelled</div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-auto">
+      <table class="table table-responsive">
+
+
+   {% for u in users %}
+      <tr class="text-start">
+
+        <td>{{ u.get_full_name }}</td>
+
+        <td>{{ u.tower }}</td>
+        
+        <td>{{ u.email|urlize }}</td>
+
+        <td>{{ u.send_notifications|yesno|capfirst }}</td>
+
+        <td>{% if u.approved != None %}A{% endif %}</td>
+        <td>{% if u.email_validated != None %}V{% endif %}</td>
+        <td>{% if u.suspended != None %}S{% endif %}</td>
+        <td>{% if u.cancelled != None %}C{% endif %}</td>
+
+      </tr>
+
+   {% endfor %}
+
+      </table>
+
+   </div>
+
+</div>
+
+{% endblock %}
