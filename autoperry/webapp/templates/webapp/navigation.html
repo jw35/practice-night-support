@@ -39,7 +39,7 @@
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for event organisers</a></li>
           </ul>
         </li>
-        {% if perms.webauth.administrator %}
+        {% if perms.custom_user.administrator %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Admin

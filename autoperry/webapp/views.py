@@ -660,7 +660,7 @@ def account_cancel(request):
     return render(request, 'webapp/account-cancel.html')
 
 @autoperry_login_required
-@permission_required('webauth.administrator', raise_exception=True)
+@permission_required('custom_user.administrator', raise_exception=True)
 def account_list(request):
 
     # Make search flags 'sticky', overridden by GET args

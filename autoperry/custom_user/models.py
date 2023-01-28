@@ -27,5 +27,11 @@ class User(BaseUser):
                 not self.suspended and
                 not self.cancelled)
 
+    class Meta:
+
+        permissions = [
+            ('administrator', 'Is system administrator')
+        ]
+
 
 
