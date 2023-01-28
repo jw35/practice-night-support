@@ -14,6 +14,7 @@ urlpatterns = [
     path(r'help/helpers', TemplateView.as_view(template_name="webapp/helpers.html"), name='guidelines-helpers'),
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"account/", views.account, name="account"),
+    path(r"account/list", views.account_list, name="account-list"),
     path(r"account/create", views.account_create, name="account-create"),
     path(r"account/confirm/<uidb64>/<token>/", views.account_confirm, name="account-confirm"),
     path(r"account/resend/<uidb64>/", views.account_resend, name="account-resend"),

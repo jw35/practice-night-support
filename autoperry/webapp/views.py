@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required as django_login_required
+from django.contrib.auth.decorators import  permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -657,3 +658,58 @@ def account_cancel(request):
                 return HttpResponseRedirect(reverse('account'))
 
     return render(request, 'webapp/account-cancel.html')
+
+@autoperry_login_required
+@permission_required('webauth.administrator', raise_exception=True)
+def account_list(request):
+
+    # Make search flags 'sticky', overridden by GET args
+    if 'f' in request.GET:
+        flags = {}
+        for flag in ('pending', 'current', 'suspended', 'cancelled'):
+            flags[flag] = flag in request.GET
+    elif 'user_flags' in request.session:
+        flags = request.session['user_flags']
+    else:
+        flags = {'pending': True, 'current': True, 'suspended': True, 'cancelled': False}
+    request.session['user_flags'] = flags
+
+    users = get_user_model().objects.all()
+
+    u1 = u2 =u3 =u4 = get_user_model().objects.none()
+
+    if flags['pending']:
+        u1 = users.filter(email_validated=None) | users.filter(approved=None)
+        u1 = u1.filter(suspended=None).filter(cancelled=None)
+
+    if flags['current']:
+        u2 = users.exclude(email_validated=None).exclude(approved=None).filter(suspended=None).filter(cancelled=None)
+
+    if flags['suspended']:
+        u3 = users.exclude(suspended=None)
+
+    if flags['cancelled']:
+        u4 = users.exclude(cancelled=None)
+
+    # Merge the four groups
+    users = u1 | u2 | u3 | u4
+
+    users = users.order_by('last_name', 'first_name')
+
+    paginator = Paginator(users, 20, orphans=2)
+    paginator.ELLIPSIS = "X"
+    try:
+        page_number = int(request.GET.get('page'))
+    except (ValueError, TypeError) as e:
+        page_number = 1
+    if page_number < 1 or page_number > paginator.num_pages:
+        page_number = 1
+
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(page_number, on_each_side=3, on_ends=1)
+
+    return render(request, "webapp/account-list.html",
+        context={'users': page_obj,
+                 'page_range': page_range,
+                 'flags': flags})
+

@@ -39,6 +39,17 @@
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for event organisers</a></li>
           </ul>
         </li>
+        {% if perms.webauth.administrator %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Admin
+          </a>
+          <ul class="dropdown-menu">
+            {% url 'account-list' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">List users</a></li>
+          </ul>
+        </li>
+        {% endif %}
       </ul>
       {% if user.is_authenticated %}
       <ul class="navbar-nav ms-auto ms-2 ms-md-0">
