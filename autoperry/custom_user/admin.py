@@ -8,7 +8,7 @@ class CustomBaseUserAdmin(BaseUserAdmin):
 
 	fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "send_notifications", "tower")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "send_notifications", "send_other", "tower")}),
         (_("Important dates"), {"fields": ("date_joined", "last_login", "approved", "email_validated", "reminded_upto", "cancelled", "suspended")}),
         (
             _("Permissions"),

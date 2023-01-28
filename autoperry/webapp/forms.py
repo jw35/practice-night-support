@@ -13,7 +13,7 @@ from datetime import date, time, datetime
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        fields = list(UserCreationForm.Meta.fields) + ["email", "first_name", "last_name", "tower", "send_notifications"]
+        fields = list(UserCreationForm.Meta.fields) + ["email", "first_name", "last_name", "tower", "send_notifications", "send_other"]
         fields.remove("username")
         model = get_user_model()
 
@@ -75,4 +75,5 @@ class UserEditForm(forms.Form):
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
     tower = forms.CharField(max_length=50, help_text="Where do you normally ring")
-    send_notifications = forms.BooleanField(required=False,label="Send email notifications")
+    send_notifications = forms.BooleanField(required=False, label="Send email alerts and reminders about your events")
+    send_other = forms.BooleanField(required=False, label="Send other emails")

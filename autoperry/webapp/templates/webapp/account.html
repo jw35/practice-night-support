@@ -15,8 +15,11 @@
     <dt>Tower</dt>
     <dd>{{ user.tower }}</dd>
 
-    <dt>Send email notifications?</dt>
+    <dt>Send alerts and reminders about your events?</dt>
     <dd>{{ user.send_notifications|yesno|capfirst }}</dd>
+
+    <dt>Send other emails?</dt>
+    <dd>{{ user.send_other|yesno|capfirst }}</dd>
 
     <dt>Date joined</dt>
     <dd>{{ user.date_joined|date:"l, j F Y g:i a"}}</dd>

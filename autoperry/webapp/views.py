@@ -559,7 +559,8 @@ def account_edit(request):
         'first_name': user.first_name,
         'last_name': user.last_name,
         'tower': user.tower,
-        'send_notifications': user.send_notifications
+        'send_notifications': user.send_notifications,
+        'send_other': user.send_other,
         })
 
     if request.method == 'POST':
@@ -573,6 +574,7 @@ def account_edit(request):
             user.last_name = form.cleaned_data['last_name']
             user.tower = form.cleaned_data['tower']
             user.send_notifications = form.cleaned_data['send_notifications']
+            user.send_other = form.cleaned_data['send_other']
             user.save()
             logger.info(f'"{user}" updated account details')
 
@@ -644,6 +646,8 @@ def account_cancel(request):
                 user.first_name = ''
                 user.last_name = f'Cancelled user #{user.pk}'
                 user.tower = ''
+                user.send_notifications = False
+                user.send_other = False
                 user.save()
                 logout(request)
                 logger.info(log_message)

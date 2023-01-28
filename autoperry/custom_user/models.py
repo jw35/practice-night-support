@@ -11,12 +11,13 @@ class User(BaseUser):
     last_name = models.CharField(_("last name"), max_length=150, blank=False)
 
     cancelled = models.DateTimeField(null=True, blank=True, help_text="Timestamp of account cancellation")
-    send_notifications = models.BooleanField(null=False, default=True, help_text="Send email reminders and other messages", verbose_name="send email notifications")
+    send_notifications = models.BooleanField(null=False, default=True, help_text="Send email alerts and reminders about your events", verbose_name="send event emails")
     email_validated = models.DateTimeField(null=True, blank=True, help_text="Timestamp of email address validation")
     reminded_upto = models.DateTimeField(null=True, blank=True, help_text="End date of most recent reminder run")
     suspended = models.DateTimeField(null=True, blank=True, help_text="Timestamp of suspension")
     approved = models.DateTimeField(null=True, blank=True, help_text="Timestamp of approval")
     tower = models.CharField(max_length=50, blank=False, help_text="Where you normally ring")
+    send_other = models.BooleanField(null=False, default=True, verbose_name="send other emails")
 
     def __str__(self):
         return self.get_full_name()
