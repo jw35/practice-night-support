@@ -6,14 +6,6 @@
 
 <div class="col-md-8 mx-auto">
 
-{% if user.email_verified != '' %}
-
-<div class="alert alert-danger" role="alert">
-	<p class="m-0">The email address for your account has already been verified.</p>
-</div>
-
-{% else %}
-
 <h2>Please confirm your email address</h2>
 
 <p>We have sent an email to {{ user.email|urlize }} containing instructions for completing your
@@ -23,9 +15,7 @@ account setup.</p>
 "[AutoPerry]: Please complete account setup". If you can't find it,
 please check you junk or spam folders.</p>
 
-<p>If you still can't find it, you can try <a href="{% url 'account-resend' uidb64=uid %}">sending it again</a>.
-
-{% endif %}
+<p>If you still can't find it, you can try <a href="{% url 'account-resend' %}">sending it again</a>.
 
 </div>
 

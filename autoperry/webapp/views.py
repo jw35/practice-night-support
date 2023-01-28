@@ -61,9 +61,7 @@ def index(request):
             logout(request)
 
         elif not user.email_validated:
-            logger.info(f'Login by user with unvalidated email "{user}"')
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            url = reverse('account-resend', args=[uid])
+            url = reverse('account-resend')
             errors.append(mark_safe(f'You must confirm your email address before you can use AutoPerry. '
                 f'<a href="{url}">Resend confirmation email</a>.'))
 
@@ -507,26 +505,20 @@ def account_create(request):
         context={'registration_form': registration_form})
 
 
-def account_resend(request, uidb64):
+@django_login_required
+def account_resend(request):
 
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = get_user_model().objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-        raise Http404;
+    user = request.user
 
-    # Only if the email address hasn't already been validated
-    if not user.email_validated:
+    email_verification_token = EmailVerificationTokenGenerator()
 
-        email_verification_token = EmailVerificationTokenGenerator()
+    send_template_email(user, "email-validate", {
+        'email': user.email,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': email_verification_token.make_token(user)
+        })
 
-        send_template_email(user, "email-validate", {
-            'email': user.email,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': email_verification_token.make_token(user)
-            })
-
-        messages.success(request, 'Email resent')
+    messages.success(request, 'Email resent')
 
     return render(request, "webapp/account-create-pending.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
