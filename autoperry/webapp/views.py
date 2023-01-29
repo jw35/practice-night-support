@@ -459,7 +459,7 @@ def volunteer(request, event_id):
                 logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You have been added as a helper for this event')
 
-                if event.alerts:
+                if event.alerts and event.owner.send_notifications:
                     send_template_email(event.owner, "volunteer", { "event": event, "helper": user })
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
@@ -499,7 +499,7 @@ def unvolunteer(request, event_id):
                 logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You are no longer a helper for this event')
 
-                if event.alerts:
+                if event.alerts and event.owner.send_notifications:
                     send_template_email(event.owner, "unvolunteer", { "event": event, "helper": user })
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
