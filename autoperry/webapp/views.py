@@ -507,6 +507,43 @@ def unvolunteer(request, event_id):
     return render(request, 'webapp/unvolunteer.html', {'event': event})
 
 
+@autoperry_login_required
+def decline(request, event_id, helper_id):
+
+    with transaction.atomic():
+
+        event = get_object_or_404(Event, pk=event_id)
+        helper = get_object_or_404(get_user_model(), pk=helper_id)
+        errors = 0
+
+        user = request.user
+        if user != event.owner:
+            messages.error(request,'You are not the owner of this event - only the owner can decline offers of help')
+            errors += 1
+
+        if event.past:
+            messages.error(request, "This event has already happened so you can't decline an offer to help")
+            errors += 1
+
+        if errors:
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
+
+        if request.method == 'POST':
+            if 'confirm' in request.POST:
+                event.helpers.remove(helper)
+                event.save()
+
+                logger.info(f'"{user}" declined {helper} as helper for event id {event.id} "{event}"')
+                messages.success(request, f'{helper} as been removed as a helper')
+
+                if helper.send_notifications:
+                    send_template_email(helper, "helper-declined", { "event": event })
+
+            return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
+
+    return render(request, 'webapp/decline.html', {'event': event, 'helper': helper})
+
+
 # ----------------------------------------------------------------------------------------
 # Account Management
 # ----------------------------------------------------------------------------------------

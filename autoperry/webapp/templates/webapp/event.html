@@ -60,7 +60,10 @@
     {% if event.helpers.all %}
       <ul style="list-style: none; padding: 0; margin: 0">
       {% for helper in event.helpers.all %}
-        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+        <li>
+          {{ helper.get_full_name }} ({{ helper.email|urlize }})
+          <a href="{% url 'decline' event_id=event.pk helper_id=helper.pk%}" class="btn btn-outline-secondary btn-sm d-none d-md-inline">Decline</a>
+        </li>
       {% endfor %}
       </ul>
     {% else %}

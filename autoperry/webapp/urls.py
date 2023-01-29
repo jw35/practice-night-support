@@ -27,6 +27,7 @@ urlpatterns = [
     path(r"event/<int:event_id>/clone", views.event_clone, name="event-clone"),
     path(r"event/<int:event_id>/volunteer/", views.volunteer, name="volunteer"),
     path(r"event/<int:event_id>/unvolunteer/", views.unvolunteer, name="unvolunteer"),
+    path(r"event/<int:event_id>/decline/<int:helper_id>", views.decline, name="decline"),
     path(r"admin/send-emails", views.send_emails, name="send-emails"),
     path(r"admin/account-list", views.account_list, name="account-list"),
     path(r"admin/account-approve-list", views.account_approve_list, name="account-approve-list"),
