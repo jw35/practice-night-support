@@ -1,0 +1,5 @@
+{% autoescape off %}{{ message }}{% endautoescape %}
+
+-----------------------------------------------------------------------
+You can control messages from AutoPerry from your account edit page:
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}

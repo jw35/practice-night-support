@@ -77,3 +77,13 @@ class UserEditForm(forms.Form):
     tower = forms.CharField(max_length=50, help_text="Where do you normally ring")
     send_notifications = forms.BooleanField(required=False, label="Send email alerts and reminders about your events")
     send_other = forms.BooleanField(required=False, label="Send other emails")
+
+class EmailForm(forms.Form):
+    helpers = forms.BooleanField(required=False, initial=True, label="Include helpers?")
+    organisers = forms.BooleanField(required=False, initial=True, label="Include organisers?")
+    rest = forms.BooleanField(required=False, initial=True, label="Include others?")
+    subject = forms.CharField(required=True)
+    message = forms.CharField(required=True, widget=forms.Textarea)
+
+
+

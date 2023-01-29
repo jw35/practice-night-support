@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required as django_login_requir
 from django.contrib.auth.decorators import  permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F
@@ -20,7 +21,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from datetime import datetime, timedelta
 
 from .models import Event
-from .forms import EventForm, CustomUserCreationForm, UserEditForm
+from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
 from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator
 
 import logging
@@ -693,6 +694,11 @@ def account_list(request):
     # Merge the four groups
     users = u1 | u2 | u3 | u4
 
+    users = (users
+        .annotate(num_owned=Count('events_owned', distinct=True))
+        .annotate(num_helped=Count('events_volunteered', distinct=True))
+    )
+
     users = users.order_by('last_name', 'first_name')
 
     paginator = Paginator(users, 20, orphans=2)
@@ -711,4 +717,57 @@ def account_list(request):
         context={'users': page_obj,
                  'page_range': page_range,
                  'flags': flags})
+
+def send_emails(request):
+
+    form = EmailForm();
+
+    if request.method == 'POST':
+
+        form = EmailForm(request.POST)
+        if form.is_valid():
+
+            base_users = (get_user_model().objects.all()
+                .filter(cancelled=None)
+                .exclude(email_validated=None)
+                .filter(send_other=True)
+                .annotate(num_owned=Count('events_owned', distinct=True))
+                .annotate(num_helped=Count('events_volunteered', distinct=True))
+            )
+
+            users = get_user_model().objects.none()
+
+            if form.cleaned_data['helpers']:
+                users = users | base_users.filter(num_helped__gt=0)
+
+            if form.cleaned_data['organisers']:
+                users = users | base_users.filter(num_owned__gt=0)
+
+            if form.cleaned_data['rest']:
+                users = users | base_users.filter(num_helped__exact=0).filter(num_owned__exact=0)
+
+            to_addresses = users.values_list('email', flat=True)
+
+            if to_addresses:
+
+                template = 'email-email'
+                context = { 'subject': form.cleaned_data['subject'], 'message': form.cleaned_data['message'] }
+                message = render_to_string(f"webapp/email/{template}-message.txt", context).strip()
+                subject = render_to_string(f"webapp/email/{template}-subject.txt", context).strip()
+
+
+
+                EmailMessage(subject=subject,
+                    body=message,
+                    bcc=to_addresses,
+                    cc=(settings.DEFAULT_FROM_EMAIL,)).send()
+
+                messages.success(request, f'Email sent to {len(to_addresses)} addresses')
+                logger.info(f'Email sent to {len(to_addresses)} addresses')
+                form = EmailForm();
+
+            else:
+                messages.error(request,'No users would be emailed by this selection!')
+
+    return render(request, "webapp/send-email.html", {'form': form})
 

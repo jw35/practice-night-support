@@ -27,5 +27,6 @@ urlpatterns = [
     path(r"event/<int:event_id>/edit", views.event_edit, name="event-edit"),
     path(r"event/<int:event_id>/clone", views.event_clone, name="event-clone"),
     path(r"event/<int:event_id>/volunteer/", views.volunteer, name="volunteer"),
-    path(r"event/<int:event_id>/unvolunteer/", views.unvolunteer, name="unvolunteer")
+    path(r"event/<int:event_id>/unvolunteer/", views.unvolunteer, name="unvolunteer"),
+    path(r"send-emails", views.send_emails, name="send-emails"),
 ]

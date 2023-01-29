@@ -1,0 +1,34 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2>Send email</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input class="btn btn-primary" type="submit" value="Send">
+</form>
+
+<ul class="mt-4">
+
+    <li>Messages will be sent to users who have:
+        <ul>
+            <li>confirmed their email address</li>
+            <li>not opted out of 'other' emails</li>
+            <li>not cancelled their account</li>
+        </ul>
+    </li>
+    <li>Messages will be 'bcc'ed so users won't see each other's addresses.</li>
+    <li>Messages will be sent from and copied to autoperry@cambridgeringing.info</li>
+    <li>The subject will be prefixed by '[AutoPerry]'.</li>
+    <li>The message will include a footer explaining how to opt-out of further emails.</li>
+    <li>There will be overlap between 'Helpers' and 'Organisers'.</li>
+
+</ul>
+
+{% endblock %}
