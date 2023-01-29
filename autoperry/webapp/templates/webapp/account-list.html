@@ -55,8 +55,20 @@
 
 <div class="row justify-content-center">
     <div class="col-auto">
-      <table class="table table-responsive">
+      <table class="table table-responsive table-sm">
 
+        <thead>
+        <tr>
+        <td class="fw-bold">Name</td>
+        <td class="fw-bold">Tower</td>
+        <td class="fw-bold">Address</td>
+        <td class="fw-bold">Email</td>
+        <td colspan="4" class="fw-bold">Flags</td>
+        <td colspan="2" class="fw-bold">Counts</td>
+      </tr>
+    </thead>
+
+    <tbody class="table-group-divider">
 
    {% for u in users %}
       <tr class="text-start">
@@ -64,21 +76,34 @@
         <td>{{ u.first_name }} <b>{{ u.last_name }}</b></td>
 
         <td>{{ u.tower }}</td>
-        
+
         <td>{{ u.email|urlize }}</td>
 
-        <td>{{ u.send_notifications|yesno|capfirst }}</td>
+        <td>
+          {% if u.send_notifications and u.send_other %}
+          All
+          {% elif u.send_notifications %}
+          Alerts
+          {% elif u.send_other %}
+          Other
+          {% else %}
+          None
+          {% endif %}
+        </td>
 
         <td>{% if u.approved != None %}A{% endif %}</td>
         <td>{% if u.email_validated != None %}E{% endif %}</td>
         <td>{% if u.suspended != None %}S{% endif %}</td>
         <td>{% if u.cancelled != None %}C{% endif %}</td>
 
-        <td>H:{{ u.num_helped }}, O:{{ u.num_owned }}</td>
+        <td>H:{{ u.num_helped }}</td>
+        <td>O:{{ u.num_owned }}</td>
 
       </tr>
 
    {% endfor %}
+
+ </tbody>
 
       </table>
 
