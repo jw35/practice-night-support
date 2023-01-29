@@ -6,12 +6,17 @@
 
 <div class="col-md-8 mx-auto">
 
-<h2>Please confirm your email address</h2>
+<h2>Account being created</h2>
 
-<p>We have sent an email to {{ user.email|urlize }} containing instructions for completing your
-account setup.</p>
+<p>Thank you for creating an AutoPerry account.</p>
 
-<p>This email will have been from "{{ sender }}" with subject
+<p>Your account needs to be approved by an administrator. This should happen quite soon
+and we will send you an email when it does.</p>
+
+<p>You <b>also</b> need to confirm your email address. We have sent an email to {{ user.email|urlize }}
+containing instructions for doing this.</p>
+
+<p>This email will be from "{{ sender }}" with subject
 "[AutoPerry]: Please complete account setup". If you can't find it,
 please check you junk or spam folders.</p>
 

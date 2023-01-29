@@ -57,19 +57,6 @@ def index(request):
 
     user = request.user
 
-    # IF the user is at least authenticated
-    if user.is_authenticated:
-
-        if user.suspended:
-            logger.info(f'Login attempt by suspended user "{user}"')
-            errors.append(mark_safe('Your account has been suspended. Please contact <a href="mailto:autoperry@cambridgeringing.info">autoperry@cambridgeringing.info</a>'))
-            logout(request)
-
-        elif not user.email_validated:
-            url = reverse('account-resend')
-            errors.append(mark_safe(f'You must confirm your email address before you can use AutoPerry. '
-                f'<a href="{url}">Resend confirmation email</a>.'))
-
     # If they are still authenticated and enabled
     if user.is_authenticated and user.is_enabled:
 
@@ -612,6 +599,7 @@ def account_create(request):
         registration_form = CustomUserCreationForm(request.POST)
         if registration_form.is_valid():
             user = registration_form.save()
+            login(request, user)
 
             # Email verification
             email_verification_token = EmailVerificationTokenGenerator()
@@ -650,7 +638,7 @@ def account_resend(request):
 
     messages.success(request, 'Email resent')
 
-    return render(request, "webapp/account-create-pending.html",
+    return render(request, "webapp/account-create-resend.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
                  'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                  'user': user })
@@ -673,8 +661,8 @@ def account_confirm(request, uidb64, token):
         user.email_validated = timezone.now()
         user.save()
         login(request, user)
-        logger.info(f'"{user}" email verified and logged in')
-        messages.success(request, 'Your email address has been confirmed and you are logged in')
+        logger.info(f'"{user}" email verified')
+        messages.success(request, 'Your email address has been confirmed')
     else:
         messages.success(request, 'Email address verification failed')
         logger.error(f'"{user}" email verification failed')

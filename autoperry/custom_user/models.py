@@ -24,7 +24,15 @@ class User(BaseUser):
 
     @property
     def is_enabled(self):
+
+        """
+        Is the user allowed to interact with the core of AutoPerry?
+        Needs to be an actual user (not Anonymous), to be approved and to
+        have a validated email address, and not to be suspended or cancelled.
+        """
+
         return (self.is_authenticated and
+                self.approved and
                 self.email_validated and
                 not self.suspended and
                 not self.cancelled)

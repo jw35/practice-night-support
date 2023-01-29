@@ -16,65 +16,93 @@
   </div>
 </div>
 
-{% if errors %}
-<div class="alert alert-danger" role="alert">
-    {% for error in errors %}
-    <p class="mb-0">{{ error }}</p>
-    {% endfor %}
-</div>
-{% endif %}
+{% if user.is_authenticated %}
 
-{% if user.is_enabled %}
+  {% comment %}  Authenticated OK  {% endcomment %}
+  {% if user.is_enabled %}
 
-<div class="text-center">
+    <div class="text-center">
 
-  {% if events.all %}
+      {% if events.all %}
 
-  <h2>Events needing helpers in the next
-    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ days }}
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{% url 'index' %}?days=14">14</a></li>
-    <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
-    <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
-  </ul>
-  days</h2>
-  {% include 'webapp/events-list-fragment.html' %}
+      <h2>Events needing helpers in the next
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ days }}
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{% url 'index' %}?days=14">14</a></li>
+        <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
+        <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
+      </ul>
+      days</h2>
+      {% include 'webapp/events-list-fragment.html' %}
 
+      {% else %}
+
+      <h2>There are no events needing helpers in the next <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ days }}
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{% url 'index' %}?days=14">14</a></li>
+        <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
+        <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
+      </ul> day{{ days|pluralize }}</h2>
+
+      {% endif %}
+
+    </div>
+
+  {% comment %} Authenticated but not enabled --> in limbo {% endcomment %}
   {% else %}
 
-  <h2>There are no events needing helpers in the next <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ days }}
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{% url 'index' %}?days=14">14</a></li>
-    <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
-    <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
-  </ul> day{{ days|pluralize }}</h2>
+    {% comment %}  This probably can't happen!  {% endcomment %}
+    {% if user.cancelled %}
+      <div class="alert alert-danger" role="alert">
+      You have <b>cancelled</b> this account!
+      </div>
+    {% elif user.suspended  %}
+      <div class="alert alert-danger" role="alert">
+      Your account has been <b>suspended</b>. Please contact {{ "autoperry@cambridgeringing.info"|urlize }}.
+      </div>
+    {% else %}
+      {% if user.approved == None %}
+        <div class="alert alert-danger" role="alert">
+        Your account has yet to be <b>approved by an administrator</b>. If you registered more than
+        a couple of days ago, please feel free to contact {{ "autoperry@cambridgeringing.info"|urlize }}
+        to find out what's happening.
+        </div>
+      {% endif %}
+
+      {% if user.email_validated == None %}
+        <div class="alert alert-danger" role="alert">
+        You must <b>confirm your email address</b> before you can use AutoPerry.
+        <a href="{% url 'account-resend' %}">Resend confirmation request email</a>.
+        </div>
+      {% endif %}
+
+    {% endif %}
 
   {% endif %}
 
-</div>
+{% comment %}  Not authenticated yet  {% endcomment %}
+{% else %}
 
-{% elif not user.is_authenticated %}
+  <main class="form-signin w-100 m-auto text-center">
 
-<main class="form-signin w-100 m-auto text-center">
+  <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-<h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+  <form method="POST" class="mb-3">
+    {% csrf_token %}
+    {{ login_form|crispy }}
+    {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
+    <button class="btn btn-primary" type="submit" name="login">Sign in</button>
+  </form>
 
-<form method="POST" class="mb-3">
-  {% csrf_token %}
-  {{ login_form|crispy }}
-  {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
-  <button class="btn btn-primary" type="submit" name="login">Sign in</button>
-</form>
+  <p><a href="{% url 'password_reset' %}">Forgotten password?</a></p>
 
-<p><a href="{% url 'password_reset' %}">Forgotten password?</a></p>
+  <p><a href="{% url 'account-create' %}">Register for an account</a></p>
 
-<p><a href="{% url 'account-create' %}">Register for an account</a></p>
-
-</main>
+  </main>
 
 {% endif %}
 
