@@ -543,25 +543,26 @@ def account_list(request):
         flags = {'pending': True, 'current': True, 'suspended': True, 'cancelled': False}
     request.session['user_flags'] = flags
 
-    users = get_user_model().objects.all()
+    base_users = get_user_model().objects.all()
 
-    u1 = u2 =u3 =u4 = get_user_model().objects.none()
+    users = get_user_model().objects.none()
 
     if flags['pending']:
-        u1 = users.filter(email_validated=None) | users.filter(approved=None)
-        u1 = u1.filter(suspended=None).filter(cancelled=None)
+        u = base_users.filter(email_validated=None) | users.filter(approved=None)
+        u = u.filter(suspended=None).filter(cancelled=None)
+        users = users | u
 
     if flags['current']:
-        u2 = users.exclude(email_validated=None).exclude(approved=None).filter(suspended=None).filter(cancelled=None)
+        users = users | (base_users.exclude(email_validated=None)
+            .exclude(approved=None)
+            .filter(suspended=None)
+            .filter(cancelled=None))
 
     if flags['suspended']:
-        u3 = users.exclude(suspended=None)
+        users = users | base_users.exclude(suspended=None)
 
     if flags['cancelled']:
-        u4 = users.exclude(cancelled=None)
-
-    # Merge the four groups
-    users = u1 | u2 | u3 | u4
+        users = users | base_users.exclude(cancelled=None)
 
     users = (users
         .annotate(num_owned=Count('events_owned', distinct=True))
