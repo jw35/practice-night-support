@@ -49,6 +49,8 @@
   <div class="col-auto">E = email validated</div>
   <div class="col-auto">S = suspended</div>
   <div class="col-auto">C = cancelled</div>
+  <div class="col-auto">H = helper</div>
+  <div class="col-auto">O = organiser</div>
 </div>
 
 <div class="row justify-content-center">
@@ -59,7 +61,7 @@
    {% for u in users %}
       <tr class="text-start">
 
-        <td>{{ u.get_full_name }}</td>
+        <td>{{ u.first_name }} <b>{{ u.last_name }}</b></td>
 
         <td>{{ u.tower }}</td>
         
@@ -68,9 +70,11 @@
         <td>{{ u.send_notifications|yesno|capfirst }}</td>
 
         <td>{% if u.approved != None %}A{% endif %}</td>
-        <td>{% if u.email_validated != None %}V{% endif %}</td>
+        <td>{% if u.email_validated != None %}E{% endif %}</td>
         <td>{% if u.suspended != None %}S{% endif %}</td>
         <td>{% if u.cancelled != None %}C{% endif %}</td>
+
+        <td>H:{{ u.num_helped }}, O:{{ u.num_owned }}</td>
 
       </tr>
 
