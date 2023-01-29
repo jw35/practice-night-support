@@ -436,7 +436,7 @@ def volunteer(request, event_id):
                 messages.success(request, 'You have been added as a helper for this event')
 
                 if event.alerts:
-                    send_template_email(event.contact, "volunteer", { "event": event, "helper": user })
+                    send_template_email(event.owner, "volunteer", { "event": event, "helper": user })
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -472,7 +472,7 @@ def unvolunteer(request, event_id):
                 messages.success(request, 'You are no longer a helper for this event')
 
                 if event.alerts:
-                    send_template_email(event.contact, "unvolunteer", { "event": event, "helper": user })
+                    send_template_email(event.owner, "unvolunteer", { "event": event, "helper": user })
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 

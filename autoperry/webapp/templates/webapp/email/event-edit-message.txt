@@ -22,5 +22,5 @@ AutoPerry.
 
 
 -----------------------------------------------------------------------
-You can turn off messages from AutoPerry from your account edit page:
+You can control messages from AutoPerry from your account edit page:
 https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}

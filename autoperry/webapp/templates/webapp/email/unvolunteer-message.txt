@@ -19,5 +19,5 @@ AutoPerry.
 
 
 -----------------------------------------------------------------------
-You can turn off messages from AutoPerry for this event from:
-https://autoperry.cambridgeringing.info{% url 'event-edit' event_id=event.pk %}{% endautoescape %}
+You can control messages from AutoPerry from your account edit page:
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}
