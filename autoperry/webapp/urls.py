@@ -14,7 +14,6 @@ urlpatterns = [
     path(r'help/helpers', TemplateView.as_view(template_name="webapp/helpers.html"), name='guidelines-helpers'),
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"account/", views.account, name="account"),
-    path(r"account/list", views.account_list, name="account-list"),
     path(r"account/create", views.account_create, name="account-create"),
     path(r"account/confirm/<uidb64>/<token>/", views.account_confirm, name="account-confirm"),
     path(r"account/resend", views.account_resend, name="account-resend"),
@@ -28,5 +27,8 @@ urlpatterns = [
     path(r"event/<int:event_id>/clone", views.event_clone, name="event-clone"),
     path(r"event/<int:event_id>/volunteer/", views.volunteer, name="volunteer"),
     path(r"event/<int:event_id>/unvolunteer/", views.unvolunteer, name="unvolunteer"),
-    path(r"send-emails", views.send_emails, name="send-emails"),
+    path(r"admin/send-emails", views.send_emails, name="send-emails"),
+    path(r"admin/account-list", views.account_list, name="account-list"),
+    path(r"admin/account-approve-list", views.account_approve_list, name="account-approve-list"),
+    path(r"admin/account-approve/<int:user_id>", views.account_approve, name="account-approve"),
 ]

@@ -53,6 +53,7 @@ and add
     00 05 * * * practice-night-support/run_backup.sh
     00 06 * * * practice-night-support/run_owner_reminders.sh
     00 07 * * 7 practice-night-support/run_helper_reminders.sh
+    00 08 * * * practice-night-support/run_admin_reminders.sh
 
 ## Deploying a new version
 

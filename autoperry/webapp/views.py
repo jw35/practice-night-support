@@ -610,6 +610,9 @@ def account_create(request):
                 'token': email_verification_token.make_token(user)
                 })
 
+            # Alert the admins
+            send_template_email(settings.DEFAULT_FROM_EMAIL, "account-approval-required", { 'user': user })
+
             return render(request, "webapp/account-create-pending.html",
                 context={'sender': settings.DEFAULT_FROM_EMAIL,
                          'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -787,6 +790,42 @@ def account_cancel(request):
     return render(request, 'webapp/account-cancel.html')
 
 
+@autoperry_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
+def account_approve_list(request):
+
+    """
+    List users requiring approval
+    """
+
+    users = get_user_model().objects.all().filter(approved=None).order_by('date_joined')
+
+    return render(request, 'webapp/account-approve-list.html', {'users': users})
+
+
+@autoperry_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
+def account_approve(request, user_id):
+
+    user = get_object_or_404(get_user_model(), pk=user_id)
+
+    if request.method == 'POST':
+
+        user.approved = timezone.now()
+        user.save()
+
+        send_template_email(user, "account-approved", { 'user': user })
+
+        logger.info(f'"{user}" approved by "{request.user}"')
+        messages.success(request, f'Account for {user} approved')
+
+        return HttpResponseRedirect(reverse('account-approve-list'))
+
+    return render(request, 'webapp/account-approve.html', {'candidate': user})
+
+
+@autoperry_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
 def send_emails(request):
 
     """
@@ -827,8 +866,6 @@ def send_emails(request):
                 context = { 'subject': form.cleaned_data['subject'], 'message': form.cleaned_data['message'] }
                 message = render_to_string(f"webapp/email/{template}-message.txt", context).strip()
                 subject = render_to_string(f"webapp/email/{template}-subject.txt", context).strip()
-
-
 
                 EmailMessage(subject=subject,
                     body=message,

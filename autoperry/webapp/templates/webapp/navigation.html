@@ -45,8 +45,10 @@
             Admin
           </a>
           <ul class="dropdown-menu">
+            {% url 'account-approve-list' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Approvals pending</a></li>
             {% url 'account-list' as url %}
-            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">List users</a></li>
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">List all users</a></li>
             {% url 'send-emails' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Send emails</a></li>
           </ul>

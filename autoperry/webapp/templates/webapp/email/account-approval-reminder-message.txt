@@ -1,0 +1,10 @@
+{% autoescape off %}Some account approvals are outstanding:
+{% for user in users %}
+    Name:  {{ user.get_full_name }}
+    Tower:  {{ user.tower }}
+    Address: {{ user.email }}
+    Waiting: {{ user.date_joined|timesince }}
+    URL:  https://autoperry.cambridgeringing.info{% url 'account-approve' user_id=user.pk %}
+{% endfor %}
+
+{% endautoescape %}

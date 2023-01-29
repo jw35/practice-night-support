@@ -1,0 +1,11 @@
+{% autoescape off %}Your account {{ user.email }} on AutoPerry has been approved!
+
+You can login and use the system at:
+
+    https://autoperry.cambridgeringing.info
+
+Thanks very much for helping to support ringing in the Cambridge District.
+
+-----------------------------------------------------------------------
+You can control messages from AutoPerry from your account edit page:
+https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}

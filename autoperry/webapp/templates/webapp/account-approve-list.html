@@ -1,0 +1,58 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<h2 class="text-center">Users awaiting approval</h2>
+
+<div class="row justify-content-center">
+    <div class="col-auto">
+
+{% if users %}
+
+      <table class="table table-responsive table-sm">
+
+       <thead>
+        <tr>
+        <td class="fw-bold">Name</td>
+        <td class="fw-bold">Tower</td>
+        <td class="fw-bold">Address</td>
+        <td class="fw-bold">Waiting</td>
+        <td class="fw-bold"></td>
+      </tr>
+    </thead>
+
+    <tbody class="table-group-divider">
+
+
+   {% for u in users %}
+      <tr class="text-start">
+
+        <td>{{ u.first_name }} <b>{{ u.last_name }}</b></td>
+
+        <td>{{ u.tower }}</td>
+
+        <td>{{ u.email|urlize }}</td>
+
+        <td>{{ u.date_joined|timesince }}</td>
+
+        <td><a href="{% url 'account-approve' user_id=u.pk %}" class="btn btn-outline-primary btn-sm d-none d-md-inline">approve</a>
+
+      </tr>
+
+   {% endfor %}
+
+      </table>
+
+{% else %}
+
+<p>There are no users awaiting approval.</p>
+
+{% endif %}
+
+   </div>
+
+</div>
+
+{% endblock %}

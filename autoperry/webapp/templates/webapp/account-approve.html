@@ -1,0 +1,32 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<h2>Approve an account</h2>
+
+<dl>
+
+    <dt>Name:</dt>
+    <dd>{{ candidate.first_name }} {{ candidate.last_name }}</dd>
+
+    <dt>Tower</dt>
+    <dd>{{ candidate.tower|default:'[none]' }}</dd>
+
+    <dt>Email</dt>
+    <dd>{{ candidate.email|urlize }}</dd>
+
+    <dt>Waiting</dt>
+    <dd>{{ candidate.date_joined|timesince }}</dd>
+
+</dl>
+
+<p>Please confirm that this person should have access to AutoPerry</p>
+
+<form method="post">
+    {% csrf_token %}
+    <input class="btn btn-primary" type="submit" name="confirm" value="Approive">
+</form>
+
+{% endblock %}

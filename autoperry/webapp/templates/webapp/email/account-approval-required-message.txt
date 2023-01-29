@@ -1,0 +1,11 @@
+{% autoescape off %}A new account requiring approval has just been created:
+
+    Name:  {{ user.get_full_name }}
+    Tower:  {{ user.tower }}
+    Address: {{ user.email }}
+
+To confirm this account, please go to:
+
+    https://autoperry.cambridgeringing.info{% url 'account-approve' user_id=user.pk %}
+
+{% endautoescape %}

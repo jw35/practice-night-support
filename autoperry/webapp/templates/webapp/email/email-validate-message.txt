@@ -1,4 +1,4 @@
-{% autoescape off %}{% filter wordwrap:60 %}Someone (probably you) created AutoPerry account for {{ email }} on https://autoperry.cambridgeringing.info/.{% endfilter %}
+{% autoescape off %}{% filter wordwrap:72 %}Someone (probably you) created AutoPerry account for {{ email }} on https://autoperry.cambridgeringing.info/.{% endfilter %}
 
 To complete your account setup, please follow this link or cut-and-paste
 it into your web browser:
