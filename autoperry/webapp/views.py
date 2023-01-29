@@ -33,6 +33,10 @@ from django.http import HttpResponse
 
 def index(request):
 
+    """
+    Landing and login page
+    """
+
     login_form = AuthenticationForm()
     errors = []
     event_list = None
@@ -93,8 +97,16 @@ def index(request):
                  'next_page': request.GET.get('next')})
 
 
+# ----------------------------------------------------------------------------------------
+# Event Management
+# ----------------------------------------------------------------------------------------
+
 @autoperry_login_required()
 def events(request):
+
+    """
+    List events
+    """
 
     user = request.user
 
@@ -147,6 +159,11 @@ def events(request):
 
 @autoperry_login_required()
 def event_details(request, event_id):
+
+    """
+    Individual event details
+    """
+
     event = get_object_or_404(Event, pk=event_id)
 
     user = request.user
@@ -158,13 +175,12 @@ def event_details(request, event_id):
                 })
 
 
-@django_login_required()
-def account(request):
-
-    return render(request, "webapp/account.html")
-
 @autoperry_login_required()
 def event_create(request):
+
+    """
+    Create new event
+    """
 
     user = request.user
     clashes = None
@@ -216,8 +232,13 @@ def event_create(request):
 
     return render(request, 'webapp/event-create.html', {'form': form, 'locations': locations })
 
+
 @autoperry_login_required()
 def event_clone(request, event_id):
+
+    """
+    Create new event based on existing one
+    """
 
     event = get_object_or_404(Event, pk=event_id)
 
@@ -237,8 +258,13 @@ def event_clone(request, event_id):
 
     return render(request, 'webapp/event-create.html', {'form': form, 'locations': locations })
 
+
 @autoperry_login_required()
 def event_edit(request, event_id):
+
+    """
+    Edit existing event
+    """
 
     with transaction.atomic():
 
@@ -351,6 +377,10 @@ def event_edit(request, event_id):
 @autoperry_login_required()
 def event_cancel(request, event_id):
 
+    """
+    Cancel (request for help at) an event
+    """
+
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
@@ -389,9 +419,16 @@ def event_cancel(request, event_id):
     return render(request, 'webapp/event-cancel.html', {'event': event})
 
 
+# ----------------------------------------------------------------------------------------
+# Helper Management
+# ----------------------------------------------------------------------------------------
 
 @autoperry_login_required
 def volunteer(request, event_id):
+
+    """
+    Add current user as helper
+    """
 
     with transaction.atomic():
 
@@ -446,6 +483,10 @@ def volunteer(request, event_id):
 @autoperry_login_required
 def unvolunteer(request, event_id):
 
+    """
+    REmove current user as helper
+    """
+
     with transaction.atomic():
 
         event = get_object_or_404(Event, pk=event_id)
@@ -478,190 +519,18 @@ def unvolunteer(request, event_id):
 
     return render(request, 'webapp/unvolunteer.html', {'event': event})
 
-def account_create(request):
 
-    registration_form = CustomUserCreationForm()
-
-    # Return from registering or logging in
-    if request.method == 'POST':
-        registration_form = CustomUserCreationForm(request.POST)
-        if registration_form.is_valid():
-            user = registration_form.save()
-
-            # Email verification
-            email_verification_token = EmailVerificationTokenGenerator()
-
-            send_template_email(user, "email-validate", { 
-                'email': user.email,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': email_verification_token.make_token(user)
-                })
-
-            return render(request, "webapp/account-create-pending.html",
-                context={'sender': settings.DEFAULT_FROM_EMAIL,
-                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                         'user': user })
-
-    return render(request, "webapp/account-create.html",
-        context={'registration_form': registration_form})
-
-
-@django_login_required
-def account_resend(request):
-
-    user = request.user
-
-    email_verification_token = EmailVerificationTokenGenerator()
-
-    send_template_email(user, "email-validate", {
-        'email': user.email,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': email_verification_token.make_token(user)
-        })
-
-    messages.success(request, 'Email resent')
-
-    return render(request, "webapp/account-create-pending.html",
-        context={'sender': settings.DEFAULT_FROM_EMAIL,
-                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                 'user': user })
-
-
-
-def account_confirm(request, uidb64, token):
-
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = get_user_model().objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-        raise Http404;
-
-    email_verification_token = EmailVerificationTokenGenerator()
-    if email_verification_token.check_token(user, token):
-        user.email_validated = timezone.now()
-        user.save()
-        login(request, user)
-        logger.info(f'"{user}" email verified and logged in')
-        messages.success(request, 'Your email address has been confirmed and you are logged in')
-    else:
-        messages.success(request, 'Email address verification failed')
-        logger.error(f'"{user}" email verification failed')
-
-    return redirect(reverse('index'))
-
-
-
-@django_login_required()
-def account_edit(request):
-
-    user = request.user
-    form = UserEditForm(
-        {'email': user.email,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'tower': user.tower,
-        'send_notifications': user.send_notifications,
-        'send_other': user.send_other,
-        })
-
-    if request.method == 'POST':
-
-        original_email = user.email
-
-        form = UserEditForm(request.POST)
-        if form.is_valid():
-            user.email = form.cleaned_data['email']
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.tower = form.cleaned_data['tower']
-            user.send_notifications = form.cleaned_data['send_notifications']
-            user.send_other = form.cleaned_data['send_other']
-            user.save()
-            logger.info(f'"{user}" updated account details')
-
-            messages.success(request, 'Your account details have been successfully updated')
-
-            if user.email != original_email:
-                user.email_validated =  None;
-                user.save()
-                logout(request)
-                messages.success(request, 'Your account details have been successfully updated')
-                email_verification_token = EmailVerificationTokenGenerator()
-                send_template_email(user, "email-validate", {
-                    'email': user.email,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': email_verification_token.make_token(user)
-                    })
-                return render(request, "webapp/account-create-pending.html",
-                    context={'sender': settings.DEFAULT_FROM_EMAIL,
-                             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                             'user': user })
-            
-            return HttpResponseRedirect(reverse('account'))
-
-    return render(request, 'webapp/account-edit.html', {'form': form})
-
-
-@django_login_required
-def account_cancel(request):
-
-    user = request.user
-    errors = 0
-
-    with transaction.atomic():
-
-        events_as_organiser = (Event.objects.all()
-                               .filter(owner=user)
-                               .filter(start__gte=timezone.now())
-                               .filter(cancelled=None))
-
-        events_as_volunteer = (Event.objects.all()
-                               .filter(helpers=user)
-                               .filter(start__gte=timezone.now())
-                               .filter(cancelled=None))
-
-        if events_as_organiser.all():
-            messages.error(request, 'You are the organiser of events that have yet to happen. '
-                          'You must cancel them or wait for them to happen before you can cancel your account.')
-            errors += 1
-        if events_as_volunteer.all():
-            messages.error(request, 'You have volunteered to help with events that have yet to happen. '
-                          'You must withdraw your offer or wait for them to happen before you can cancel your account.')
-            errors += 1
-
-        if user.is_superuser:
-            messages.error(request, "You have a superuser account. Superuser accounts can't be cancelled here.")
-            errors += 1
-
-        if errors:
-            return HttpResponseRedirect(reverse('account'))
-
-        if request.method == 'POST':
-            if 'confirm' in request.POST:
-                # Do this now before destroying user.first_name and user.last_name!
-                log_message = f'"{user}" cancelled'
-                user.cancelled = timezone.now()
-                user.is_active = False
-                user.set_unusable_password()
-                user.email = f'canceled_{user.pk}'
-                user.first_name = ''
-                user.last_name = f'Cancelled user #{user.pk}'
-                user.tower = ''
-                user.send_notifications = False
-                user.send_other = False
-                user.save()
-                logout(request)
-                logger.info(log_message)
-                messages.success(request, 'Your account has been cancelled')
-                return HttpResponseRedirect(reverse('index'))
-            else:
-                return HttpResponseRedirect(reverse('account'))
-
-    return render(request, 'webapp/account-cancel.html')
+# ----------------------------------------------------------------------------------------
+# Account Management
+# ----------------------------------------------------------------------------------------
 
 @autoperry_login_required
 @permission_required('custom_user.administrator', raise_exception=True)
 def account_list(request):
+
+    """
+    List accounts (admin only)
+    """
 
     # Make search flags 'sticky', overridden by GET args
     if 'f' in request.GET:
@@ -718,7 +587,222 @@ def account_list(request):
                  'page_range': page_range,
                  'flags': flags})
 
+
+@django_login_required()
+def account(request):
+
+    """
+    Individual account details
+    """
+
+    return render(request, "webapp/account.html")
+
+
+def account_create(request):
+
+    """
+    Create a new account
+    """
+
+    registration_form = CustomUserCreationForm()
+
+    # Return from registering or logging in
+    if request.method == 'POST':
+        registration_form = CustomUserCreationForm(request.POST)
+        if registration_form.is_valid():
+            user = registration_form.save()
+
+            # Email verification
+            email_verification_token = EmailVerificationTokenGenerator()
+
+            send_template_email(user, "email-validate", {
+                'email': user.email,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': email_verification_token.make_token(user)
+                })
+
+            return render(request, "webapp/account-create-pending.html",
+                context={'sender': settings.DEFAULT_FROM_EMAIL,
+                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                         'user': user })
+
+    return render(request, "webapp/account-create.html",
+        context={'registration_form': registration_form})
+
+
+@django_login_required
+def account_resend(request):
+
+    """
+    Resend email validation request
+    """
+
+    user = request.user
+
+    email_verification_token = EmailVerificationTokenGenerator()
+
+    send_template_email(user, "email-validate", {
+        'email': user.email,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': email_verification_token.make_token(user)
+        })
+
+    messages.success(request, 'Email resent')
+
+    return render(request, "webapp/account-create-pending.html",
+        context={'sender': settings.DEFAULT_FROM_EMAIL,
+                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                 'user': user })
+
+
+def account_confirm(request, uidb64, token):
+
+    """
+    Receive email confirmation
+    """
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = get_user_model().objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        raise Http404;
+
+    email_verification_token = EmailVerificationTokenGenerator()
+    if email_verification_token.check_token(user, token):
+        user.email_validated = timezone.now()
+        user.save()
+        login(request, user)
+        logger.info(f'"{user}" email verified and logged in')
+        messages.success(request, 'Your email address has been confirmed and you are logged in')
+    else:
+        messages.success(request, 'Email address verification failed')
+        logger.error(f'"{user}" email verification failed')
+
+    return redirect(reverse('index'))
+
+
+@django_login_required()
+def account_edit(request):
+
+    """
+    Edit existing account
+    """
+
+    user = request.user
+    form = UserEditForm(
+        {'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'tower': user.tower,
+        'send_notifications': user.send_notifications,
+        'send_other': user.send_other,
+        })
+
+    if request.method == 'POST':
+
+        original_email = user.email
+
+        form = UserEditForm(request.POST)
+        if form.is_valid():
+            user.email = form.cleaned_data['email']
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.tower = form.cleaned_data['tower']
+            user.send_notifications = form.cleaned_data['send_notifications']
+            user.send_other = form.cleaned_data['send_other']
+            user.save()
+            logger.info(f'"{user}" updated account details')
+
+            messages.success(request, 'Your account details have been successfully updated')
+
+            if user.email != original_email:
+                user.email_validated =  None;
+                user.save()
+                logout(request)
+                messages.success(request, 'Your account details have been successfully updated')
+                email_verification_token = EmailVerificationTokenGenerator()
+                send_template_email(user, "email-validate", {
+                    'email': user.email,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': email_verification_token.make_token(user)
+                    })
+                return render(request, "webapp/account-create-pending.html",
+                    context={'sender': settings.DEFAULT_FROM_EMAIL,
+                             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                             'user': user })
+
+            return HttpResponseRedirect(reverse('account'))
+
+    return render(request, 'webapp/account-edit.html', {'form': form})
+
+
+@django_login_required
+def account_cancel(request):
+
+    """
+    Cancel existing account
+    """
+
+    user = request.user
+    errors = 0
+
+    with transaction.atomic():
+
+        events_as_organiser = (Event.objects.all()
+                               .filter(owner=user)
+                               .filter(start__gte=timezone.now())
+                               .filter(cancelled=None))
+
+        events_as_volunteer = (Event.objects.all()
+                               .filter(helpers=user)
+                               .filter(start__gte=timezone.now())
+                               .filter(cancelled=None))
+
+        if events_as_organiser.all():
+            messages.error(request, 'You are the organiser of events that have yet to happen. '
+                          'You must cancel them or wait for them to happen before you can cancel your account.')
+            errors += 1
+        if events_as_volunteer.all():
+            messages.error(request, 'You have volunteered to help with events that have yet to happen. '
+                          'You must withdraw your offer or wait for them to happen before you can cancel your account.')
+            errors += 1
+
+        if user.is_superuser:
+            messages.error(request, "You have a superuser account. Superuser accounts can't be cancelled here.")
+            errors += 1
+
+        if errors:
+            return HttpResponseRedirect(reverse('account'))
+
+        if request.method == 'POST':
+            if 'confirm' in request.POST:
+                # Do this now before destroying user.first_name and user.last_name!
+                log_message = f'"{user}" cancelled'
+                user.cancelled = timezone.now()
+                user.is_active = False
+                user.set_unusable_password()
+                user.email = f'canceled_{user.pk}'
+                user.first_name = ''
+                user.last_name = f'Cancelled user #{user.pk}'
+                user.tower = ''
+                user.send_notifications = False
+                user.send_other = False
+                user.save()
+                logout(request)
+                logger.info(log_message)
+                messages.success(request, 'Your account has been cancelled')
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                return HttpResponseRedirect(reverse('account'))
+
+    return render(request, 'webapp/account-cancel.html')
+
+
 def send_emails(request):
+
+    """
+    Send bulk email (admin only)
+    """
 
     form = EmailForm();
 
