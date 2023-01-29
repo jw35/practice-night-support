@@ -62,7 +62,7 @@
       {% for helper in event.helpers.all %}
         <li>
           {{ helper.get_full_name }} ({{ helper.email|urlize }})
-          <a href="{% url 'decline' event_id=event.pk helper_id=helper.pk%}" class="btn btn-outline-secondary btn-sm d-none d-md-inline">Decline</a>
+          <a href="{% url 'decline' event_id=event.pk helper_id=helper.pk%}" class="btn btn-outline-secondary btn-sm">Decline</a>
         </li>
       {% endfor %}
       </ul>
