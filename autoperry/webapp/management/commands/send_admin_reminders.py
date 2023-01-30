@@ -26,8 +26,12 @@ class Command(BaseCommand):
 
         now = timezone.now()
 
+        # Anyone awaiting approval who hasn't been cancelled or suspended
+        # and has been waiting more than 24 hours
         users = (get_user_model().objects.all()
             .filter(approved=None)
+            .filter(cancelled=None)
+            .filter(suspeded=None)
             .filter(date_joined__lte=now-datetime.timedelta(hours=24))
             .order_by('date_joined'))
 
