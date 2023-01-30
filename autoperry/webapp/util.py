@@ -10,21 +10,34 @@ from custom_user.models import User
 import logging
 logger = logging.getLogger(__name__)
 
-def send_template_email(to,template,context):
+def send_template_email(to,template,context,force=False):
 
     """
     Construct an email from the supplied template path and context
     and send it to the user
     """
 
+    # If 'to' us a user, don't send to cancelled or suspended users, and don't
+    # send unless the user approved 'notification' emails or force if True
+
     message = render_to_string(f"webapp/email/{template}-message.txt", context).strip()
     subject = render_to_string(f"webapp/email/{template}-subject.txt", context).strip()
+
+    if isinstance(to, User):
+        if to.cancelled or to.suspended:
+            logger.warn(f'Not emailing {to} "{subject}" - user cancelled or suspended')
+            return
+        if not to.send_notifications and not force:
+            logger.warn(f'Not emailing {to} "{subject}" - notifications not wanted')
+            return
+
     if isinstance(to, User):
         to.email_user(subject, message)
         logger.info(f'Emailed user {to} {to.email} "{subject}"')
     else:
         send_mail(subject, message, None, [to])
         logger.info(f'Emailed address {to} "{subject}"')
+
 
 def autoperry_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
 

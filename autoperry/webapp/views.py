@@ -645,7 +645,7 @@ def account_create(request):
                 'email': user.email,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': email_verification_token.make_token(user)
-                })
+                }, force=True)
 
             # Alert the admins
             send_template_email(settings.DEFAULT_FROM_EMAIL, "account-approval-required", { 'user': user })
@@ -674,7 +674,7 @@ def account_resend(request):
         'email': user.email,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': email_verification_token.make_token(user)
-        })
+        }, Force=True)
 
     messages.success(request, 'Email resent')
 
@@ -754,7 +754,7 @@ def account_edit(request):
                     'email': user.email,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': email_verification_token.make_token(user)
-                    })
+                    }, force=True)
                 return render(request, "webapp/account-create-pending.html",
                     context={'sender': settings.DEFAULT_FROM_EMAIL,
                              'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -851,7 +851,7 @@ def account_approve(request, user_id):
         user.approved = timezone.now()
         user.save()
 
-        send_template_email(user, "account-approved", { 'user': user })
+        send_template_email(user, "account-approved", { 'user': user }, force=True)
 
         logger.info(f'"{user}" approved by "{request.user}"')
         messages.success(request, f'Account for {user} approved')
