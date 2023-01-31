@@ -42,7 +42,7 @@ def index(request):
     event_list = None
     days = 14
 
-    # REturn from logging in
+    # Return from logging in
     if request.method == 'POST':
         login_form = AuthenticationForm(request.POST)
         username = request.POST.get('username')
@@ -192,9 +192,11 @@ def event_create(request):
                        .filter(start__lt=end)
                        .filter(end__gt=start))
 
-                            # If there are, redisplay the form with a message
+            # If there are, redisplay the form with a message
             if clashes.all():
-                message = render_to_string("webapp/event-clash-error-fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                message = (render_to_string("webapp/event-clash-error-fragment.html",
+                    { "location": form.cleaned_data['location'],
+                      "clashes": clashes }))
                 form.add_error(None, message)
 
             else:
@@ -241,7 +243,11 @@ def event_clone(request, event_id):
           'alerts': event.alerts})
 
     # Get a list of Locations
-    locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
+    locations = (Event.objects
+        .filter(cancelled=None)
+        .values_list('location', flat=True)
+        .order_by('location')
+        .distinct())
 
     return render(request, 'webapp/event-create.html', {'form': form, 'locations': locations })
 
@@ -276,6 +282,7 @@ def event_edit(request, event_id):
         if user != event.owner:
             messages.error(request, 'You are not the owner of this event - only the owner can edit it.')
             errors += 1
+
         if event.past:
             messages.error(request, "This event has already happened - events in the past can't be edited.")
             errors += 1
@@ -310,7 +317,9 @@ def event_edit(request, event_id):
 
                 # If there are, redisplay the form with a message
                 if clashes.all():
-                    message = render_to_string("webapp/event-clash-error-fragment.html", { "location": form.cleaned_data['location'], "clashes": clashes })
+                    message = (render_to_string("webapp/event-clash-error-fragment.html",
+                        { "location": form.cleaned_data['location'],
+                          "clashes": clashes }))
                     form.add_error(None, message)
 
                 # Otherwise success: update the event
@@ -326,6 +335,8 @@ def event_edit(request, event_id):
                         event.alerts = form.cleaned_data['alerts']
                         event.save()
 
+                        logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
+
                         send_email = False
                         for field in ('date', 'start_time', 'end_time', 'location', 'helpers_required', 'notes'):
                             if initial_data[field] != form.cleaned_data[field]:
@@ -334,13 +345,15 @@ def event_edit(request, event_id):
                         if send_email:
                             for helper in event.helpers.all():
                                 if helper.send_notifications:
-                                    send_template_email(helper, "event-edit", { "event": event, "before": initial_data, "after": form.cleaned_data })
+                                    send_template_email(helper, "event-edit",
+                                        { "event": event, "before": initial_data,
+                                          "after": form.cleaned_data })
                                 else:
-                                    logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been edited')
+                                    logger.warn(f'Unable to notify {helper} that event id {event.id} "{event}" has been edited')
                         else:
                             logger.info(f'No emailable changes to Event id {event.id} "{event}"')
 
-                        logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
+
                         messages.success(request, 'Event successfully updated')
 
                     else:
@@ -355,10 +368,17 @@ def event_edit(request, event_id):
             form =EventForm(initial_data)
 
     # Get a list of Locations
-    locations = Event.objects.filter(cancelled=None).values_list('location', flat=True).order_by('location').distinct()
+    locations = (Event.objects
+        .filter(cancelled=None)
+        .values_list('location', flat=True)
+        .order_by('location')
+        .distinct())
 
     # ... and display it
-    return render(request, 'webapp/event-edit.html', {'form': form, 'locations': locations, 'event': event })
+    return render(request, 'webapp/event-edit.html',
+        {'form': form,
+          'locations': locations,
+          'event': event })
 
 
 @autoperry_login_required()
@@ -400,6 +420,8 @@ def event_cancel(request, event_id):
                         send_template_email(helper, "event-cancel", { "event": event })
                     else:
                         logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been cancelled')
+
+                messages.success(request, 'Event cancelled')
 
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
 
@@ -638,6 +660,8 @@ def account_create(request):
             user = registration_form.save()
             login(request, user)
 
+            logger.info(f'Created new user "{user}"')
+
             # Email verification
             email_verification_token = EmailVerificationTokenGenerator()
 
@@ -648,7 +672,8 @@ def account_create(request):
                 }, force=True)
 
             # Alert the admins
-            send_template_email(settings.DEFAULT_FROM_EMAIL, "account-approval-required", { 'user': user })
+            send_template_email(settings.DEFAULT_FROM_EMAIL, "account-approval-required",
+                { 'user': user })
 
             return render(request, "webapp/account-create-pending.html",
                 context={'sender': settings.DEFAULT_FROM_EMAIL,
@@ -677,10 +702,10 @@ def account_resend(request):
         }, Force=True)
 
     messages.success(request, 'Email resent')
+    logger.info(f'Resent validation request for "{user}" to {user.email}')
 
     return render(request, "webapp/account-create-resend.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
-                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                  'user': user })
 
 
@@ -748,16 +773,15 @@ def account_edit(request):
                 user.email_validated =  None;
                 user.save()
                 logout(request)
-                messages.success(request, 'Your account details have been successfully updated')
+
                 email_verification_token = EmailVerificationTokenGenerator()
                 send_template_email(user, "email-validate", {
                     'email': user.email,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': email_verification_token.make_token(user)
                     }, force=True)
-                return render(request, "webapp/account-create-pending.html",
+                return render(request, "webapp/account-create-resend.html",
                     context={'sender': settings.DEFAULT_FROM_EMAIL,
-                             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                              'user': user })
 
             return HttpResponseRedirect(reverse('account'))
@@ -835,7 +859,9 @@ def account_approve_list(request):
     List users requiring approval
     """
 
-    users = get_user_model().objects.all().filter(approved=None).order_by('date_joined')
+    users = (get_user_model().objects.all()
+        .filter(approved=None)
+        .order_by('date_joined'))
 
     return render(request, 'webapp/account-approve-list.html', {'users': users})
 
@@ -909,7 +935,7 @@ def send_emails(request):
                     bcc=to_addresses,
                     cc=(settings.DEFAULT_FROM_EMAIL,)).send()
 
-                messages.success(request, f'Email sent to {len(to_addresses)} addresses')
+                messages.success(request, f'Bulk email sent to {len(to_addresses)} addresses')
                 logger.info(f'Email sent to {len(to_addresses)} addresses')
                 form = EmailForm();
 
