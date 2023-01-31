@@ -715,10 +715,6 @@ def account_confirm(request, uidb64, token):
     Receive email confirmation
     """
 
-    if user.email_validated:
-        messages.success(request, 'Your email address has already been confirmed')
-        return redirect(reverse('index'))
-
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_user_model().objects.get(pk=uid)
@@ -726,12 +722,17 @@ def account_confirm(request, uidb64, token):
         raise Http404;
 
     email_verification_token = EmailVerificationTokenGenerator()
-    if email_verification_token.check_token(user, token):
+
+    if user.email_validated:
+        messages.success(request, 'This email address has already been confirmed')
+    elif email_verification_token.check_token(user, token):
         user.email_validated = timezone.now()
         user.save()
-        login(request, user)
         logger.info(f'"{user}" email verified')
-        messages.success(request, 'Your email address has been confirmed')
+        if user.approved:
+            messages.success(request, 'Your email address has been confirmed and you can login in.')
+        else:
+            messages.warning(request, 'Your email address has been confirmed, but your account has yet to be approved.')
     else:
         messages.success(request, 'Email address verification failed')
         logger.error(f'"{user}" email verification failed')
