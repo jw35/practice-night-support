@@ -742,49 +742,51 @@ def account_edit(request):
     Edit existing account
     """
 
-    user = request.user
-    form = UserEditForm(
-        {'email': user.email,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'tower': user.tower,
-        'send_notifications': user.send_notifications,
-        'send_other': user.send_other,
-        })
+    with transaction.atomic():
 
-    if request.method == 'POST':
+        user = request.user
+        form = UserEditForm(
+            {'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'tower': user.tower,
+            'send_notifications': user.send_notifications,
+            'send_other': user.send_other,
+            })
 
-        original_email = user.email
+        if request.method == 'POST':
 
-        form = UserEditForm(request.POST)
-        if form.is_valid():
-            user.email = form.cleaned_data['email']
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.tower = form.cleaned_data['tower']
-            user.send_notifications = form.cleaned_data['send_notifications']
-            user.send_other = form.cleaned_data['send_other']
-            user.save()
-            logger.info(f'"{user}" updated account details')
+            original_email = user.email
 
-            messages.success(request, 'Your account details have been successfully updated')
-
-            if user.email != original_email:
-                user.email_validated =  None;
+            form = UserEditForm(request.POST)
+            if form.is_valid():
+                user.email = form.cleaned_data['email']
+                user.first_name = form.cleaned_data['first_name']
+                user.last_name = form.cleaned_data['last_name']
+                user.tower = form.cleaned_data['tower']
+                user.send_notifications = form.cleaned_data['send_notifications']
+                user.send_other = form.cleaned_data['send_other']
                 user.save()
-                logout(request)
+                logger.info(f'"{user}" updated account details')
 
-                email_verification_token = EmailVerificationTokenGenerator()
-                send_template_email(user, "email-validate", {
-                    'email': user.email,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': email_verification_token.make_token(user)
-                    }, force=True)
-                return render(request, "webapp/account-create-resend.html",
-                    context={'sender': settings.DEFAULT_FROM_EMAIL,
-                             'user': user })
+                messages.success(request, 'Your account details have been successfully updated')
 
-            return HttpResponseRedirect(reverse('account'))
+                if user.email != original_email:
+                    user.email_validated =  None;
+                    user.save()
+                    logout(request)
+
+                    email_verification_token = EmailVerificationTokenGenerator()
+                    send_template_email(user, "email-validate", {
+                        'email': user.email,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': email_verification_token.make_token(user)
+                        }, force=True)
+                    return render(request, "webapp/account-create-resend.html",
+                        context={'sender': settings.DEFAULT_FROM_EMAIL,
+                                 'user': user })
+
+                return HttpResponseRedirect(reverse('account'))
 
     return render(request, 'webapp/account-edit.html', {'form': form})
 
@@ -872,17 +874,19 @@ def account_approve(request, user_id):
 
     user = get_object_or_404(get_user_model(), pk=user_id)
 
-    if request.method == 'POST':
+    with transaction.atomic():
 
-        user.approved = timezone.now()
-        user.save()
+        if request.method == 'POST':
 
-        send_template_email(user, "account-approved", { 'user': user }, force=True)
+            user.approved = timezone.now()
+            user.save()
 
-        logger.info(f'"{user}" approved by "{request.user}"')
-        messages.success(request, f'Account for {user} approved')
+            send_template_email(user, "account-approved", { 'user': user }, force=True)
 
-        return HttpResponseRedirect(reverse('account-approve-list'))
+            logger.info(f'"{user}" approved by "{request.user}"')
+            messages.success(request, f'Account for {user} approved')
+
+            return HttpResponseRedirect(reverse('account-approve-list'))
 
     return render(request, 'webapp/account-approve.html', {'candidate': user})
 
