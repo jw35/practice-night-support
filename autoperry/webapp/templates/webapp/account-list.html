@@ -59,10 +59,9 @@
 
         <thead>
         <tr>
-        <td class="fw-bold">Name</td>
-        <td class="fw-bold">Tower</td>
-        <td class="fw-bold">Address</td>
-        <td class="fw-bold">Email</td>
+        <td class="fw-bold">Name<br>Tower</td>
+        <td class="fw-bold">Email<br>&nbsp;</td>
+        <td class="fw-bold">Created<br>LastLogin</td>
         <td colspan="4" class="fw-bold">Flags</td>
         <td colspan="2" class="fw-bold">Counts</td>
       </tr>
@@ -70,34 +69,39 @@
 
     <tbody class="table-group-divider">
 
-   {% for u in users %}
+   {% for user in users %}
       <tr class="text-start">
 
-        <td>{{ u.first_name }} <b>{{ u.last_name }}</b></td>
-
-        <td>{{ u.tower }}</td>
-
-        <td>{{ u.email|urlize }}</td>
+        <td>
+          {{ user.first_name }} <b>{{ user.last_name }}</b><br>
+          {{ user.tower }}
+        </td>
 
         <td>
-          {% if u.send_notifications and u.send_other %}
-          All
-          {% elif u.send_notifications %}
-          Alerts
-          {% elif u.send_other %}
-          Other
+          {{ user.email|urlize }}<br>
+          {% if user.send_notifications and user.send_other %}
+          Send all
+          {% elif user.send_notifications %}
+          Alerts only
+          {% elif user.send_other %}
+          Other noly
           {% else %}
-          None
+          Send none
           {% endif %}
         </td>
 
-        <td>{% if u.approved != None %}A{% endif %}</td>
-        <td>{% if u.email_validated != None %}E{% endif %}</td>
-        <td>{% if u.suspended != None %}S{% endif %}</td>
-        <td>{% if u.cancelled != None %}C{% endif %}</td>
+        <td>
+          {{ user.date_joined|date:"j M Y"}}<br>
+          {{ user.last_login|date:"j M Y"|default:"never"}}
+        </td>
 
-        <td>H:{{ u.num_helped }}</td>
-        <td>O:{{ u.num_owned }}</td>
+        <td>{% if user.approved != None %}A{% endif %}</td>
+        <td>{% if user.email_validated != None %}E{% endif %}</td>
+        <td>{% if user.suspended != None %}S{% endif %}</td>
+        <td>{% if user.cancelled != None %}C{% endif %}</td>
+
+        <td>H:{{ user.num_helped }}</td>
+        <td>O:{{ user.num_owned }}</td>
 
       </tr>
 
