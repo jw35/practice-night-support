@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
 
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timedelta
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
@@ -18,8 +18,17 @@ class CustomUserCreationForm(UserCreationForm):
         model = get_user_model()
 
 
+def today_or_tomorrow():
+    """
+    Return tomorrows date if it's past 19:30, else todays date
+    """
+    now = datetime.now()
+    if now.time() > time(hour=19, minute=30):
+        return (now + timedelta(days=1)).date()
+    return now.date()
+
 class EventForm(forms.Form):
-    date = forms.DateField(help_text='Event date', initial=date.today, widget=forms.widgets.DateInput(attrs={'type': 'date'}))
+    date = forms.DateField(help_text='Event date', initial=today_or_tomorrow, widget=forms.widgets.DateInput(attrs={'type': 'date'}))
     start_time = forms.TimeField(help_text='Event start time', initial="19:30", widget=forms.widgets.DateInput(format="%H:%M", attrs={'type': 'time', 'step': 300}))
     end_time = forms.TimeField(help_text='Event finish time', initial="21:00", widget=forms.widgets.DateInput(format="%H:%M", attrs={'type': 'time', 'step': 300}))
     location = forms.CharField(max_length=60, help_text='Where the event takes place')
