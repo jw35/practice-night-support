@@ -12,10 +12,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
-        <li class="nav-item">
-          {% url 'index' as url %}
-          <a href="{{ url }}" class="nav-link {% if request.path == url %}active{% endif %}">Home</a>
-        </li>
         {% if user.is_authenticated and user.is_enabled %}
         <li class="nav-item">
           {% url 'events' as url %}
