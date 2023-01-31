@@ -6,18 +6,16 @@
 
 <h2>Decline offer of help</h2>
 
+<div class="container">
+<div class="row">
+    <div class="col-md">
+
 <h5>Event:</h5>
 
 <dl>
-    <dt>Date</dt>
-    <dd>{{event.start|date:"l, j F Y"}}</dd>
-
-    <dt>Start</dt>
-    <dd>{{event.start|date:"g:i a"}}</dd>
-
-    <dt>End</dt>
-    <dd>{{event.end|date:"g:i a"}}</dd>
-
+    <dt>When</dt>
+    <dd>{{event.when}}</dd>
+    
     <dt>Location</dt>
     <dd>{{event.location}}</dd>
 
@@ -38,6 +36,10 @@
 
 </dl>
 
+</div>
+
+    <div class="col-md">
+
 <h5>Helper you wish to decline:</h5>
 
 <dl>
@@ -49,6 +51,12 @@
     <dd>{{ user.email|urlize }}</dd>
 
 </dl>
+
+</div>
+
+</div>
+
+</div>
 
 <p>If at all possible, please don't decline offers of help.</p>
 
