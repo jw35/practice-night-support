@@ -24,17 +24,18 @@ def send_template_email(to,template,context,force=False):
     subject = render_to_string(f"webapp/email/{template}-subject.txt", context).strip()
 
     if isinstance(to, User):
+
         if to.cancelled or to.suspended:
             logger.warn(f'Not emailing {to} "{subject}" - user cancelled or suspended')
             return
         if not to.send_notifications and not force:
             logger.warn(f'Not emailing {to} "{subject}" - notifications not wanted')
             return
-
-    if isinstance(to, User):
         to.email_user(subject, message)
         logger.info(f'Emailed user {to} {to.email} "{subject}"')
+
     else:
+
         send_mail(subject, message, None, [to])
         logger.info(f'Emailed address {to} "{subject}"')
 
