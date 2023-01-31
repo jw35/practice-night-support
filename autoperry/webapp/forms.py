@@ -80,7 +80,7 @@ class EventForm(forms.Form):
         js = ('webapp/jquery.min.js', 'webapp/jquery-ui.min.js')
 
 class UserEditForm(forms.Form):
-    email = forms.EmailField()
+    email = forms.EmailField(help_text="You will need to re-confirm your email address if you change this")
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
     tower = forms.CharField(max_length=50, help_text="Where do you normally ring")
