@@ -906,6 +906,42 @@ def account_approve(request, user_id):
 
 @autoperry_login_required
 @permission_required('custom_user.administrator', raise_exception=True)
+def account_toggle(request, action, user_id):
+
+    user = get_object_or_404(get_user_model(), pk=user_id)
+
+    errors = 0
+    if action == 'suspend' and user.suspended:
+        messages.error(request,f'User {user} is already suspended')
+        errors += 1
+    elif action == 'enable' and not user.suspended:
+        messages.error(request,f'User {user} is already eenabled')
+        errors += 1
+
+    else:
+        with transaction.atomic():
+
+            if request.method == 'POST':
+
+                if action == 'enable':
+                    user.suspended = None
+                    logger.info(f'"{user}" re-enabled by "{request.user}"')
+                    messages.success(request, f'Account for {user} re-enabled')
+                elif action == 'suspend':
+                    user.suspended = timezone.now()
+                    logger.info(f'"{user}" suspended by "{request.user}"')
+                    messages.success(request, f'Account for {user} suspended')
+
+                user.save()
+
+                return HttpResponseRedirect(reverse('account-list'))
+
+    return render(request, 'webapp/account-toggle.html',
+        { 'user': user, 'action': action, 'errors': errors })
+
+
+@autoperry_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
 def send_emails(request):
 
     """

@@ -55,6 +55,9 @@
 
 <div class="row justify-content-center">
     <div class="col-auto">
+
+      {% if users %}
+
       <table class="table table-responsive table-sm">
 
         <thead>
@@ -103,6 +106,12 @@
         <td>H:{{ user.num_helped }}</td>
         <td>O:{{ user.num_owned }}</td>
 
+        {% if user.suspended %}
+        <td><a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">Re-enable</a></td>
+        {% else %}
+        <td><a href="{% url 'account-toggle' action='suspend' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">Suspend</a></td>
+        {%endif %}
+
       </tr>
 
    {% endfor %}
@@ -110,6 +119,14 @@
  </tbody>
 
       </table>
+
+      {% else %}
+
+      <div class="alert alert-warning mt-3" role="alert">
+      No users match the filters selected
+      </div>
+
+      {% endif %}
 
    </div>
 

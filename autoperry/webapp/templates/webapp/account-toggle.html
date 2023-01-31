@@ -1,0 +1,39 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<h2>
+{% if action == 'enable' %}
+    Re-enable an account
+{% else %}
+    Suspend an account
+{% endif %}
+</h2>
+
+<dl>
+
+    <dt>Name:</dt>
+    <dd>{{ user.first_name }} {{ user.last_name }}</dd>
+
+    <dt>Tower</dt>
+    <dd>{{ user.tower|default:'[none]' }}</dd>
+
+    <dt>Email</dt>
+    <dd>{{ user.email|urlize }}</dd>
+
+</dl>
+
+<p>Please confirm that this person that you want to {{ action }}.</p>
+
+<p>When suspended, a user won't be able to interact with AutoPerry (other than
+to edit their account details or to cancel their account). Nor will they
+receive any email from AutoPerry.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <input class="btn btn-primary{% if errors %}disabled{% endif %}" type="submit" name="confirm" value="{{ action|capfirst}}">
+</form>
+
+{% endblock %}
