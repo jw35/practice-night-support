@@ -715,6 +715,10 @@ def account_confirm(request, uidb64, token):
     Receive email confirmation
     """
 
+    if user.email_validated:
+        messages.success(request, 'Your email address has already been confirmed')
+        return redirect(reverse('index'))
+
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_user_model().objects.get(pk=uid)
@@ -874,21 +878,30 @@ def account_approve(request, user_id):
 
     user = get_object_or_404(get_user_model(), pk=user_id)
 
-    with transaction.atomic():
+    errors = 0
+    if user.approved:
+        messages.error(request,f'User {user} has already been approved')
+        errors += 1
 
-        if request.method == 'POST':
+    else:
 
-            user.approved = timezone.now()
-            user.save()
+        with transaction.atomic():
 
-            send_template_email(user, "account-approved", { 'user': user }, force=True)
+            if request.method == 'POST':
 
-            logger.info(f'"{user}" approved by "{request.user}"')
-            messages.success(request, f'Account for {user} approved')
+                user.approved = timezone.now()
+                user.save()
 
-            return HttpResponseRedirect(reverse('account-approve-list'))
+                send_template_email(user, "account-approved", { 'user': user }, force=True)
 
-    return render(request, 'webapp/account-approve.html', {'candidate': user})
+                logger.info(f'"{user}" approved by "{request.user}"')
+                messages.success(request, f'Account for {user} approved')
+
+                return HttpResponseRedirect(reverse('account-approve-list'))
+
+    return render(request, 'webapp/account-approve.html',
+        { 'candidate': user,
+          'errors': errors })
 
 
 @autoperry_login_required

@@ -26,7 +26,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-primary" type="submit" name="confirm" value="Approve">
+    <input class="btn btn-primary{% if errors %} disabled{% endif %}" type="submit" name="confirm" value="Approve">
 </form>
 
 {% endblock %}
