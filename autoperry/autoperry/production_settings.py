@@ -27,3 +27,8 @@ port: '587'
 username: 'autoperry@cambridgeringing.info'
 password: EMAIL_PASSWORD
 use_tls: True
+
+# Default scheme and domain for URL's in emails
+
+WEBAPP_SCHEME = 'https'
+WEBAPP_DOMAIN = 'autoperry.cambridgeringing.info'

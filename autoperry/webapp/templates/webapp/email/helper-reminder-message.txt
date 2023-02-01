@@ -3,7 +3,7 @@
     When:      {{ event.when }}
     Where:     {{ event.location }}
     Organiser: {{ event.owner }} {{ event.contact }}
-    Details:   https://autoperry.cambridgeringing.info{% url 'event-details' event_id=event.pk %}
+    Details:   {{scheme}}://{{domain}}{% url 'event-details' event_id=event.pk %}
 {% endfor %}
 If you are no longer able to help at any of these events then please
 withdraw your offer to help from the event's details page.

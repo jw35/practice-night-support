@@ -5,7 +5,6 @@
     Address: {{ user.email }}
     Waiting: {{ user.date_joined|timesince }}
 {% endfor %}
-
-See full list: URL:  https://autoperry.cambridgeringing.info{% url 'account-approve-list' %}
+See full list: URL:  {{scheme}}://{{domain}}{% url 'account-approve-list' %}
 
 {% endautoescape %}

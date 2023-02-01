@@ -11,7 +11,7 @@
 If you no longer need helpers for this event, please cancel your help
 request at:
 
-    https://autoperry.cambridgeringing.info{% url 'event-cancel' event_id=event.pk %}
+    {{scheme}}://{{domain}}{% url 'event-cancel' event_id=event.pk %}
 
 Otherwise, we hope your event goes well!
 

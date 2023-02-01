@@ -6,6 +6,6 @@
 
 To confirm this account, please go to:
 
-    https://autoperry.cambridgeringing.info{% url 'account-approve' user_id=user.pk %}
+    {{scheme}}://{{domain}}{% url 'account-approve' user_id=user.pk %}
 
 {% endautoescape %}

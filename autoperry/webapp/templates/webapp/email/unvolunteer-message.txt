@@ -11,7 +11,7 @@
 
 You can find more details of this event at:
 
-    https://autoperry.cambridgeringing.info{% url 'event-details' event_id=event.pk %}
+    {{scheme}}://{{domain}}{% url 'event-details' event_id=event.pk %}
 
 We hope your event goes well!
 

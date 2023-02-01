@@ -1,9 +1,10 @@
-
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
 
 from custom_user.models import User
 
@@ -17,13 +18,17 @@ def send_template_email(to,template,context,force=False):
     and send it to the user
     """
 
-    # If 'to' us a user, don't send to cancelled or suspended users, and don't
-    # send unless the user approved 'notification' emails or force if True
+    local_context = context.copy()
+    local_context['domain'] = settings.WEBAPP_DOMAIN
+    local_context['scheme'] = settings.WEBAPP_SCHEME
 
-    message = render_to_string(f"webapp/email/{template}-message.txt", context).strip()
-    subject = render_to_string(f"webapp/email/{template}-subject.txt", context).strip()
+    message = render_to_string(f"webapp/email/{template}-message.txt", local_context).strip()
+    subject = render_to_string(f"webapp/email/{template}-subject.txt", local_context).strip()
 
     if isinstance(to, User):
+
+        # If 'to' us a user, don't send to cancelled or suspended users, and don't
+        # send unless the user approved 'notification' emails or force if True
 
         if to.cancelled or to.suspended:
             logger.warn(f'Not emailing {to} "{subject}" - user cancelled or suspended')

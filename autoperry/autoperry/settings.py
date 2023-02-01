@@ -207,3 +207,7 @@ LOGGING = {
     }
 }
 
+# Default scheme and domain for URL's in emails
+
+WEBAPP_SCHEME = 'http'
+WEBAPP_DOMAIN = '127.0.0.1:8000'

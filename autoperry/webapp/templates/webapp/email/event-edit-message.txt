@@ -11,7 +11,7 @@ Notes:      {% filter wordwrap:60 %}{% if before.notes == after.notes %}{{ befor
 If you are no longer able to help with this event, please withdraw your
 offer to help from:
 
-    https://autoperry.cambridgeringing.info{% url 'event-details' event_id=event.pk %}
+    {{scheme}}://{{domain}}{% url 'event-details' event_id=event.pk %}
 
 If you have any questions about this, please contact the organiser at
 {{ event.contact }}.

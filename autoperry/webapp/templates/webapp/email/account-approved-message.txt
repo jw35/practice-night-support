@@ -2,7 +2,7 @@
 
 You can login and use the system at:
 
-    https://autoperry.cambridgeringing.info
+    {{scheme}}://{{domain}}
 
 Thanks very much for helping to support ringing in the Cambridge District.
 

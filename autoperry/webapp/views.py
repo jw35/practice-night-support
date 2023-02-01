@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.views import PasswordResetView as DefaultPasswordResetView
 from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib.auth.decorators import  permission_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -999,4 +1000,11 @@ def send_emails(request):
                 messages.error(request,'No users would be emailed by this selection!')
 
     return render(request, "webapp/send-email.html", {'form': form})
+
+
+class PasswordResetView(DefaultPasswordResetView):
+    """
+    Override protocol as sent to message template to use iur configuration
+    """
+    extra_email_context = { 'protocol': 'XXX' + settings.WEBAPP_SCHEME }
 
