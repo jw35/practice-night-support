@@ -31,7 +31,7 @@ class Command(BaseCommand):
         users = (get_user_model().objects.all()
             .filter(approved=None)
             .filter(cancelled=None)
-            .filter(suspeded=None)
+            .filter(suspended=None)
             .filter(date_joined__lte=now-datetime.timedelta(hours=24))
             .order_by('date_joined'))
 
