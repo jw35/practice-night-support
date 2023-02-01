@@ -23,9 +23,9 @@
     <dd>
     {% if event.helpers.all %}
       <ul style="list-style: none; padding: 0; margin: 0">
-      {% for helper in event.helpers.all %}
+      {% for h in event.helpers.all %}
         <li>
-          {{ helper.get_full_name }} ({{ helper.email|urlize }})
+          {{ h.get_full_name }} ({{ h.email|urlize }})
         </li>
       {% endfor %}
       </ul>
@@ -45,10 +45,10 @@
 <dl>
 
     <dt>Name</dt>
-    <dd>{{ user.get_full_name }}</dd>
+    <dd>{{ helper.get_full_name }}</dd>
 
     <dt>Email address</dt>
-    <dd>{{ user.email|urlize }}</dd>
+    <dd>{{ helper.email|urlize }}</dd>
 
 </dl>
 
@@ -60,7 +60,7 @@
 
 <p>If at all possible, please don't decline offers of help.</p>
 
-<p>If still want to proceed, please confirm that you want to decline this
+<p>If want to proceed, please confirm that you want to decline this
 helper's offer of help at this event. We will try to send them an email to
 let them know that they won't be needed, but you should contact them to check
 that this arrived and to let them know why they are no longer required.</p>
