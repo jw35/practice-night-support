@@ -107,9 +107,9 @@
         <td>O:{{ user.num_owned }}</td>
 
         {% if user.suspended %}
-        <td><a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">Re-enable</a></td>
+        <td><a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">enable</a></td>
         {% else %}
-        <td><a href="{% url 'account-toggle' action='suspend' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">Suspend</a></td>
+        <td><a href="{% url 'account-toggle' action='suspend' user_id=user.pk %}" class="btn btn-outline-secondary btn-sm">suspend</a></td>
         {%endif %}
 
       </tr>
