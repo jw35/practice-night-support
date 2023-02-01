@@ -1006,5 +1006,5 @@ class PasswordResetView(DefaultPasswordResetView):
     """
     Override protocol as sent to message template to use iur configuration
     """
-    extra_email_context = { 'protocol': 'XXX' + settings.WEBAPP_SCHEME }
+    extra_email_context = { 'protocol': settings.WEBAPP_SCHEME }
 
