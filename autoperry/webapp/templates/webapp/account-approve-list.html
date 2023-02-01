@@ -37,7 +37,9 @@
 
         <td>{{ u.date_joined|timesince }}</td>
 
-        <td><a href="{% url 'account-approve' user_id=u.pk %}" class="btn btn-outline-primary btn-sm">approve</a>
+        <td><a href="{% url 'account-approve' user_id=u.pk %}" class="btn btn-outline-primary btn-sm">approve</a></td>
+
+        <td><a href="{% url 'account-toggle' action='suspend' user_id=u.pk %}&approve-list=1" class="btn btn-outline-secondary btn-sm">suspend</a></td>
 
       </tr>
 
