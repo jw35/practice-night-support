@@ -120,6 +120,19 @@
 
       </table>
 
+<nav>
+    <ul class="pagination justify-content-center">
+      {% for page in page_range %}
+        {% if page == 'X' %}
+        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+        {% else %}
+          <li class="page-item{% if page == events.number %} active{% endif %}"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+          {% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+
+
       {% else %}
 
       <div class="alert alert-warning mt-3" role="alert">
