@@ -594,7 +594,7 @@ def account_list(request):
     users = get_user_model().objects.none()
 
     if flags['pending']:
-        u = base_users.filter(email_validated=None) | users.filter(approved=None)
+        u = base_users.filter(email_validated=None) | base_users.filter(approved=None)
         u = u.filter(suspended=None).filter(cancelled=None)
         users = users | u
 
@@ -868,6 +868,8 @@ def account_approve_list(request):
 
     users = (get_user_model().objects.all()
         .filter(approved=None)
+        .filter(cancelled=None)
+        .filter(suspended=None)
         .order_by('date_joined'))
 
     return render(request, 'webapp/account-approve-list.html', {'users': users})
