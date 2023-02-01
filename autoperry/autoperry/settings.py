@@ -14,6 +14,7 @@ from django.contrib.messages import constants as messages
 
 from pathlib import Path
 import datetime
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -186,6 +187,7 @@ LOGGING = {
         'autoperry': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
             'formatter': 'autoperry'
         },
         'autoperry-file': {
