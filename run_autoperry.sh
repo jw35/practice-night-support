@@ -12,6 +12,6 @@ source venv/bin/activate
 cd "${appdir}"
 export DJANGO_SETTINGS_MODULE=autoperry.production_settings
 
-gunicorn -b "${socket}" "${app}"
+gunicorn --bind "${socket}" --worker-class gthread --threads 10 "${app}"
 
 
