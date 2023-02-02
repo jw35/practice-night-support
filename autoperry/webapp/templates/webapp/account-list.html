@@ -45,8 +45,8 @@
 </form>
 
 <div class="row align-items-center justify-content-center mt-2 mb-2">
-  <div class="col-auto">A = approved</div>
-  <div class="col-auto">E = email validated</div>
+  <div class="col-auto">A = not approved</div>
+  <div class="col-auto">E = email not validated</div>
   <div class="col-auto">S = suspended</div>
   <div class="col-auto">C = cancelled</div>
   <div class="col-auto">H = helper</div>
@@ -83,13 +83,13 @@
         <td>
           {{ user.email|urlize }}<br>
           {% if user.send_notifications and user.send_other %}
-          Send all
+          Allow all
           {% elif user.send_notifications %}
           Alerts only
           {% elif user.send_other %}
-          Other noly
+          Non-alert emails only
           {% else %}
-          Send none
+          Allow none
           {% endif %}
         </td>
 
@@ -98,13 +98,13 @@
           {{ user.last_login|date:"j M Y"|default:"never"}}
         </td>
 
-        <td>{% if user.approved != None %}A{% endif %}</td>
-        <td>{% if user.email_validated != None %}E{% endif %}</td>
+        <td>{% if user.approved == None %}A{% endif %}</td>
+        <td>{% if user.email_validated == None %}E{% endif %}</td>
         <td>{% if user.suspended != None %}S{% endif %}</td>
         <td>{% if user.cancelled != None %}C{% endif %}</td>
 
-        <td>H:{{ user.num_helped }}</td>
-        <td>O:{{ user.num_owned }}</td>
+        <td>{% if user.num_helped %}H:{{ user.num_helped }}{% endif %}</td>
+        <td>{% if user.num_owned %}O:{{ user.num_owned }}{% endif %}</td>
 
         {% if user.suspended %}
         <td><a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">enable</a></td>
