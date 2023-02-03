@@ -14,10 +14,13 @@
     {% csrf_token %}
     {{ registration_form|crispy }}
     {% if next_page %}<input type="hidden" name="next_page" value="{{ next_page }}">{% endif %}
+    <p>AutoPerry uses cookies to provide some of its features. We'll assume you are OK with
+this if you register to use the system. We have a page about
+<a href="{% url 'privacy' %}">how we will use the data you provide</a>.</p>
     <button class="btn btn-primary" type="submit" name="register">Register</button>
 </form>
 
-<p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>
+
 
 </div>
 
