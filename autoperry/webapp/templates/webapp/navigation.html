@@ -33,6 +33,8 @@
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for helpers</a></li>
             {% url 'guidelines-organisers' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for event organisers</a></li>
+            {% url 'privacy' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Data privacy</a></li>
           </ul>
         </li>
         {% if perms.custom_user.administrator %}
