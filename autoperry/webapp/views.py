@@ -700,7 +700,7 @@ def account_resend(request):
         'email': user.email,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': email_verification_token.make_token(user)
-        }, Force=True)
+        }, force=True)
 
     messages.success(request, 'Email resent')
     logger.info(f'Resent validation request for "{user}" to {user.email}')
