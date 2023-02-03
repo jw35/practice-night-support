@@ -9,7 +9,8 @@
 <h2>Resend email confirmation</h2>
 
 <p>We have sent an email to {{ user.email|urlize }} containing instructions for completing your
-account setup.</p>
+account setup. If that's the wrong address, you can change it from
+<a href="{% url 'account-edit' %}">your account edit page</a>.</p>
 
 <p>This email will have been from "{{ sender }}" with subject
 "[AutoPerry]: Please complete account setup". If you can't find it,

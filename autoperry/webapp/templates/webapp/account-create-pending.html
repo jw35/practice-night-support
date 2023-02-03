@@ -14,7 +14,8 @@
 and we will send you an email when it does.</p>
 
 <p>You <b>also</b> need to confirm your email address. We have sent an email to {{ user.email|urlize }}
-containing instructions for doing this.</p>
+containing instructions for doing this. If that's the wrong address, you can change it from
+<a href="{% url 'account-edit' %}">your account edit page</a>.</p>
 
 <p>This email will be from "{{ sender }}" with subject
 "[AutoPerry]: Please complete account setup". If you can't find it,
@@ -22,6 +23,8 @@ please check you junk or spam folders.</p>
 
 <p>If you still can't find it, you can try <a href="{% url 'account-resend' %}">sending it again</a>.
 
-</div>
+
+
+<div>
 
 {% endblock %}
