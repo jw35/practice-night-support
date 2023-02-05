@@ -9,6 +9,18 @@ from webapp.models import Event
 
 from datetime import timedelta
 
+"""
+Test accessing all the URLs in the system as the various class of user:
+    * just registered
+    * email validated (but not approved)
+    * approved (but email not validated)
+    * live (email_alidated, approved, bot suspended)
+    * suspended
+    * administrator
+
+Note that  cancelled users ca authenticate and so are not tested here.
+"""
+
 index_url = '/'
 
 public_urls = ['/privacy',
@@ -43,6 +55,8 @@ core_urls   = ['/events',
                '/event/1/decline/1',
                ]
 
+event_url = '/event/1'
+
 admin_urls  = ['/admin/send-emails',
                '/admin/account-list',
                '/admin/account-approve/1',
@@ -51,7 +65,7 @@ admin_urls  = ['/admin/send-emails',
 
 
 
-class DecoratorTestCase(TestCase):
+class PermissionsTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -150,6 +164,10 @@ class DecoratorTestCase(TestCase):
             response = self.client.get(url)
             self.assertRedirects(response, '/?next=' + url, msg_prefix=url)
 
+        url = event_url
+        response = self.client.get(url)
+        self.assertRedirects(response, '/?next=' + url, msg_prefix=url)
+
         response = self.client.get(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
 
@@ -177,6 +195,10 @@ class DecoratorTestCase(TestCase):
                 response = self.client.get(url)
                 self.assertRedirects(response, '/?next=' + url, msg_prefix=url)
 
+            url = event_url
+            response = self.client.get(url)
+            self.assertRedirects(response, '/?next=' + url, msg_prefix=url)
+
             response = self.client.get(logout_url)
             self.assertRedirects(response, '/', msg_prefix=logout_url)
 
@@ -198,6 +220,9 @@ class DecoratorTestCase(TestCase):
                     self.assertEquals(response.status_code, 302, url)
                 else:
                     self.assertEquals(response.status_code, 200, url)
+
+        response = self.client.get(event_url)
+        self.assertNotContains(response, 'Administrator Info.', msg_prefix=event_url)
 
         for url in admin_urls:
             response = self.client.get(url)
@@ -224,6 +249,9 @@ class DecoratorTestCase(TestCase):
                     self.assertEquals(response.status_code, 302, url)
                 else:
                     self.assertEquals(response.status_code, 200, url)
+
+        response = self.client.get(event_url)
+        self.assertContains(response, 'Administrator Info.', msg_prefix=event_url)
 
         response = self.client.get(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
