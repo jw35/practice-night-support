@@ -1,1 +1,1 @@
-{% autoescape off %}[AutoPerry]: Your account has been aprpoved{% endautoescape %}
+{% autoescape off %}[AutoPerry]: Your account has been approved{% endautoescape %}
