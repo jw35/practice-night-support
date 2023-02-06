@@ -12,8 +12,7 @@ from datetime import timedelta
 import re
 
 
-
-class TemplateTestCase(TestCase):
+class UserTimelineTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -34,7 +33,7 @@ class TemplateTestCase(TestCase):
         cls.admin.groups.add(cls.admin_group)
 
 
-    def test_lifecycle(self):
+    def test_templates(self):
 
         user_model = get_user_model()
 
@@ -174,17 +173,31 @@ class TemplateTestCase(TestCase):
         self.assertFalse(user.suspended, 'reenabled')
 
         #
-        # And finally cancel
+        # As the user, change our password
         #
 
         # Switch to the user
         self.client.logout()
         self.assertTrue(self.client.login(username=user.email, password='passwordABCDE123450987'),f'Logging in {user.email}')
 
+        response = self.client.get('/accounts/password_change/')
+        self.assertEquals(response.status_code, 200, 'got pwd change form')
+
+        response = self.client.post('/accounts/password_change/',
+            { 'old_password': 'passwordABCDE123450987',
+              'new_password1': 'password123450987ABCDE',
+              'new_password2': 'password123450987ABCDE',
+            })
+        self.assertRedirects(response, '/accounts/password_change/done/')
+
+        #
+        # And finally cancel
+        #
+
         response = self.client.post('/account/cancel/',
             { 'confirm': 'Yes, cancel my account'})
         self.assertRedirects(response, '/')
 
         user.refresh_from_db()
-        self.assertTrue(user.cancelled, 'cacelled')
+        self.assertTrue(user.cancelled, 'cancelled')
         self.assertEqual(user.first_name, '')
