@@ -694,6 +694,10 @@ def account_resend(request):
 
     user = request.user
 
+    if user.email_validated:
+        messages.success(request, 'This email address has already been confirmed')
+        return redirect(reverse('index'))
+
     email_verification_token = EmailVerificationTokenGenerator()
 
     send_template_email(user, "email-validate", {
