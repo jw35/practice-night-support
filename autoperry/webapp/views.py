@@ -923,7 +923,7 @@ def account_toggle(request, action, user_id):
         messages.error(request,f'User {user} is already suspended')
         errors += 1
     elif action == 'enable' and not user.suspended:
-        messages.error(request,f'User {user} is already eenabled')
+        messages.error(request,f'User {user} is already enabled')
         errors += 1
 
     else:
