@@ -23,12 +23,12 @@ Note that  cancelled users ca authenticate and so are not tested here.
 
 index_url = '/'
 
-public_urls = ['/privacy',
-               '/help/about',
-               '/help/organisers',
-               '/help/helpers',
-               '/account/create',
-               #'/account/confirm/XXX/XXX',
+public_urls = ['/privacy/',
+               '/help/about/',
+               '/help/organisers/',
+               '/help/helpers/',
+               '/account/create/',
+               #'/account/confirm/XXX/XXX/',
                '/accounts/password_reset/',
                '/accounts/password_reset/done/',
                '/accounts/reset/XXX/XXX/',
@@ -37,30 +37,31 @@ public_urls = ['/privacy',
 
 logout_url = '/accounts/logout/'
 
-limbo_urls  = ['/account',
-               '/account/resend',
-               '/account/edit',
-               '/account/cancel',
+limbo_urls  = ['/account/',
+               '/account/resend/',
+               '/account/edit/',
+               '/account/cancel/',
                '/accounts/password_change/',
                '/accounts/password_change/done/',
                ]
 
-core_urls   = ['/events',
-               '/event/create',
-               '/event/1/cancel',
-               '/event/1/edit',
-               '/event/1/clone',
-               '/event/1/volunteer',
-               '/event/1/unvolunteer',
-               '/event/1/decline/1',
+core_urls   = ['/events/',
+               '/event/create/',
+               '/event/1/cancel/',
+               '/event/1/edit/',
+               '/event/1/clone/',
+               '/event/1/volunteer/',
+               '/event/1/unvolunteer/',
+               '/event/1/decline/1/',
                ]
 
-event_url = '/event/1'
+event_url = '/event/1/'
 
-admin_urls  = ['/admin/send-emails',
-               '/admin/account-list',
-               '/admin/account-approve/1',
-               '/admin/account-toggle/suspend/1',
+admin_urls  = ['/admin/send-emails/',
+               '/admin/account-list/',
+               '/admin/account-approve-list/',
+               '/admin/account-approve/1/',
+               '/admin/account-toggle/suspend/1/',
                ]
 
 
@@ -150,6 +151,9 @@ class PermissionsTestCase(TestCase):
             alerts=True)
 
 
+        print(f'Future event id {cls.future_event.pk}')
+
+
     def test_anonymous(self):
 
         response = self.client.get(index_url)
@@ -180,6 +184,7 @@ class PermissionsTestCase(TestCase):
 
             response = self.client.get(index_url)
             self.assertEquals(response.status_code, 200, '/')
+            # Status message on the index page depends on user state
             if not user.approved:
                 self.assertContains(response, 'approved by an administrator', msg_prefix='/')
             if not user.email_validated:
@@ -188,8 +193,12 @@ class PermissionsTestCase(TestCase):
                 self.assertContains(response, 'has been <b>suspended</b>', msg_prefix='/')
 
             for url in public_urls + limbo_urls:
-                response = self.client.get(url)
-                self.assertEquals(response.status_code, 200, url)
+                response = self.client.get(url, follow=True)
+                # Resend not allowed by already validated user
+                if url == '/account/resend/' and user.email_validated:
+                    self.assertContains(response, 'This email address has already been confirmed')
+                else:
+                    self.assertEquals(response.status_code, 200, url + ' ' + str(user))
 
             for url in core_urls + admin_urls:
                 response = self.client.get(url)
@@ -215,8 +224,8 @@ class PermissionsTestCase(TestCase):
 
         for url in public_urls + limbo_urls + core_urls:
                 response = self.client.get(url)
-                # CAncel and Unvolunteer redirect because not allowed by this user
-                if url == '/account/cancel' or url == '/event/1/unvolunteer':
+                # Cancel and Unvolunteer redirect because not allowed by this user
+                if url == '/account/cancel/' or url == '/event/1/unvolunteer/' or url == '/account/resend/':
                     self.assertEquals(response.status_code, 302, url)
                 else:
                     self.assertEquals(response.status_code, 200, url)
@@ -245,7 +254,7 @@ class PermissionsTestCase(TestCase):
         for url in public_urls + limbo_urls + core_urls + admin_urls:
                 response = self.client.get(url)
                 # cancel redirect because not allowed by this user
-                if url == '/event/1/cancel' or url == '/event/1/edit' or url == '/event/1/decline/1' or url == '/event/1/unvolunteer':
+                if url == '/event/1/cancel/' or url == '/event/1/edit/' or url == '/event/1/decline/1/' or url == '/event/1/unvolunteer/' or url == '/account/resend/':
                     self.assertEquals(response.status_code, 302, url)
                 else:
                     self.assertEquals(response.status_code, 200, url)

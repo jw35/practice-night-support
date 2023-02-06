@@ -42,7 +42,7 @@ class TemplateTestCase(TestCase):
         # Fill in the registration form
         #
 
-        response = self.client.post('/account/create',
+        response = self.client.post('/account/create/',
             { 'email': 'nweuser@new.com',
               'first_name': 'New',
               'last_name': 'User',
@@ -61,7 +61,7 @@ class TemplateTestCase(TestCase):
         self.assertFalse(user.approved, 'approved flag unset')
 
         #
-        # Check emails sent
+        # Check emails were sent
         #
 
         self.assertEquals(len(mail.outbox), 2)
@@ -71,7 +71,7 @@ class TemplateTestCase(TestCase):
         self.assertEquals(mail.outbox[0].to[0], 'nweuser@new.com')
         body = mail.outbox[0].body
 
-        pattern = r'/account/confirm/(?P<uid>[^/]+)/(?P<token>.*)$'
+        pattern = r'/account/confirm/(?P<uid>[^/]+)/(?P<token>[^/]+)/$'
         match = re.search(pattern, body, re.MULTILINE)
         self.assertNotEqual(match, None, 'match worked')
         uid = match.group('uid')
@@ -87,8 +87,9 @@ class TemplateTestCase(TestCase):
         # Respond to email validation
         #
 
-        response = self.client.get(f'/account/confirm/{uid}/{token}', follow=True)
-        self.assertContains(response, 'Your email address has been confirmed', status_code=200, msg_prefix='validation confirmation message')
+        response = self.client.get(f'/account/confirm/{uid}/{token}/', follow=True)
+        self.assertContains(response, 'Your email address has been confirmed', status_code=200, msg_prefix='validation confirmation message 1')
+        self.assertContains(response, 'but your account has yet to be approved', status_code=200, msg_prefix='validation confirmation message 2')
 
         user.refresh_from_db()
         self.assertTrue(user.email_validated, 'email validation flag set')
@@ -98,25 +99,43 @@ class TemplateTestCase(TestCase):
         self.assertEquals(len(mail.outbox), 0)
 
         #
+        # Try responding again - token should be invalid
+        #
+
+        response = self.client.get(f'/account/confirm/{uid}/{token}/', follow=True)
+        self.assertContains(response, 'This email address has already been confirmed', status_code=200, msg_prefix='validation confirmation message')
+
+        #
+        # Login and try to request validation code after account validated
+        #
+
+        self.assertTrue(self.client.login(username=user.email, password='passwordABCDE123450987'),f'Logging in {user.email}')
+
+        response = self.client.get(f'/account/resend/', follow=True)
+        self.assertRedirects(response, '/')
+        self.assertContains(response, 'This email address has already been confirmed', msg_prefix='email already confirmed')
+
+        #
         # Become an administrator
         #
 
+        self.client.logout()
         self.assertTrue(self.client.login(username=self.admin.email, password='password'),f'Logging in {self.admin.email}')
 
-        response = self.client.get('/admin/account-approve-list')
+        response = self.client.get('/admin/account-approve-list/')
         self.assertEquals(response.status_code, 200, 'getting approval list')
 
-        pattern = r'href="/admin/account-approve/(?P<uid>.*?)"'
+        pattern = r'href="/admin/account-approve/(?P<uid>.*?)/"'
         match = re.search(pattern, response.content.decode('utf-8'), re.MULTILINE)
         self.assertNotEqual(match, None, 'match worked')
         uid = match.group('uid')
 
-        response = self.client.get(f'/admin/account-approve/{uid}')
+        response = self.client.get(f'/admin/account-approve/{uid}/')
         self.assertContains(response, 'nweuser@new.com')
 
-        response = self.client.post(f'/admin/account-approve/{uid}',
+        response = self.client.post(f'/admin/account-approve/{uid}/',
             { 'confirm': 'Approve'})
-        self.assertRedirects(response, '/admin/account-approve-list')
+        self.assertRedirects(response, '/admin/account-approve-list/')
 
         user.refresh_from_db()
         self.assertTrue(user.email_validated, 'email validation flag still set')
@@ -138,9 +157,9 @@ class TemplateTestCase(TestCase):
         #
 
         self.assertFalse(user.suspended, 'not yet suspended')
-        response = self.client.post(f'/admin/account-toggle/suspend/{uid}',
+        response = self.client.post(f'/admin/account-toggle/suspend/{uid}/',
             { 'confirm': 'Suspend'})
-        self.assertRedirects(response, '/admin/account-list')
+        self.assertRedirects(response, '/admin/account-list/')
         user.refresh_from_db()
         self.assertTrue(user.suspended, 'now suspended')
 
@@ -148,9 +167,9 @@ class TemplateTestCase(TestCase):
         # Put them back
         #
 
-        response = self.client.post(f'/admin/account-toggle/enable/{uid}',
+        response = self.client.post(f'/admin/account-toggle/enable/{uid}/',
             { 'confirm': 'Enable'})
-        self.assertRedirects(response, '/admin/account-list')
+        self.assertRedirects(response, '/admin/account-list/')
         user.refresh_from_db()
         self.assertFalse(user.suspended, 'reenabled')
 
@@ -162,7 +181,7 @@ class TemplateTestCase(TestCase):
         self.client.logout()
         self.assertTrue(self.client.login(username=user.email, password='passwordABCDE123450987'),f'Logging in {user.email}')
 
-        response = self.client.post('/account/cancel',
+        response = self.client.post('/account/cancel/',
             { 'confirm': 'Yes, cancel my account'})
         self.assertRedirects(response, '/')
 
