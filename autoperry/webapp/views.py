@@ -289,7 +289,7 @@ def event_edit(request, event_id):
             errors += 1
         elif event.cancelled:
             messages.error(request, "The request for help at this event has been cancelled - cancelled events can't be edited.")
-            errors == 1
+            errors += 1
 
         if errors:
             return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
