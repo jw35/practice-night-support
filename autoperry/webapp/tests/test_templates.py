@@ -21,7 +21,8 @@ class TemplateTestCase(TestCase):
         for root, dirs, files in os.walk("webapp"):
             for file in files:
                 name = os.path.join(root, file)
-                try:
-                    template = get_template(name)
-                except TemplateSyntaxError:
-                     self.assertTrue(False, name)
+                with self.subTest(name):
+                    try:
+                        template = get_template(name)
+                    except TemplateSyntaxError as e:
+                         self.fail("Syntax error - '" + str(e) + "'")
