@@ -33,6 +33,9 @@ def send_template_email(to,template,context,force=False):
         if to.cancelled or to.suspended:
             logger.warn(f'Not emailing {to} "{subject}" - user cancelled or suspended')
             return
+        if not to.email_validated and not force:
+            logger.warn(f'Not emailing {to} "{subject}" - email not yet validated')
+            return
         if not to.send_notifications and not force:
             logger.warn(f'Not emailing {to} "{subject}" - notifications not wanted')
             return
