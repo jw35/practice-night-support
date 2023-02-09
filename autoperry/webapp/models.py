@@ -12,7 +12,7 @@ class Event(models.Model):
     start = models.DateTimeField(blank=False)
     end = models.DateTimeField(blank=False, null=True)
     location = models.CharField(max_length=128, blank=False)
-    helpers_required = models.IntegerField(blank=False)
+    helpers_required = models.IntegerField(blank=False, verbose_name='helpers needed')
     owner = models.ForeignKey(User, models.DO_NOTHING, related_name='events_owned')
     helpers = models.ManyToManyField(User, through="Volunteer", related_name='events_volunteered')
     created = models.DateTimeField(auto_now_add=True)
