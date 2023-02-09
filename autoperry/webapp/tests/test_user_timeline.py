@@ -52,7 +52,7 @@ class UserTimelineTestCase(TestCase):
               'password2': 'passwordABCDE123450987'
             })
 
-        self.assertEquals(response.status_code, 200, 'Created user')
+        self.assertEqual(response.status_code, 200, 'Created user')
         self.assertTemplateUsed(response, 'webapp/account-create-pending.html')
 
         user = user_model.objects.get(email='nweuser@new.com')
@@ -63,11 +63,11 @@ class UserTimelineTestCase(TestCase):
         # Check emails were sent
         #
 
-        self.assertEquals(len(mail.outbox), 2)
+        self.assertEqual(len(mail.outbox), 2)
 
-        self.assertEquals(mail.outbox[0].subject, '[AutoPerry]: Please confirm your email address')
-        self.assertEquals(mail.outbox[0].from_email, settings.DEFAULT_FROM_EMAIL)
-        self.assertEquals(mail.outbox[0].to[0], 'nweuser@new.com')
+        self.assertEqual(mail.outbox[0].subject, '[AutoPerry]: Please confirm your email address')
+        self.assertEqual(mail.outbox[0].from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(mail.outbox[0].to[0], 'nweuser@new.com')
         body = mail.outbox[0].body
 
         pattern = r'/account/confirm/(?P<uid>[^/]+)/(?P<token>[^/]+)/$'
@@ -76,9 +76,9 @@ class UserTimelineTestCase(TestCase):
         uid = match.group('uid')
         token = match.group('token')
 
-        self.assertEquals(mail.outbox[1].subject, '[AutoPerry]: New account created - New User')
-        self.assertEquals(mail.outbox[1].from_email, settings.DEFAULT_FROM_EMAIL)
-        self.assertEquals(mail.outbox[1].to[0], settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(mail.outbox[1].subject, '[AutoPerry]: New account created - New User')
+        self.assertEqual(mail.outbox[1].from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(mail.outbox[1].to[0], settings.DEFAULT_FROM_EMAIL)
 
         mail.outbox = []
 
@@ -95,7 +95,7 @@ class UserTimelineTestCase(TestCase):
         self.assertFalse(user.approved, 'approved flag still unset')
 
         # Doesn't send any email
-        self.assertEquals(len(mail.outbox), 0)
+        self.assertEqual(len(mail.outbox), 0)
 
         #
         # Try responding again - token should be invalid
@@ -122,7 +122,7 @@ class UserTimelineTestCase(TestCase):
         self.assertTrue(self.client.login(username=self.admin.email, password='password'),f'Logging in {self.admin.email}')
 
         response = self.client.get('/admin/account-approve-list/')
-        self.assertEquals(response.status_code, 200, 'getting approval list')
+        self.assertEqual(response.status_code, 200, 'getting approval list')
 
         pattern = r'href="/admin/account-approve/(?P<uid>.*?)/"'
         match = re.search(pattern, response.content.decode('utf-8'), re.MULTILINE)
@@ -144,10 +144,10 @@ class UserTimelineTestCase(TestCase):
         # Check email sent
         #
 
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].subject, '[AutoPerry]: Your account has been approved')
-        self.assertEquals(mail.outbox[0].from_email, settings.DEFAULT_FROM_EMAIL)
-        self.assertEquals(mail.outbox[0].to[0], 'nweuser@new.com')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, '[AutoPerry]: Your account has been approved')
+        self.assertEqual(mail.outbox[0].from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(mail.outbox[0].to[0], 'nweuser@new.com')
 
         mail.outbox = []
 
@@ -181,7 +181,7 @@ class UserTimelineTestCase(TestCase):
         self.assertTrue(self.client.login(username=user.email, password='passwordABCDE123450987'),f'Logging in {user.email}')
 
         response = self.client.get('/accounts/password_change/')
-        self.assertEquals(response.status_code, 200, 'got pwd change form')
+        self.assertEqual(response.status_code, 200, 'got pwd change form')
 
         response = self.client.post('/accounts/password_change/',
             { 'old_password': 'passwordABCDE123450987',

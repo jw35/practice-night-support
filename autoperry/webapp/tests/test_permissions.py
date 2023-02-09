@@ -157,13 +157,13 @@ class PermissionsTestCase(TestCase):
     def test_anonymous(self):
 
         response = self.client.get(index_url)
-        self.assertEquals(response.status_code, 200, '/')
+        self.assertEqual(response.status_code, 200, '/')
         self.assertContains(response, 'Please sign in', msg_prefix='/')
 
         for url in public_urls:
             with self.subTest(url):
                 response = self.client.get(url)
-                self.assertEquals(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)
 
         for url in limbo_urls + core_urls + admin_urls:
             with self.subTest(url):
@@ -185,7 +185,7 @@ class PermissionsTestCase(TestCase):
             self.assertTrue(self.client.login(username=user.email, password='password'),f'Logging in {user.email}')
 
             response = self.client.get(index_url)
-            self.assertEquals(response.status_code, 200, '/')
+            self.assertEqual(response.status_code, 200, '/')
             # Status message on the index page depends on user state
             if not user.approved:
                 self.assertContains(response, 'approved by an administrator', msg_prefix='/')
@@ -201,7 +201,7 @@ class PermissionsTestCase(TestCase):
                     if url == '/account/resend/' and user.email_validated:
                         self.assertContains(response, 'This email address has already been confirmed')
                     else:
-                        self.assertEquals(response.status_code, 200, url + ' ' + str(user))
+                        self.assertEqual(response.status_code, 200, url + ' ' + str(user))
 
             for url in core_urls + admin_urls:
                 with self.subTest(url):
@@ -222,7 +222,7 @@ class PermissionsTestCase(TestCase):
         self.assertTrue(self.client.login(username=user.email, password='password'),f'Logging in {user.email}')
 
         response = self.client.get(index_url)
-        self.assertEquals(response.status_code, 200, '/')
+        self.assertEqual(response.status_code, 200, '/')
         # Deliberately 'vents' to cope with 'Events needing helpers' and 'No events needing helpers''
         self.assertContains(response, 'vents needing helpers', msg_prefix='/')
 
@@ -231,9 +231,9 @@ class PermissionsTestCase(TestCase):
                 response = self.client.get(url)
                 # Cancel and Unvolunteer redirect because not allowed by this user
                 if url == '/account/cancel/' or url == '/event/1/unvolunteer/' or url == '/account/resend/':
-                    self.assertEquals(response.status_code, 302, url)
+                    self.assertEqual(response.status_code, 302, url)
                 else:
-                    self.assertEquals(response.status_code, 200, url)
+                    self.assertEqual(response.status_code, 200, url)
 
         response = self.client.get(event_url)
         self.assertNotContains(response, 'Administrator Info.', msg_prefix=event_url)
@@ -241,7 +241,7 @@ class PermissionsTestCase(TestCase):
         for url in admin_urls:
             with self.subTest(url):
                 response = self.client.get(url)
-                self.assertEquals(response.status_code, 403, url)
+                self.assertEqual(response.status_code, 403, url)
 
         response = self.client.get(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
@@ -253,7 +253,7 @@ class PermissionsTestCase(TestCase):
         self.assertTrue(self.client.login(username=user.email, password='password'),f'Logging in {user.email}')
 
         response = self.client.get(index_url)
-        self.assertEquals(response.status_code, 200, '/')
+        self.assertEqual(response.status_code, 200, '/')
         # Deliberately 'vents' to cope with 'Events needing helpers' and 'No events needing helpers''
         self.assertContains(response, 'vents needing helpers', msg_prefix='/')
 
@@ -262,9 +262,9 @@ class PermissionsTestCase(TestCase):
                 response = self.client.get(url)
                 # cancel redirect because not allowed by this user
                 if url == '/event/1/cancel/' or url == '/event/1/edit/' or url == '/event/1/decline/1/' or url == '/event/1/unvolunteer/' or url == '/account/resend/':
-                    self.assertEquals(response.status_code, 302, url)
+                    self.assertEqual(response.status_code, 302, url)
                 else:
-                    self.assertEquals(response.status_code, 200, url)
+                    self.assertEqual(response.status_code, 200, url)
 
         response = self.client.get(event_url)
         self.assertContains(response, 'Administrator Info.', msg_prefix=event_url)
