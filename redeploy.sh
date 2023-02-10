@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -xe
 
 export DJANGO_SETTINGS_MODULE=autoperry.production_settings
 
