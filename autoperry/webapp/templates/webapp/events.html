@@ -51,7 +51,13 @@
 {% if events_as_voluteer %}
 {% include 'webapp/events-list-fragment.html' with events=events_as_voluteer %}
 {% else %}
-<p class="text-center">No events</p>
+<div class="row justify-content-center">
+    <div class="col-auto">
+<div class="alert alert-warning mt-3 text-center" role="alert">
+No events
+</div>
+</div>
+</div>
 {% endif %}
 
 <h3 class="text-center mt-4">Events you are organising:</h3>
@@ -59,12 +65,27 @@
 {% if events_as_organiser %}
 {% include 'webapp/events-list-fragment.html' with events=events_as_organiser %}
 {% else %}
-<p class="text-center">No events</p>
+<div class="row justify-content-center">
+    <div class="col-auto">
+<div class="alert alert-warning mt-3 text-center" role="alert">
+No events
+</div>
+</div>
+</div>
 {% endif %}
 
 {% else %}
-
+{% if events %}
 {% include 'webapp/events-list-fragment.html' %}
+{% else %}
+<div class="row justify-content-center">
+    <div class="col-auto">
+<div class="alert alert-warning mt-3 text-center" role="alert">
+No events
+</div>
+</div>
+</div>
+{% endif %}
 
 {% if events.paginator.num_pages > 1 %}
 
