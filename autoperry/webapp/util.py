@@ -7,6 +7,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 
 from custom_user.models import User
+from .models import Event
 
 import logging
 logger = logging.getLogger(__name__)
@@ -73,3 +74,48 @@ class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
         return (
                 str(user.email_validated) + str(user.pk) + str(timestamp)
         )
+
+
+def event_clash_error(start, end, location):
+
+    """
+    Test if adding and event from start to end at location
+    would clash with an existing event. Return an error message
+    if so, else None
+    """
+
+    clashes = (Event.objects.all()
+                .filter(cancelled=None)
+                .filter(location=location)
+                .filter(start__lt=end)
+                .filter(end__gt=start))
+
+    if clashes.all():
+        message = (render_to_string("webapp/event-clash-error-fragment.html",
+            { "clashes": clashes }))
+        return message
+
+    return None
+
+
+def volunteer_clash_error(user, event):
+
+    """
+    Test if user volunteering to help at event
+    would clash with their other volunteering commitments.
+    Return an error message if so, else None
+    """
+
+    clashes = (Event.objects.all()
+               .exclude(pk=event.pk)
+               .filter(cancelled=None)
+               .filter(helpers=user)
+               .filter(start__lt=event.end)
+               .filter(end__gt=event.start))
+
+    if clashes.all():
+        message = render_to_string("webapp/volunteer-clash-error-fragment.html",
+            { "clashes": clashes })
+        return message
+
+    return None

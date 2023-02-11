@@ -23,7 +23,7 @@ from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
-from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator
+from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator, event_clash_error, volunteer_clash_error
 
 import logging
 logger = logging.getLogger(__name__)
@@ -171,7 +171,6 @@ def event_create(request):
     """
 
     user = request.user
-    clashes = None
 
     if request.method == 'POST':
 
@@ -186,20 +185,9 @@ def event_create(request):
             start = datetime.combine(date, start_time)
             end = datetime.combine(date, end_time)
 
-            # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
-            clashes = (Event.objects.all()
-                       .filter(cancelled=None)
-                       .filter(location=form.cleaned_data['location'])
-                       .filter(start__lt=end)
-                       .filter(end__gt=start))
-
-            # If there are, redisplay the form with a message
-            if clashes.all():
-                message = (render_to_string("webapp/event-clash-error-fragment.html",
-                    { "location": form.cleaned_data['location'],
-                      "clashes": clashes }))
+            message = event_clash_error(start, end, form.cleaned_data.get("location"))
+            if message:
                 form.add_error(None, message)
-
             else:
                 event = Event.objects.create(start=start,
                                      end=end,
@@ -274,7 +262,6 @@ def event_edit(request, event_id):
               'alerts': event.alerts }
 
         errors = 0
-        clashes = None
         form = None
 
         # Check if editing is actually possible
@@ -308,21 +295,10 @@ def event_edit(request, event_id):
                 start = datetime.combine(date, start_time)
                 end = datetime.combine(date, end_time)
 
-                # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
-                clashes = (Event.objects.all()
-                           .exclude(pk=event.pk)
-                           .filter(cancelled=None)
-                           .filter(location=form.cleaned_data['location'])
-                           .filter(start__lt=end)
-                           .filter(end__gt=start))
-
-                # If there are, redisplay the form with a message
-                if clashes.all():
-                    message = (render_to_string("webapp/event-clash-error-fragment.html",
-                        { "location": form.cleaned_data['location'],
-                          "clashes": clashes }))
+                # If there are clashes, redisplay the form with a message
+                message = event_clash_error(start, end, form.cleaned_data.get("location"))
+                if message:
                     form.add_error(None, message)
-
                 # Otherwise success: update the event
                 else:
 
@@ -459,15 +435,8 @@ def volunteer(request, event_id):
             errors += 1
 
         # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
-        clashes = (Event.objects.all()
-                   .exclude(pk=event.pk)
-                   .filter(cancelled=None)
-                   .filter(helpers=user)
-                   .filter(start__lt=event.end)
-                   .filter(end__gt=event.start))
-
-        if clashes.all():
-            message = render_to_string("webapp/volunteer-clash-error-fragment.html", { "clashes": clashes })
+        message =volunteer_clash_error(user, event)
+        if message:
             messages.error(request, message)
             errors += 1
 
