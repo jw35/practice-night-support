@@ -41,7 +41,6 @@ class ClashesTestCase(TestCase):
         start = datetime(1960, 3, 5, 12, 00)
         end = start + timedelta(hours=2)
 
-
         before = start - timedelta(hours=2)
         just_before = start - timedelta(hours=1)
         just_started = start + timedelta(minutes=5)
