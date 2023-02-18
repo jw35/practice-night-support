@@ -981,6 +981,7 @@ class PasswordResetView(DefaultPasswordResetView):
     """
     extra_email_context = { 'protocol': settings.WEBAPP_SCHEME }
 
+
 @autoperry_login_required()
 def stats_screen(request):
 
