@@ -49,41 +49,41 @@
       <tbody class="table-group-divider">
 
       {% for month in month_summary %}
-        <tr class="text-end">
+        <tr{% if month.incomplete %} class="fst-italic"{% endif %}>
 
           <th>
             {{ month.month | date:"M Y"}}
           </th>
 
-          <td>
+          <td class="text-end">
             {{ month.events }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ month.cancelled_events }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ month.owners }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ month.locations }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ month.helpers_wanted }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ month.helpers_provided }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ month.distinct_helpers }}
-          </td>
+          </td class="text-end">
 
-          <td>
+          <td class="text-end">
             {{ month.helpers_cancelled }}
           </td>
 
@@ -94,41 +94,41 @@
 
       <tfoot class="table-group-divider">
 
-        <tr class="text-end">
+        <tr>
 
           <th>
             Summary
           </th>
 
-          <td>
+          <td class="text-end">
             {{ event_totals.events }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ event_totals.cancelled_events }}
           </td>
 
-          <td>
+          <td class="text-end">
             [{{ event_totals.owners }}]
           </td>
 
-          <td>
+          <td class="text-end">
             [{{ event_totals.locations }}]
           </td>
 
-          <td>
+          <td class="text-end">
             {{ event_totals.helpers_wanted }}
           </td>
 
-          <td>
+          <td class="text-end">
             {{ helper_totals.helpers_provided }}
           </td>
 
-          <td>
+          <td class="text-end">
             [{{ helper_totals.distinct_helpers }}]
           </td>
 
-          <td>
+          <td class="text-end">
             {{ helper_totals.helpers_cancelled }}
           </td>
 
@@ -138,7 +138,12 @@
 
     </table>
 
+
    </div>
+
+
+    <p>This table only includes events that are complete. As a result, the figures for the final
+    month shown are <span class="fst-italic">probably incomplete</span>.</p>
 
 </div>
 

@@ -159,8 +159,6 @@ def build_stats_screen(now):
         )
     )
 
-    print(event_totals, helper_totals)
-
     events = (Event.objects.all()
         .filter(start__lte=now)
         .annotate(month=TruncMonth('start'))
@@ -194,13 +192,14 @@ def build_stats_screen(now):
     month_summary = []
     for e, h in zip(event_sum.all(), helper_sum.all()):
         assert(e['month']==h['month'])
-        month_summary.append({**e, **h})
+        incomplete = e['month'].date() >= now.date().replace(day=1)
+        month_summary.append({**e, **h, 'incomplete': incomplete})
 
     return ({
         'people_totals': people_totals,
         'event_totals': event_totals,
         'helper_totals': helper_totals,
-        'month_summary': month_summary
+        'month_summary': month_summary,
         })
 
 

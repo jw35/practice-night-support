@@ -24,10 +24,10 @@ class PermissionsTestCase(TestCase):
         # Events from 5/3/1960
         base = datetime(1960, 3, 5, hour=14, minute=0)
         next_month = datetime(1960, 4, 5, hour=14, minute=0)
-        # Report being run 1/5/1960
-        now = datetime(1960, 5, 1, hour=14, minute=0)
+        # Report being run 5/5/1960
+        now = datetime(1960, 4, 30, hour=14, minute=0)
         # So this is in the future 5/5/1960
-        future = datetime(1960, 5, 5, hour=14, minute=0)
+        future = datetime(1960, 5, 10, hour=14, minute=0)
 
         one_hour = timedelta(hours=1)
         one_day = timedelta(days=1)
@@ -150,7 +150,8 @@ class PermissionsTestCase(TestCase):
              'helpers_wanted': 3,
              'helpers_provided': 3,
              'distinct_helpers': 2,
-             'helpers_cancelled': 1
+             'helpers_cancelled': 1,
+             'incomplete': False,
             })
 
         self.assertEqual(data['month_summary'][1],
@@ -162,7 +163,8 @@ class PermissionsTestCase(TestCase):
              'helpers_wanted': 1,
              'helpers_provided': 1,
              'distinct_helpers': 1,
-             'helpers_cancelled': 0
+             'helpers_cancelled': 0,
+             'incomplete': True,
             })
 
         self.assertEqual(data['event_totals'],
@@ -178,3 +180,4 @@ class PermissionsTestCase(TestCase):
              'distinct_helpers': 2,
              'helpers_cancelled': 1,
             })
+
