@@ -132,8 +132,9 @@ def build_stats_screen(now):
 
     people_totals = (get_user_model().objects.all()
         .aggregate(
-            total=Count('id', filter=(Q(cancelled=None) & ~Q(approved=None) & ~Q(email_validated=None))),
-            pending=Count('id', filter=(Q(cancelled=None) & (Q(approved=None) | Q(email_validated=None)))),
+            pending=Count('id', filter=(Q(approved=None) | Q(email_validated=None)) & Q(cancelled=None) & Q(suspended=None)),
+            live=Count('id', filter=(~Q(approved=None) & ~Q(email_validated=None)) & Q(cancelled=None) & Q(suspended=None)),
+            suspended=Count('id', filter=Q(cancelled=None) & ~Q(suspended=None)),
             cancelled=Count('id', filter=(~Q(cancelled=None)))
         )
     )

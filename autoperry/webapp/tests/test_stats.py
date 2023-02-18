@@ -134,9 +134,10 @@ class PermissionsTestCase(TestCase):
 
         data = build_stats_screen(self.now)
 
-        self.assertEqual(data['people_totals']['total'], 2)
+        self.assertEqual(data['people_totals']['live'], 2)
         self.assertEqual(data['people_totals']['pending'], 1)
         self.assertEqual(data['people_totals']['cancelled'], 1)
+        self.assertEqual(data['people_totals']['suspended'], 0)
 
         self.assertEqual(len(data['month_summary']), 2)
 
