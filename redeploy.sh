@@ -4,9 +4,9 @@ export DJANGO_SETTINGS_MODULE=autoperry.production_settings
 
 . venv/bin/activate
 
-pip install -r production-requirements.txt
-
 git pull
+
+pip install -r production-requirements.txt
 
 cd autoperry
 
