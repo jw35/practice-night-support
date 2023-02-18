@@ -40,9 +40,6 @@
           <td>
             <div class="fw-bold stats-head-label">Distinct helpers</div>
           </td>
-          <td>
-            <div class="fw-bold stats-head-label">Helpers cancelled</div>
-          </td>
         </tr>
       </thead>
 
@@ -83,10 +80,6 @@
             {{ month.distinct_helpers }}
           </td class="text-end">
 
-          <td class="text-end">
-            {{ month.helpers_cancelled }}
-          </td>
-
         </tr>
       {% endfor %}
 
@@ -126,10 +119,6 @@
 
           <td class="text-end">
             [{{ helper_totals.distinct_helpers }}]
-          </td>
-
-          <td class="text-end">
-            {{ helper_totals.helpers_cancelled }}
           </td>
 
         </tr>
