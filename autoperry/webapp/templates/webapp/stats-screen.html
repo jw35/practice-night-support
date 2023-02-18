@@ -1,0 +1,145 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<h2 class="text-center">Statistics</h2>
+
+<div class="row justify-content-center">
+  <div class="col-auto">
+
+  <p><b>{{ people_totals.total }} registered users</b> (and {{ people_totals.pending }} pending
+  approval and {{ people_totals.cancelled }} cancelled).</p>
+
+    <table class="table table-responsive">
+
+      <thead>
+        <tr>
+          <td>
+            <div class="fw-bold text-center">Month</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Events delivered</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Events cancelled</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Distinct organisers</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Distinct locations</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Helpers wanted</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Helpers provided</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Distinct helpers</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Helpers cancelled</div>
+          </td>
+        </tr>
+      </thead>
+
+      <tbody class="table-group-divider">
+
+      {% for month in month_summary %}
+        <tr class="text-end">
+
+          <th>
+            {{ month.month | date:"M Y"}}
+          </th>
+
+          <td>
+            {{ month.events }}
+          </td>
+
+          <td>
+            {{ month.cancelled_events }}
+          </td>
+
+          <td>
+            {{ month.owners }}
+          </td>
+
+          <td>
+            {{ month.locations }}
+          </td>
+
+          <td>
+            {{ month.helpers_wanted }}
+          </td>
+
+          <td>
+            {{ month.helpers_provided }}
+          </td>
+
+          <td>
+            {{ month.distinct_helpers }}
+          </td>
+
+          <td>
+            {{ month.helpers_cancelled }}
+          </td>
+
+        </tr>
+      {% endfor %}
+
+      </tbody>
+
+      <tfoot class="table-group-divider">
+
+        <tr class="text-end">
+
+          <th>
+            Summary
+          </th>
+
+          <td>
+            {{ event_totals.events }}
+          </td>
+
+          <td>
+            {{ event_totals.cancelled_events }}
+          </td>
+
+          <td>
+            [{{ event_totals.owners }}]
+          </td>
+
+          <td>
+            [{{ event_totals.locations }}]
+          </td>
+
+          <td>
+            {{ event_totals.helpers_wanted }}
+          </td>
+
+          <td>
+            {{ helper_totals.helpers_provided }}
+          </td>
+
+          <td>
+            [{{ helper_totals.distinct_helpers }}]
+          </td>
+
+          <td>
+            {{ helper_totals.helpers_cancelled }}
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+   </div>
+
+</div>
+
+{% endblock %}

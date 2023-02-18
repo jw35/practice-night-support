@@ -34,4 +34,5 @@ urlpatterns = [
     path(r"admin/account-approve-list/", views.account_approve_list, name="account-approve-list"),
     path(r"admin/account-approve/<int:user_id>/", views.account_approve, name="account-approve"),
     path(r"admin/account-toggle/<str:action>/<int:user_id>/", views.account_toggle, name="account-toggle"),
+    path(r"stats/", views.stats_screen, name="stats")
 ]

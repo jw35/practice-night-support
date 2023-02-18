@@ -1,10 +1,14 @@
 from django.conf import settings
-from django.template.loader import render_to_string
+from django.contrib.auth import get_user_model
+
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q, Count, Sum
+from django.db.models.functions import TruncMonth
+from django.template.loader import render_to_string
 
 from custom_user.models import User
 from .models import Event
@@ -119,3 +123,85 @@ def volunteer_clash_error(user, event):
         return message
 
     return None
+
+def build_stats_screen(now):
+
+    """
+    Collect aggregate statistics for the stats page
+    """
+
+    people_totals = (get_user_model().objects.all()
+        .aggregate(
+            total=Count('id', filter=(Q(cancelled=None) & ~Q(approved=None) & ~Q(email_validated=None))),
+            pending=Count('id', filter=(Q(cancelled=None) & (Q(approved=None) | Q(email_validated=None)))),
+            cancelled=Count('id', filter=(~Q(cancelled=None)))
+        )
+    )
+
+    event_totals = (Event.objects.all()
+        .filter(start__lte=now)
+        .aggregate(
+            events=Count('id', filter=Q(cancelled=None)),
+            cancelled_events=Count('id', filter=~Q(cancelled=None)),
+            owners=Count('owner', distinct=True, filter=Q(cancelled=None)),
+            locations=Count('location', distinct=True, filter=Q(cancelled=None)),
+            helpers_wanted=Sum('helpers_required', filter=Q(cancelled=None)),
+        )
+    )
+
+    helper_totals = (Event.objects.all()
+        .filter(start__lte=now)
+        .aggregate(
+            helpers_provided=Count('helpers', filter=Q(cancelled=None)),
+            distinct_helpers=Count('helpers', distinct=True, filter=Q(cancelled=None)),
+            helpers_cancelled=Count('helpers', filter=~Q(cancelled=None))
+        )
+    )
+
+    print(event_totals, helper_totals)
+
+    events = (Event.objects.all()
+        .filter(start__lte=now)
+        .annotate(month=TruncMonth('start'))
+        .values('month')
+    )
+
+    event_sum = (events
+        .annotate(
+            events=Count('id', filter=Q(cancelled=None)),
+            cancelled_events=Count('id', filter=~Q(cancelled=None)),
+            owners=Count('owner', distinct=True, filter=Q(cancelled=None)),
+            locations=Count('location', distinct=True, filter=Q(cancelled=None)),
+            helpers_wanted=Sum('helpers_required', filter=Q(cancelled=None))
+        )
+        .order_by()
+    )
+
+    # Have to count helpers in a separate query because it introduces
+    # a join which would multiply counts on Event fields
+    helper_sum = (events
+        .annotate(
+            helpers_provided=Count('helpers', filter=Q(cancelled=None)),
+            distinct_helpers=Count('helpers', distinct=True, filter=Q(cancelled=None)),
+            helpers_cancelled=Count('helpers', filter=~Q(cancelled=None))
+        )
+        .order_by()
+    )
+
+    # The two queries should return results for the same months in the
+    # same order so we can zip them together and return them. Probably...
+    month_summary = []
+    for e, h in zip(event_sum.all(), helper_sum.all()):
+        assert(e['month']==h['month'])
+        month_summary.append({**e, **h})
+
+    return ({
+        'people_totals': people_totals,
+        'event_totals': event_totals,
+        'helper_totals': helper_totals,
+        'month_summary': month_summary
+        })
+
+
+
+

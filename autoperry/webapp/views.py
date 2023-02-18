@@ -23,7 +23,7 @@ from datetime import datetime, timedelta
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
-from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator, event_clash_error, volunteer_clash_error
+from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator, event_clash_error, volunteer_clash_error, build_stats_screen
 
 import logging
 logger = logging.getLogger(__name__)
@@ -980,4 +980,16 @@ class PasswordResetView(DefaultPasswordResetView):
     Override protocol as sent to message template to use iur configuration
     """
     extra_email_context = { 'protocol': settings.WEBAPP_SCHEME }
+
+@autoperry_login_required()
+def stats_screen(request):
+
+    """
+    Stats summary
+    """
+
+    return render(request, "webapp/stats-screen.html",
+        context=build_stats_screen(timezone.now())
+        )
+
 

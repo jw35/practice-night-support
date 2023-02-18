@@ -21,3 +21,15 @@ dd {
   max-width: 330px;
   padding: 15px;
 }
+
+.stats-head-label {
+    left: calc(50% - 0.25rem);
+    line-height: 1;
+    padding-top: 0.5rem;
+    position: relative;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    white-space: nowrap;
+    -webkit-writing-mode: vertical-rl;
+    writing-mode: vertical-rl;
+}

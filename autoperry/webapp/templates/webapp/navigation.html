@@ -35,6 +35,10 @@
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for event organisers</a></li>
             {% url 'privacy' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Data privacy</a></li>
+            {% if user.is_authenticated and user.is_enabled %}
+            {% url 'stats' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">System statistics</a></li>
+            {% endif %}
           </ul>
         </li>
         {% if perms.custom_user.administrator %}
