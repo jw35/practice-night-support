@@ -5,8 +5,8 @@
 
 {% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.email }} has just volunteered to help with this event.{% endfilter %}
 
-{% if event.helpers.all.count > 1 %}The full list of helpers is:
-      {% for helper in event.helpers.all %}
+{% if event.current_helpers > 1 %}The full list of helpers is:
+      {% for helper in event.curret_helpers %}
     * {{ helper.get_full_name }} ({{ helper.email }}){% endfor %}{% else %}At the moment this is your only helper.{% endif %}
 
 You can find more details of this event at:

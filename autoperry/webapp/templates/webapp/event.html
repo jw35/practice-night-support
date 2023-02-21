@@ -57,9 +57,9 @@
 
     <dt>Current helpers</dt>
     <dd>
-    {% if event.helpers.all %}
+    {% if event.current_helpers %}
       <ul style="list-style: none; padding: 0; margin: 0">
-      {% for helper in event.helpers.all %}
+      {% for helper in event.current_helpers %}
         <li>
           {{ helper.get_full_name }} ({{ helper.email|urlize }})
           <a href="{% url 'decline' event_id=event.pk helper_id=helper.pk%}" class="btn btn-outline-secondary btn-sm">Decline</a>
@@ -80,7 +80,7 @@
     {% else %}
 
     <dt>Current helpers</dt>
-    <dd>{{event.helpers.all|length}}</dd>
+    <dd>{{event.current_helpers|length}}</dd>
 
     {% endif %}
 
@@ -158,20 +158,23 @@
 
         <dt>Helpers</dt>
         <dd>
-        {% if event.helpers.all %}
+        {% if event.volunteer_set.all %}
           <ul style="list-style: none; padding: 0; margin: 0">
-          {% for helper in event.helpers.all %}
-            <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+          {% for helper in event.volunteer_set.all %}
+            <li>
+              {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
+              ({{ helper.person.email|urlize }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
+              {% if helper.withdrawn %} (withdrawn){% endif %}
+              {% if helper.declined %} (declined){% endif %}
+            </li>
           {% endfor %}
           </ul>
         {% else %}
         None
         {% endif %}
         </dd>
- 
+
       </dl>
-
-
 
       </div>
     </div>

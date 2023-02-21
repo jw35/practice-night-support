@@ -80,7 +80,7 @@ class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
         )
 
 
-def event_clash_error(start, end, location):
+def event_clash_error(start, end, location, this=None):
 
     """
     Test if adding and event from start to end at location
@@ -93,6 +93,9 @@ def event_clash_error(start, end, location):
                 .filter(location=location)
                 .filter(start__lt=end)
                 .filter(end__gt=start))
+
+    if this:
+        clashes = clashes.exclude(pk=this.pk)
 
     if clashes.all():
         message = (render_to_string("webapp/event-clash-error-fragment.html",
@@ -113,7 +116,9 @@ def volunteer_clash_error(user, event):
     clashes = (Event.objects.all()
                .exclude(pk=event.pk)
                .filter(cancelled=None)
-               .filter(helpers=user)
+               .filter(volunteer__person=user)
+               .filter(volunteer__declined=None)
+               .filter(volunteer__withdrawn=None)
                .filter(start__lt=event.end)
                .filter(end__gt=event.start))
 

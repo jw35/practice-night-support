@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.dateformat import format
@@ -21,23 +22,62 @@ class Event(models.Model):
     notes = models.CharField(max_length=200, blank=True, null=True, help_text="Purpose of the event, helper skills required, etc.")
     owner_reminded = models.DateTimeField(null=True, blank=True)
     alerts = models.BooleanField(default=False)
+    # Also volunteer_set/volunteer to access the individual volunteering records
+
+
+    def has_current_helper(self, user):
+        """
+        tests if user is a current (so not withdrawn, not declined)
+        helpers for an event
+        """
+        return bool(self.volunteer_set.current().filter(person=user))
+
+
+    @property
+    def current_helpers(self):
+        """
+        Return a QuerySet representing all current (so not withdrawn,
+        not declined) helpers for this event
+        """
+        return (get_user_model().objects.
+            filter(
+                volunteer__event=self,
+                volunteer__withdrawn=None,
+                volunteer__declined=None
+            )
+       )
+
 
     @property
     def contact(self):
+        """
+        Contact address for this event
+        """
         if self.contact_address:
             return self.contact_address
         return self.owner.email
 
+
     @property
     def past(self):
+        """
+        Is this event in the past?
+        """
         return self.start < timezone.now()
+
 
     @property
     def helpers_needed(self):
-        return self.helpers_required > len(self.helpers.all()) and not self.cancelled and not self.past
+        """
+        Does this event still need helpers?
+        """
+        return self.helpers_required > len(self.volunteer_set.current()) and not self.cancelled and not self.past
 
     @property
     def when(self):
+        """
+        Date of the event with start and end times
+        """
         start = self.start
         end = self.end
         # Only include AM on start if event spans midday
@@ -50,6 +90,9 @@ class Event(models.Model):
 
     @property
     def short_when(self):
+        """
+        Short format d of the event with start and end times
+        """
         start = self.start
         end = self.end
         # Only include year for December and January
@@ -81,13 +124,30 @@ class Event(models.Model):
         ordering = ["start"]
 
 
+class VolunteerManager(models.Manager):
+
+    """
+    Add a custom method to only return volunteer objects that haven't
+    been withdrawn or declined
+    """
+
+    def current(self):
+        return self.filter(withdrawn=None, declined=None)
+
+
 class Volunteer(models.Model):
     event = models.ForeignKey(Event, models.DO_NOTHING)
     person = models.ForeignKey(User, models.DO_NOTHING)
     created = models.DateTimeField(auto_now_add=True)
-    cancelled = models.DateTimeField(null=True, blank=True)
+    withdrawn = models.DateTimeField(null=True, blank=True)
+    declined = models.DateTimeField(null=True, blank=True)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['event', 'person'], name='only_volunteer_once')
-        ]
+    objects = VolunteerManager()
+
+    @property
+    def current(self):
+        return self.withdrawn == None and self.declined == None
+
+    def __str__(self):
+        return f'{self.person} helping at {self.event}'
+

@@ -1,23 +1,23 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from django.contrib.auth.views import PasswordResetView as DefaultPasswordResetView
-from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib.auth.decorators import  permission_required
+from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import PasswordResetView as DefaultPasswordResetView
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
-from django.utils.safestring import mark_safe
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.safestring import mark_safe
 
 from datetime import datetime, timedelta
 
@@ -72,7 +72,7 @@ def index(request):
                       .filter(start__gte=timezone.now())
                       .filter(start__lte=timezone.now()+timedelta(days=days))
                       .filter(cancelled=None)
-                      .annotate(helpers_available=Count('helpers'))
+                      .annotate(helpers_available=Count('volunteer', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))))
                       .filter(helpers_required__gt=F("helpers_available"))
                       .order_by('start', 'location'))
 
@@ -109,7 +109,7 @@ def events(request):
         flags = {'past': False, 'cancelled': True, 'mine': False, 'location': False}
     request.session['search_flags'] = flags
 
-    event_list = Event.objects.all().annotate(helpers_available=Count('volunteer'))
+    event_list = Event.objects.all().annotate(helpers_available=Count('volunteer', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))))
 
     if not flags['past']:
         event_list = event_list.filter(start__gte=timezone.now())
@@ -123,7 +123,7 @@ def events(request):
         event_list = event_list.order_by('start', 'location')
 
     events_as_organiser = event_list.filter(owner=user) if flags['mine'] else None
-    events_as_voluteer = event_list.filter(helpers=user) if flags['mine'] else None
+    events_as_voluteer = (event_list.filter(volunteer__person=user, volunteer__withdrawn=None, volunteer__declined=None)) if flags['mine'] else None
 
     paginator = Paginator(event_list, 20, orphans=2)
     paginator.ELLIPSIS = "X"
@@ -159,7 +159,7 @@ def event_details(request, event_id):
     return render(request, "webapp/event.html",
         context={'event': event,
                  'user_is_owner': user == event.owner,
-                 'user_is_helper': user in event.helpers.all()
+                 'user_is_helper': event.has_current_helper(user)
                 })
 
 
@@ -270,8 +270,7 @@ def event_edit(request, event_id):
         if user != event.owner:
             messages.error(request, 'You are not the owner of this event - only the owner can edit it.')
             errors += 1
-
-        if event.past:
+        elif event.past:
             messages.error(request, "This event has already happened - events in the past can't be edited.")
             errors += 1
         elif event.cancelled:
@@ -296,7 +295,7 @@ def event_edit(request, event_id):
                 end = datetime.combine(date, end_time)
 
                 # If there are clashes, redisplay the form with a message
-                message = event_clash_error(start, end, form.cleaned_data.get("location"))
+                message = event_clash_error(start, end, form.cleaned_data.get("location"), this=event)
                 if message:
                     form.add_error(None, message)
                 # Otherwise success: update the event
@@ -320,7 +319,7 @@ def event_edit(request, event_id):
                                 send_email = True
 
                         if send_email:
-                            for helper in event.helpers.all():
+                            for helper in event.current_helpers:
                                 if helper.send_notifications:
                                     send_template_email(helper, "event-edit",
                                         { "event": event, "before": initial_data,
@@ -371,11 +370,11 @@ def event_cancel(request, event_id):
         errors = 0
 
         user = request.user
+
         if user != event.owner:
             messages.error(request,'You are not the owner of this event - only the owner can cancel it')
             errors += 1
-
-        if event.past:
+        elif event.past:
             messages.error(request, "This event has already happened can so can't now be cancelled")
             errors += 1
         elif event.cancelled:
@@ -392,7 +391,7 @@ def event_cancel(request, event_id):
 
                 logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
 
-                for helper in event.helpers.all():
+                for helper in event.current_helpers:
                     if helper.send_notifications:
                         send_template_email(helper, "event-cancel", { "event": event })
                     else:
@@ -429,9 +428,11 @@ def volunteer(request, event_id):
         elif event.cancelled:
             messages.error(request, "The request for help at this event has been cancelled so you can't volunteer to help with it")
             errors += 1
-
-        if user in event.helpers.all():
+        elif event.has_current_helper(user):
             messages.error(request, 'You have already volunteered to help at this event ')
+            errors += 1
+        elif not event.helpers_needed:
+            messages.error(request, "This event already has enough helpers so you can't also volunteer to help with it")
             errors += 1
 
         # Check for clashing events - test is (StartA <= EndB) and (EndA >= StartB)
@@ -445,8 +446,7 @@ def volunteer(request, event_id):
 
         if request.method == 'POST':
             if 'confirm' in request.POST:
-                event.helpers.add(user)
-                event.save()
+                event.volunteer_set.create(person=user)
 
                 logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You have been added as a helper for this event')
@@ -471,12 +471,12 @@ def unvolunteer(request, event_id):
         event = get_object_or_404(Event, pk=event_id)
         errors = 0
 
+        user = request.user
+
         if event.past:
             messages.error(request, "This event has already happened so you can't withdraw your offer to help")
             errors += 1
-
-        user = request.user
-        if user not in event.helpers.all():
+        elif not event.has_current_helper(user):
             messages.error(request, "You are not a helper for this event so you can't withdraw your offer to help")
             errors += 1
 
@@ -485,8 +485,9 @@ def unvolunteer(request, event_id):
 
         if request.method == 'POST':
             if 'confirm' in request.POST:
-                event.helpers.remove(request.user)
-                event.save()
+                volunteer = event.volunteer_set.get(person=user, withdrawn=None, declined=None)
+                volunteer.withdrawn = timezone.now()
+                volunteer.save()
 
                 logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
                 messages.success(request, 'You are no longer a helper for this event')
@@ -509,12 +510,15 @@ def decline(request, event_id, helper_id):
         errors = 0
 
         user = request.user
-        if user != event.owner:
-            messages.error(request,'You are not the owner of this event - only the owner can decline offers of help')
-            errors += 1
 
         if event.past:
             messages.error(request, "This event has already happened so you can't decline an offer to help")
+            errors += 1
+        elif user != event.owner:
+            messages.error(request,'You are not the owner of this event - only the owner can decline offers of help')
+            errors += 1
+        elif not event.has_current_helper(helper):
+            messages.error(request, f"{helper} is not a helper for this event so you can't decline their offer to help")
             errors += 1
 
         if errors:
@@ -522,8 +526,9 @@ def decline(request, event_id, helper_id):
 
         if request.method == 'POST':
             if 'confirm' in request.POST:
-                event.helpers.remove(helper)
-                event.save()
+                volunteer = event.volunteer_set.get(person=helper, withdrawn=None, declined=None)
+                volunteer.declined = timezone.now()
+                volunteer.save()
 
                 logger.info(f'"{user}" declined {helper} as helper for event id {event.id} "{event}"')
                 messages.success(request, f'{helper} as been removed as a helper')
@@ -582,7 +587,7 @@ def account_list(request):
 
     users = (users
         .annotate(num_owned=Count('events_owned', distinct=True))
-        .annotate(num_helped=Count('events_volunteered', distinct=True))
+        .annotate(num_helped=Count('volunteer__person', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
     )
 
     users = users.order_by('last_name', 'first_name')
@@ -788,7 +793,7 @@ def account_cancel(request):
                                .filter(cancelled=None))
 
         events_as_volunteer = (Event.objects.all()
-                               .filter(helpers=user)
+                               .filter(volunteer__person=user, volunteer__withdrawn=None, volunteer__declined=None)
                                .filter(start__gte=timezone.now())
                                .filter(cancelled=None))
 
@@ -937,7 +942,7 @@ def send_emails(request):
                 .exclude(email_validated=None)
                 .filter(send_other=True)
                 .annotate(num_owned=Count('events_owned', distinct=True))
-                .annotate(num_helped=Count('events_volunteered', distinct=True))
+                .annotate(num_helped=Count('volunteer', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
             )
 
             users = get_user_model().objects.none()
@@ -977,7 +982,7 @@ def send_emails(request):
 
 class PasswordResetView(DefaultPasswordResetView):
     """
-    Override protocol as sent to message template to use iur configuration
+    Override protocol as sent to message template to use our configuration
     """
     extra_email_context = { 'protocol': settings.WEBAPP_SCHEME }
 

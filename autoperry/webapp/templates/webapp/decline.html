@@ -21,9 +21,9 @@
 
     <dt>Current helpers</dt>
     <dd>
-    {% if event.helpers.all %}
+    {% if event.current_helpers %}
       <ul style="list-style: none; padding: 0; margin: 0">
-      {% for h in event.helpers.all %}
+      {% for h in event.current_helpers %}
         <li>
           {{ h.get_full_name }} ({{ h.email|urlize }})
         </li>

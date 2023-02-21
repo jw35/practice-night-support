@@ -9,7 +9,7 @@
 
 <h2>Update event details</h2>
 
-{% if event.helpers.all %}
+{% if event.current_helpers %}
 <div class="alert alert-block alert-warning">
 <p>There are helpers for this event.</p>
 
@@ -21,7 +21,7 @@ that they don't for example turn up at the wrong time or place.</p>
 <p>The helpers are:</p>
 
     <ul class="m-0">
-          {% for helper in event.helpers.all %}
+          {% for helper in event.current_helpers %}
         <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
           {% endfor %}
     </ul>

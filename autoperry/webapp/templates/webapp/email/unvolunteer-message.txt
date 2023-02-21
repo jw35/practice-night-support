@@ -5,8 +5,8 @@
 
 {% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.email }} has just withdrawn their offer to help with this event.{% endfilter %}
 
-{% if event.helpers.all.count > 0 %}Your remaining helpers are:
-      {% for helper in event.helpers.all %}
+{% if event.current_helpers > 0 %}Your remaining helpers are:
+      {% for helper in event.current_helpers %}
     * {{ helper.get_full_name }} ({{ helper.email }}){% endfor %}{% else %}There are now no helpers for this event.{% endif %}
 
 You can find more details of this event at:

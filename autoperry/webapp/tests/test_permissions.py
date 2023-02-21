@@ -230,7 +230,7 @@ class PermissionsTestCase(TestCase):
             with self.subTest(url):
                 response = self.client.get(url)
                 # Cancel and Unvolunteer redirect because not allowed by this user
-                if url == '/account/cancel/' or url == '/event/1/unvolunteer/' or url == '/account/resend/':
+                if url == '/account/cancel/' or url == '/event/1/unvolunteer/' or url == '/account/resend/' or url == '/event/1/decline/1/':
                     self.assertEqual(response.status_code, 302, url)
                 else:
                     self.assertEqual(response.status_code, 200, url)

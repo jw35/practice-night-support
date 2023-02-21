@@ -6,13 +6,13 @@
 
 <h2>Cancel request for help</h2>
 
-{% if event.helpers.all %}
+{% if event.current_helpers %}
 <div class="alert alert-block alert-warning">
 <p>There are helpers for this event. We will try to send them an email
 to let them know that they won't be needed, but you might want to check with them
 that this arrived and they know that they don't need to turn up:</p>
     <ul class="m-0">
-          {% for helper in event.helpers.all %}
+          {% for helper in event.current_helpers %}
         <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
           {% endfor %}
     </ul>
