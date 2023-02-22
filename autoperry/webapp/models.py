@@ -151,3 +151,6 @@ class Volunteer(models.Model):
     def __str__(self):
         return f'{self.person} helping at {self.event}'
 
+    class Meta:
+        ordering = ["created"]
+
