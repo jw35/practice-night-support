@@ -942,7 +942,7 @@ def send_emails(request):
                 .exclude(email_validated=None)
                 .filter(send_other=True)
                 .annotate(num_owned=Count('events_owned', distinct=True))
-                .annotate(num_helped=Count('volunteer', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
+                .annotate(num_helped=Count('volunteer__person', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
             )
 
             users = get_user_model().objects.none()
@@ -957,6 +957,8 @@ def send_emails(request):
                 users = users | base_users.filter(num_helped__exact=0).filter(num_owned__exact=0)
 
             to_addresses = users.values_list('email', flat=True)
+
+            print(to_addresses)
 
             if to_addresses:
 
