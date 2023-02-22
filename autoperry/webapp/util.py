@@ -158,9 +158,11 @@ def build_stats_screen(now):
     helper_totals = (Event.objects.all()
         .filter(start__lte=now)
         .aggregate(
-            helpers_provided=Count('helpers', filter=Q(cancelled=None)),
-            distinct_helpers=Count('helpers', distinct=True, filter=Q(cancelled=None)),
-            helpers_cancelled=Count('helpers', filter=~Q(cancelled=None))
+            helpers_provided=Count('volunteer__person', filter=(Q(cancelled=None) & Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))),
+            distinct_helpers=Count('volunteer__person', distinct=True, filter=(Q(cancelled=None) & Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))),
+            helpers_cancelled=Count('volunteer__person', filter=(~Q(cancelled=None) & Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))),
+            helpers_withdrawn=Count('volunteer__person', filter=~Q(volunteer__withdrawn=None)),
+            helpers_declined=Count('volunteer__person', filter=~Q(volunteer__declined=None)),
         )
     )
 
@@ -185,9 +187,11 @@ def build_stats_screen(now):
     # a join which would multiply counts on Event fields
     helper_sum = (events
         .annotate(
-            helpers_provided=Count('helpers', filter=Q(cancelled=None)),
-            distinct_helpers=Count('helpers', distinct=True, filter=Q(cancelled=None)),
-            helpers_cancelled=Count('helpers', filter=~Q(cancelled=None))
+            helpers_provided=Count('volunteer__person', filter=(Q(cancelled=None) & Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))),
+            distinct_helpers=Count('volunteer__person', distinct=True, filter=(Q(cancelled=None) & Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))),
+            helpers_cancelled=Count('volunteer__person', filter=(~Q(cancelled=None) & Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))),
+            helpers_withdrawn=Count('volunteer__person', filter=~Q(volunteer__withdrawn=None)),
+            helpers_declined=Count('volunteer__person', filter=~Q(volunteer__declined=None)),
         )
         .order_by()
     )

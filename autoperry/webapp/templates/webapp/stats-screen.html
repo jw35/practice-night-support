@@ -40,6 +40,15 @@
           <td>
             <div class="fw-bold stats-head-label">Distinct helpers</div>
           </td>
+          <td>
+            <div class="fw-bold stats-head-label">Offers withdrawn</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Offers declined</div>
+          </td>
+          <td>
+            <div class="fw-bold stats-head-label">Offers cancelled</div>
+          </td>
         </tr>
       </thead>
 
@@ -80,6 +89,18 @@
             {{ month.distinct_helpers }}
           </td class="text-end">
 
+          <td class="text-end">
+            {{ month.helpers_withdrawn }}
+          </td class="text-end">
+
+          <td class="text-end">
+            {{ month.helpers_declined }}
+          </td class="text-end">
+
+          <td class="text-end">
+            {{ month.helpers_cancelled }}
+          </td class="text-end">
+
         </tr>
       {% endfor %}
 
@@ -101,12 +122,12 @@
             {{ event_totals.cancelled_events }}
           </td>
 
-          <td class="text-end">
-            [{{ event_totals.owners }}]
+          <td class="text-end fst-italic">
+            {{ event_totals.owners }}
           </td>
 
-          <td class="text-end">
-            [{{ event_totals.locations }}]
+          <td class="text-end fst-italic">
+            {{ event_totals.locations }}
           </td>
 
           <td class="text-end">
@@ -117,9 +138,21 @@
             {{ helper_totals.helpers_provided }}
           </td>
 
-          <td class="text-end">
-            [{{ helper_totals.distinct_helpers }}]
+          <td class="text-end fst-italic">
+            {{ helper_totals.distinct_helpers }}
           </td>
+
+          <td class="text-end">
+            {{ helper_totals.helpers_withdrawn }}
+          </td class="text-end">
+
+          <td class="text-end">
+            {{ helper_totals.helpers_declined }}
+          </td class="text-end">
+
+          <td class="text-end">
+            {{ helper_totals.helpers_cancelled }}
+          </td class="text-end">
 
         </tr>
 
@@ -131,8 +164,44 @@
    </div>
 
 
-    <p>This table only includes events that are complete. As a result, the figures for the final
+    <p>This table only includes events that are complete &ndash; the figures for the final
     month shown are <span class="fst-italic">probably incomplete</span>.</p>
+
+    <h5>Key:</h5>
+
+    <dl>
+      <dt>Events delivered</dt>
+      <dd>Number of events that (probably) happened.</dd>
+    
+      <dt>Events cancelled</dt>
+      <dd>Number of events for which the request for help was cancelled before the event happened.</dd>
+
+      <dt>Distinct organisers</dt>
+      <dd>Number of individuals who organised events.</dd>
+
+      <dt>Distinct locations</dt>
+      <dd>Number of locations that hosted events (based on a textual comparison, so for example 'Little Shelford'
+      and 'Lt. Shelford' would count separately)</dd>
+
+      <dt>Helpers wanted</dt>
+      <dd>Total number of helpers requested.</dd>
+
+      <dt>Helpers provided</dt>
+      <dd>Total number of helpers organised by AutoPerry.</dd>
+
+      <dt>Distinct helpers</dt>
+      <dd>Number of individuals who acted as helpers.</dd>
+
+      <dt>Offers withdrawn</dt>
+      <dd>Number of offers of help subsequently withdrawn by the helper.</dd>
+
+      <dt>Offers declined</dt>
+      <dd>Number of offers of help subsequently declined by the event organiser.</dd>
+
+      <dt>Offers cancelled</dt>
+      <dd>Number of offers of help at events where the request for help was subsequently cancelled.</dd>
+
+    </dl>
 
 </div>
 

@@ -72,6 +72,8 @@ class PermissionsTestCase(TestCase):
             approved=base,
             cancelled=base)
 
+        # *** 1980-03
+
         cls.event1 = Event.objects.create(
             start=base,
             end=base + one_hour,
@@ -79,8 +81,10 @@ class PermissionsTestCase(TestCase):
             helpers_required=2,
             owner=cls.user2)
 
-        cls.event1.helpers.add(cls.user1)
-        cls.event1.helpers.add(cls.user2)
+        cls.event1.volunteer_set.create(person=cls.user1)
+        cls.event1.volunteer_set.create(person=cls.user2)
+
+        cls.event1.volunteer_set.create(person=cls.user4, withdrawn=next_month)
 
         cls.event2 = Event.objects.create(
             start=base + one_day,
@@ -89,7 +93,10 @@ class PermissionsTestCase(TestCase):
             helpers_required=1,
             owner=cls.user3)
 
-        cls.event2.helpers.add(cls.user1)
+        cls.event2.volunteer_set.create(person=cls.user1)
+
+        cls.event2.volunteer_set.create(person=cls.user3, declined=next_month)
+        cls.event2.volunteer_set.create(person=cls.user4, declined=next_month)
 
         cls.event3 = Event.objects.create(
             start=base + (2*one_day),
@@ -99,7 +106,10 @@ class PermissionsTestCase(TestCase):
             owner=cls.user2,
             cancelled=next_month)
 
-        cls.event3.helpers.add(cls.user1)
+        cls.event3.volunteer_set.create(person=cls.user1)
+        cls.event3.volunteer_set.create(person=cls.user3, declined=next_month)
+
+        # *** 1960-04
 
         cls.event4 = Event.objects.create(
             start=next_month,
@@ -108,7 +118,12 @@ class PermissionsTestCase(TestCase):
             helpers_required=1,
             owner=cls.user3)
 
-        cls.event4.helpers.add(cls.user1)
+        cls.event4.volunteer_set.create(person=cls.user1)
+        cls.event4.volunteer_set.create(person=cls.user4, declined=next_month)
+
+        # <----- NOW ----->
+
+        # *** 1906-05
 
         cls.event5 = Event.objects.create(
             start=future,
@@ -117,7 +132,8 @@ class PermissionsTestCase(TestCase):
             helpers_required=1,
             owner=cls.user2)
 
-        cls.event5.helpers.add(cls.user1)
+        cls.event5.volunteer_set.create(person=cls.user1)
+        cls.event5.volunteer_set.create(person=cls.user4, declined=future)
 
         cls.event6 = Event.objects.create(
             start=future + (2*one_hour),
@@ -126,6 +142,8 @@ class PermissionsTestCase(TestCase):
             helpers_required=1,
             owner=cls.user2,
             cancelled=future+one_day)
+
+        cls.event6.volunteer_set.create(person=cls.user4, withdrawn=future)
 
         cls.now = now
 
@@ -151,6 +169,8 @@ class PermissionsTestCase(TestCase):
              'helpers_provided': 3,
              'distinct_helpers': 2,
              'helpers_cancelled': 1,
+             'helpers_withdrawn': 1,
+             'helpers_declined': 3,
              'incomplete': False,
             })
 
@@ -164,6 +184,8 @@ class PermissionsTestCase(TestCase):
              'helpers_provided': 1,
              'distinct_helpers': 1,
              'helpers_cancelled': 0,
+             'helpers_withdrawn': 0,
+             'helpers_declined': 1,
              'incomplete': True,
             })
 
@@ -179,5 +201,7 @@ class PermissionsTestCase(TestCase):
             {'helpers_provided': 4,
              'distinct_helpers': 2,
              'helpers_cancelled': 1,
+             'helpers_withdrawn': 1,
+             'helpers_declined': 4,
             })
 
