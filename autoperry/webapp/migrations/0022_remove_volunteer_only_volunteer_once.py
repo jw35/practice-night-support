@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+from django.db.models.indexes import Index
 
 class Migration(migrations.Migration):
 
@@ -10,6 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AddIndex('volunteer', Index(fields=['event'], name='event_index')),
         migrations.RemoveConstraint(
             model_name='volunteer',
             name='only_volunteer_once',
