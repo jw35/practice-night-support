@@ -55,14 +55,25 @@
 
     {% if user_is_owner %}
 
-    <dt>Current helpers</dt>
+    <dt>Helpers</dt>
     <dd>
-    {% if event.current_helpers %}
+
+    {% if event.volunteer_set.all %}
       <ul style="list-style: none; padding: 0; margin: 0">
-      {% for helper in event.current_helpers %}
+      {% for helper in event.volunteer_set.all %}
         <li>
-          {{ helper.get_full_name }} ({{ helper.email|urlize }})
-          <a href="{% url 'decline' event_id=event.pk helper_id=helper.pk%}" class="btn btn-outline-secondary btn-sm">Decline</a>
+
+          {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
+          ({{ helper.person.email|urlize }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
+
+          {% if helper.withdrawn %} (withdrawn {{ helper.withdrawn|date:"D, j M" }}){% endif %}
+
+          {% if helper.declined %} (declined {{ helper.declined|date:"D, j M" }}){% endif %}
+
+          {% if not helper.withdrawn and not helper.declined %}
+             <a href="{% url 'decline' event_id=event.pk helper_id=helper.person.pk %}" class="btn btn-outline-secondary btn-sm mt-1">Decline</a>
+          {% endif %}
+
         </li>
       {% endfor %}
       </ul>
@@ -160,15 +171,19 @@
         <dd>
         {% if event.volunteer_set.all %}
           <ul style="list-style: none; padding: 0; margin: 0">
-          {% for helper in event.volunteer_set.all %}
-            <li>
-              {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
-              ({{ helper.person.email|urlize }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
-              {% if helper.withdrawn %} (withdrawn){% endif %}
-              {% if helper.declined %} (declined){% endif %}
-            </li>
-          {% endfor %}
-          </ul>
+      {% for helper in event.volunteer_set.all %}
+        <li>
+
+          {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
+          ({{ helper.person.email|urlize }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
+
+          {% if helper.withdrawn %} (withdrawn {{ helper.withdrawn|date:"D, j M" }}){% endif %}
+
+          {% if helper.declined %} (declined {{ helper.declined|date:"D, j M" }}){% endif %}
+
+        </li>
+      {% endfor %}
+      </ul>
         {% else %}
         None
         {% endif %}
