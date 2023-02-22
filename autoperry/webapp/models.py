@@ -153,4 +153,5 @@ class Volunteer(models.Model):
 
     class Meta:
         ordering = ["created"]
+        indexes = [models.Index(fields=['event'], name='event_index')]
 
