@@ -1,6 +1,9 @@
 from django_use_email_as_username.models import BaseUser, BaseUserManager
+from django.contrib import admin
 from django.db import models
+from django.apps import apps
 from django.utils.translation import gettext_lazy as _
+
 
 class User(BaseUser):
     objects = BaseUserManager()
@@ -23,6 +26,7 @@ class User(BaseUser):
         return self.get_full_name()
 
     @property
+    @admin.display(boolean=True)
     def is_enabled(self):
 
         """
@@ -36,6 +40,49 @@ class User(BaseUser):
                 self.email_validated and
                 not self.suspended and
                 not self.cancelled)
+
+    @property
+    @admin.display(boolean=True)
+    def is_email_validated(self):
+        return self.email_validated != None
+
+    @property
+    @admin.display(boolean=True)
+    def is_approved(self):
+        return self.approved != None
+
+    @property
+    @admin.display(boolean=True)
+    def is_suspended(self):
+        return self.suspended != None
+
+    @property
+    @admin.display(boolean=True)
+    def is_cancelled(self):
+        return self.cancelled != None
+
+    @property
+    def n_events_helped(self):
+        """
+        Return the number of events at which the user helped
+        """
+        return (apps.get_model('webapp', 'Event').objects.
+            filter(
+                volunteer__person=self,
+                volunteer__withdrawn=None,
+                volunteer__declined=None
+            ).count()
+       )
+
+    @property
+    def n_events_owned(self):
+        """
+        Return the number of events at which the user helped
+        """
+        return (self.events_owned.all().count())
+
+
+
 
     class Meta:
 

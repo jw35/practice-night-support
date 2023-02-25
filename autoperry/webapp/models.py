@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
@@ -25,6 +26,7 @@ class Event(models.Model):
     # Also volunteer_set/volunteer to access the individual volunteering records
 
 
+
     def has_current_helper(self, user):
         """
         tests if user is a current (so not withdrawn, not declined)
@@ -47,6 +49,13 @@ class Event(models.Model):
             )
        )
 
+    @property
+    def n_helpers_available(self):
+        """
+        Return the number of current helpers
+        """
+        return len(self.current_helpers)
+
 
     @property
     def contact(self):
@@ -59,21 +68,36 @@ class Event(models.Model):
 
 
     @property
+    @admin.display(boolean=True)
     def past(self):
         """
         Is this event in the past?
         """
-        return self.start < timezone.now()
+        if self.start:
+            return self.start < timezone.now()
+        return False
+
+    @property
+    @admin.display(boolean=True)
+    def is_cancelled(self):
+        """
+        Has this event been cancelled?
+        """
+        return self.cancelled != None
 
 
     @property
+    @admin.display(boolean=True)
     def helpers_needed(self):
         """
         Does this event still need helpers?
         """
-        return self.helpers_required > len(self.volunteer_set.current()) and not self.cancelled and not self.past
+        if self.helpers_required:
+            return self.helpers_required > len(self.volunteer_set.current()) and not self.cancelled and not self.past
+        return True
 
     @property
+    @admin.display(ordering='start')
     def when(self):
         """
         Date of the event with start and end times
@@ -89,6 +113,7 @@ class Event(models.Model):
                 format(end, "g:i a"))
 
     @property
+    @admin.display(ordering='start')
     def short_when(self):
         """
         Short format d of the event with start and end times
@@ -145,6 +170,7 @@ class Volunteer(models.Model):
     objects = VolunteerManager()
 
     @property
+    @admin.display(boolean=True)
     def current(self):
         return self.withdrawn == None and self.declined == None
 

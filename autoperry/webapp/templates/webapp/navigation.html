@@ -53,6 +53,9 @@
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">List all users</a></li>
             {% url 'send-emails' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Send emails</a></li>
+            {% if user.is_superuser %}
+            <li><a href="/django-admin" class="dropdown-item {% if request.path == url %}active{% endif %}">Django admin</a></li>
+            {% endif %}
           </ul>
         </li>
         {% endif %}
