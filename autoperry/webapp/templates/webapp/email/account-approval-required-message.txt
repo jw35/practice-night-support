@@ -8,4 +8,6 @@ To confirm this account, please go to:
 
     {{scheme}}://{{domain}}{% url 'account-approve-list' %}
 
+AutoPerry.
+
 {% endautoescape %}

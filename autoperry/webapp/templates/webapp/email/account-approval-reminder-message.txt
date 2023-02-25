@@ -7,4 +7,6 @@
 {% endfor %}
 See full list: URL:  {{scheme}}://{{domain}}{% url 'account-approve-list' %}
 
+AutoPerry.
+
 {% endautoescape %}

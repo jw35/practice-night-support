@@ -6,6 +6,9 @@ You can login and use the system at:
 
 Thanks very much for helping to support ringing in the Cambridge District.
 
+AutoPerry.
+
+
 -----------------------------------------------------------------------
 You can control messages from AutoPerry from your account edit page:
 https://autoperry.cambridgeringing.info{% url 'account-edit' %}{% endautoescape %}
