@@ -6,6 +6,6 @@
 
 To confirm this account, please go to:
 
-    {{scheme}}://{{domain}}{% url 'account-approve' user_id=user.pk %}
+    {{scheme}}://{{domain}}{% url 'account-approve-list' %}
 
 {% endautoescape %}
