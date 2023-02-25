@@ -587,7 +587,7 @@ def account_list(request):
 
     users = (users
         .annotate(num_owned=Count('events_owned', distinct=True))
-        .annotate(num_helped=Count('volunteer__person', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
+        .annotate(num_helped=Count('volunteer__id', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
     )
 
     users = users.order_by('last_name', 'first_name')
