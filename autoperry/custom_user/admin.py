@@ -7,18 +7,34 @@ from webapp.models import Event
 
 class HelpedInLine(admin.TabularInline):
     model = User.events_volunteered.through
+    fields = [
+        "event",
+        "created",
+        "withdrawn",
+        "declined",
+        "current"
+    ]
+    readonly_fields = [
+        "event",
+        "created",
+        "current"
+    ]
     verbose_name = 'events helped'
-    extra = 1
+    extra = 0
     show_change_link = True
+    classes = ( "collapse", )
 
 class OwnedInLine(admin.TabularInline):
     fields = [
-        "start",
-        "end",
-        "location"]
+        "__str__"
+    ]
+    readonly_fields = [
+        "__str__"
+    ]
     model = Event
-    extra = 1
+    extra = 0
     show_change_link = True
+    classes = ( "collapse", )
 
 class BooleanDateListFilter(admin.SimpleListFilter):
 
@@ -80,6 +96,9 @@ class CustomBaseUserAdmin(BaseUserAdmin):
             "Password", {
                 "fields": (
                     "password",
+                ),
+                "classes": (
+                    "collapse",
                 )
             }
         ),
@@ -107,7 +126,7 @@ class CustomBaseUserAdmin(BaseUserAdmin):
                     "user_permissions",
                 ),
                 "classes": (
-                    "collapse"
+                    "collapse",
                 )
             },
         ),

@@ -59,23 +59,33 @@ class PastListFilter(admin.SimpleListFilter):
 
 class HelpersInline(admin.TabularInline):
     model = Event.helpers.through
-    readonly_fields = ['created', 'current']
-    extra = 1
+    fields = [
+        "person",
+        "created",
+        "withdrawn",
+        "declined",
+        "current"
+    ]
+    readonly_fields = [
+        "person",
+        "created",
+        "current"
+    ]
+    verbose_name = 'events helped'
+    extra = 0
+    show_change_link = True
+    classes = ( "collapse", )
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     date_hierarchy = 'start'
     fields = [
-        'start',
-        'end',
-        'location',
-        'helpers_required',
+        ('start', 'end'),
+        ('location', 'helpers_required'),
         'owner',
         'created',
-        'owner_reminded',
-        'cancelled',
-        'past',
-        'helpers_needed',
+        ('owner_reminded', 'cancelled'),
+        ('past', 'helpers_needed'),
         'contact_address',
         'notes',
         ]
