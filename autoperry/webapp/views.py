@@ -625,7 +625,6 @@ def account(request):
     if not user.uuid:
         user.uuid = uuid4()
         user.save()
-        print(user.uuid)
 
     return render(request, "webapp/account.html")
 
@@ -1054,5 +1053,7 @@ def ical(request, uuid):
     )
 
     response.writelines(c.serialize_iter())
+
+    logger.info(f'Calendar feed collected by "{user}"')
 
     return response
