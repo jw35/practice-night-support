@@ -1023,22 +1023,32 @@ def ical(request, uuid):
     tz = pytz.timezone('Europe/London')
 
     for event in events_as_voluteer:
+
+        description = f'Organised by: {event.owner.get_full_name()} {event.contact}'
+        if event.notes:
+            description += f'\n{event.notes}'
+
         e = ics.Event(
           name = "AutoPerry helper",
-          description = event.notes,
+          description = description,
           begin = event.start.replace(tzinfo=tz),
           end = event.end.replace(tzinfo=tz),
           location = event.location,
-          organizer = event.contact,
           url = f"{settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}{event.get_absolute_url()}",
           uid = f"helper-{event.pk}@autoperry.cambridgeringing.org"
         )
         c.events.add(e)
 
     for event in events_as_organiser:
+
+        description = (f'{event.n_helpers_available} helpers of the {event.helpers_required} requested:\n' +
+            '\n'.join(map(lambda u: f'{u.get_full_name()} {u.email}', event.current_helpers)))
+        if event.notes:
+            description += f'\n{event.notes}'
+
         e = ics.Event(
           name = "AutoPerry event",
-          description=event.notes,
+          description=description,
           begin = event.start.replace(tzinfo=tz),
           end = event.end.replace(tzinfo=tz),
           location = event.location,
