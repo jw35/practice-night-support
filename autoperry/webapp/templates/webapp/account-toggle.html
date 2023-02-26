@@ -12,16 +12,38 @@
 {% endif %}
 </h2>
 
+{% if action == 'suspend' and events_as_organiser %}
+<div class="alert alert-warning">
+<p>The owner of this account is the organiser of events that have yet to happen:</p>
+<ul>
+    {% for event in events_as_organiser %}
+    <li><a href="{% url 'event-details' event_id=event.pk %}" class="alert-link">{{ event.short_when }} {{ event.location }}</a></li>
+    {% endfor %}
+</ul>
+</div>
+{% endif %}
+
+{% if action == 'suspend' and events_as_volunteer %}
+<div class="alert alert-warning">
+<p>The owner of this account has volunteered to help with events that have yet to happen:</p>
+<ul>
+    {% for event in events_as_volunteer %}
+    <li><a href="{% url 'event-details' event_id=event.pk %}" class="alert-link">{{ event.short_when }} {{ event.location }}</a></li>
+    {% endfor %}
+</ul>
+</div>
+{% endif %}
+
 <dl>
 
     <dt>Name:</dt>
-    <dd>{{ user.first_name }} {{ user.last_name }}</dd>
+    <dd>{{ target_user.first_name }} {{ target_user.last_name }}</dd>
 
     <dt>Tower</dt>
-    <dd>{{ user.tower|default:'[none]' }}</dd>
+    <dd>{{ target_user.tower|default:'[none]' }}</dd>
 
     <dt>Email</dt>
-    <dd>{{ user.email|urlize }}</dd>
+    <dd>{{ target_user.email|urlize }}</dd>
 
 </dl>
 

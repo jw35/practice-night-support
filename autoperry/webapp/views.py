@@ -901,6 +901,15 @@ def account_toggle(request, action, user_id):
 
     user = get_object_or_404(get_user_model(), pk=user_id)
 
+    events_as_organiser = (Event.objects.all()
+                               .filter(owner=user)
+                               .filter(start__gte=timezone.now())
+                               .filter(cancelled=None))
+    events_as_volunteer = (Event.objects.all()
+                               .filter(volunteer__person=user, volunteer__withdrawn=None, volunteer__declined=None)
+                               .filter(start__gte=timezone.now())
+                               .filter(cancelled=None))
+
     errors = 0
     if action == 'suspend' and user.suspended:
         messages.error(request,f'User {user} is already suspended')
@@ -928,7 +937,12 @@ def account_toggle(request, action, user_id):
                 return HttpResponseRedirect(reverse('account-list'))
 
     return render(request, 'webapp/account-toggle.html',
-        { 'user': user, 'action': action, 'errors': errors })
+        { 'target_user': user,
+          'action': action,
+          'errors': errors,
+          'events_as_organiser': events_as_organiser,
+          'events_as_volunteer': events_as_volunteer
+        })
 
 
 @autoperry_login_required
@@ -1046,7 +1060,7 @@ def ical(request, uuid):
         else:
             description = (f'{event.n_helpers_available} helper(s) of the {event.helpers_required} requested:\n' +
             '\n   '.join(map(lambda u: f'{u.get_full_name()} {u.email}', event.current_helpers)))
-            
+
         if event.notes:
             description += f'\n\n{event.notes}'
 
