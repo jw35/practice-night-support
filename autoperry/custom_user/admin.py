@@ -96,6 +96,7 @@ class CustomBaseUserAdmin(BaseUserAdmin):
             "Password", {
                 "fields": (
                     "password",
+                    "uuid",
                 ),
                 "classes": (
                     "collapse",

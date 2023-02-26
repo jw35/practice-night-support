@@ -20,6 +20,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.safestring import mark_safe
 
 from datetime import datetime, timedelta
+from uuid import uuid4
+
+import ics
+import pytz
 
 from .models import Event
 from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
@@ -617,6 +621,12 @@ def account(request):
     Individual account details
     """
 
+    user = request.user
+    if not user.uuid:
+        user.uuid = uuid4()
+        user.save()
+        print(user.uuid)
+
     return render(request, "webapp/account.html")
 
 
@@ -1000,4 +1010,49 @@ def stats_screen(request):
         context=build_stats_screen(timezone.now())
         )
 
+def ical(request, uuid):
 
+    user = get_object_or_404(get_user_model(), uuid=uuid)
+
+    event_list = Event.objects.all().filter(start__gte=timezone.now()).filter(cancelled=None)
+
+    events_as_organiser = event_list.filter(owner=user)
+    events_as_voluteer = (event_list.filter(volunteer__person=user, volunteer__withdrawn=None, volunteer__declined=None))
+
+    c = ics.Calendar()
+    c.creator = f'AutoPerry - {settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}/'
+    tz = pytz.timezone('Europe/London')
+
+    for event in events_as_voluteer:
+        e = ics.Event(
+          name = "AutoPerry helper",
+          description = event.notes,
+          begin = event.start.replace(tzinfo=tz),
+          end = event.end.replace(tzinfo=tz),
+          location = event.location,
+          organizer = event.contact,
+          url = f"{settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}{event.get_absolute_url()}",
+          uid = f"helper-{event.pk}@autoperry.cambridgeringing.org"
+        )
+        c.events.add(e)
+
+    for event in events_as_organiser:
+        e = ics.Event(
+          name = "AutoPerry event",
+          description=event.notes,
+          begin = event.start.replace(tzinfo=tz),
+          end = event.end.replace(tzinfo=tz),
+          location = event.location,
+          url = f"{settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}{event.get_absolute_url()}",
+          uid = f"organizer-{event.pk}@autoperry.cambridgeringing.org"
+        )
+        c.events.add(e)
+
+    response = HttpResponse(
+        content_type='text/calendar',
+        headers={'Content-Disposition': 'attachment; filename="autoperry.ics"'},
+    )
+
+    response.writelines(c.serialize_iter())
+
+    return response

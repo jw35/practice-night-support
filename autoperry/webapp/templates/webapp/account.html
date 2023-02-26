@@ -23,6 +23,7 @@
 
     <dt>Date joined</dt>
     <dd>{{ user.date_joined|date:"l, j F Y g:i a"}}</dd>
+
 </dd>
 
 <p>
@@ -33,5 +34,7 @@
 </p>
 
 <p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>
+
+<p><a href="{% url 'ical' uuid=user.uuid %}">Calendar</a></p>
 
 {% endblock %}

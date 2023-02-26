@@ -21,6 +21,7 @@ class User(BaseUser):
     approved = models.DateTimeField(null=True, blank=True, help_text="Timestamp of approval")
     tower = models.CharField(max_length=50, blank=False, help_text="Where you normally ring")
     send_other = models.BooleanField(null=False, default=True, verbose_name="send other emails")
+    uuid = models.CharField(max_length=64, blank=True)
 
     def __str__(self):
         return self.get_full_name()
