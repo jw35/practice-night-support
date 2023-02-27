@@ -835,6 +835,7 @@ def account_cancel(request):
                 user.tower = ''
                 user.send_notifications = False
                 user.send_other = False
+                user.uuid = ''
                 user.save()
                 logout(request)
                 logger.info(log_message)
