@@ -1,0 +1,3 @@
+{% autoescape off %}Organised by: {{ event.owner.get_full_name }} {{event.contact}}
+{% if event.notes %}
+{{ event.notes }}{% endif %}{% endautoescape %}

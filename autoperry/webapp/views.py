@@ -1038,9 +1038,7 @@ def ical(request, uuid):
 
     for event in events_as_voluteer:
 
-        description = f'Organised by: {event.owner.get_full_name()} {event.contact}'
-        if event.notes:
-            description += f'\n\n{event.notes}'
+        description = render_to_string(f"webapp/ical-volunteer-fragment.txt", { 'event': event }).strip()
 
         e = ics.Event(
           name = "AutoPerry helper",
@@ -1055,14 +1053,7 @@ def ical(request, uuid):
 
     for event in events_as_organiser:
 
-        if event.n_helpers_available == 0:
-            description = 'No helpers available.'
-        else:
-            description = (f'{event.n_helpers_available} helper(s) of the {event.helpers_required} requested:\n' +
-            '\n   '.join(map(lambda u: f'{u.get_full_name()} {u.email}', event.current_helpers)))
-
-        if event.notes:
-            description += f'\n\n{event.notes}'
+        description = render_to_string(f"webapp/ical-owner-fragment.txt", { 'event': event }).strip()
 
         e = ics.Event(
           name = "AutoPerry event",
