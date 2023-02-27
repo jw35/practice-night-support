@@ -1,7 +1,15 @@
 
 {% load static %}
 
-<nav class="navbar navbar-expand-md bg-light mb-4 sticky-top">
+
+<div class="sticky-top">
+
+{% if debug %}
+<div class="striped"></div>
+{% endif %}
+
+<nav class="navbar navbar-expand-md bg-light mb-4">
+
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'index' %}">
       <img src="{% static 'webapp/elyda_logo.png' %}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
@@ -77,4 +85,6 @@
     </div>
   </div>
 </nav>
+
+</div>
 

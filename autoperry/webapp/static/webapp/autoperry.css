@@ -33,3 +33,13 @@ dd {
     -webkit-writing-mode: vertical-rl;
     writing-mode: vertical-rl;
 }
+.striped {
+    background-image: repeating-linear-gradient(
+    -45deg,
+    yellow,
+    yellow 20px,
+    black 20px,
+    black 40px
+  );
+    height: 10px;
+}
