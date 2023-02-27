@@ -626,7 +626,10 @@ def account(request):
         user.uuid = uuid4()
         user.save()
 
-    return render(request, "webapp/account.html")
+    return render(request, "webapp/account.html",
+        { 'domain': settings.WEBAPP_DOMAIN,
+          'scheme': settings.WEBAPP_SCHEME
+        })
 
 
 def account_create(request):

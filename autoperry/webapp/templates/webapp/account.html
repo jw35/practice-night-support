@@ -35,6 +35,6 @@
 
 <p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>
 
-<p><a href="{% url 'ical' uuid=user.uuid %}">Calendar</a></p>
+<p>iCal link: {% filter urlize %}{{ scheme }}://{{ domain }}{% url 'ical' uuid=user.uuid %}{% endfilter %}<p>
 
 {% endblock %}
