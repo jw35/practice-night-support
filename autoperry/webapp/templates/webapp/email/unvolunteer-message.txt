@@ -3,11 +3,11 @@
     Where: {{ event.location }}
     When:  {{ event.when }}
 
-{% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.email }} has just withdrawn their offer to help with this event.{% endfilter %}
+{% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.contact_info_text }} has just withdrawn their offer to help with this event.{% endfilter %}
 
 {% if event.current_helpers|length > 0 %}Your remaining helpers are:
       {% for helper in event.current_helpers %}
-    * {{ helper.get_full_name }} ({{ helper.email }}){% endfor %}{% else %}There are now no helpers for this event.{% endif %}
+    * {{ helper.get_full_name }} ({{ helper.contact_info_text }}){% endfor %}{% else %}There are now no helpers for this event.{% endif %}
 
 You can find more details of this event at:
 

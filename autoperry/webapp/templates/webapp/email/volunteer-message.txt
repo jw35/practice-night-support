@@ -3,11 +3,11 @@
     Where: {{ event.location }}
     When:  {{ event.when }}
 
-{% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.email }} has just volunteered to help with this event.{% endfilter %}
+{% filter wordwrap:72 %}{{ helper.get_full_name }} {{ helper.contact_info_text }} has just volunteered to help with this event.{% endfilter %}
 
 {% if event.current_helpers|length > 1 %}The full list of helpers is:
       {% for helper in event.current_helpers %}
-    * {{ helper.get_full_name }} ({{ helper.email }}){% endfor %}{% else %}At the moment this is your only helper.{% endif %}
+    * {{ helper.get_full_name }} ({{ helper.contact_info_text }}){% endfor %}{% else %}At the moment this is your only helper.{% endif %}
 
 You can find more details of this event at:
 

@@ -3,6 +3,7 @@
     Name:  {{ user.get_full_name }}
     Tower:  {{ user.tower }}
     Address: {{ user.email }}
+    Phone number:  {{ user.phone_number }}
     Waiting: {{ user.date_joined|timesince }}
 {% endfor %}
 See full list: URL:  {{scheme}}://{{domain}}{% url 'account-approve-list' %}

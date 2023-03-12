@@ -13,8 +13,7 @@ offer to help from:
 
     {{scheme}}://{{domain}}{% url 'event-details' event_id=event.pk %}
 
-If you have any questions about this, please contact the organiser at
-{{ event.contact }}.
+{% filter wordwrap:72 %}If you have any questions about this, please contact the organiser {{ event.owner }} at {{ event.contact_info_text }}.{% endfilter %}
 
 Thanks very much for helping to support ringing in the Cambridge District.
 

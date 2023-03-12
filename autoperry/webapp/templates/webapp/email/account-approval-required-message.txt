@@ -2,7 +2,8 @@
 
     Name:  {{ user.get_full_name }}
     Tower:  {{ user.tower }}
-    Address: {{ user.email }}
+    Address:  {{ user.email }}
+    Phone number:  {{ user.phone_number }}
 
 To confirm this account, please go to:
 

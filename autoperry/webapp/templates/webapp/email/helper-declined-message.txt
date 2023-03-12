@@ -3,7 +3,7 @@
     Where: {{ event.location }}
     When:  {{ event.when }}
 
-{% filter wordwrap:72 %}The organiser of this event {{ event.owner }} no longer needs your help so there is no need for you to turn up. If you have any questions about this, please contact them at {{ event.contact }}.{% endfilter %}
+{% filter wordwrap:72 %}The organiser of this event {{ event.owner }} no longer needs your help so there is no need for you to turn up. If you have any questions about this, please contact them at {{ event.contact_info_text }}.{% endfilter %}
 
 You can find more details of this event at:
 

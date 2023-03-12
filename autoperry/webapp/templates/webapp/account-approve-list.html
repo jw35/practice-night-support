@@ -11,13 +11,14 @@
 
 {% if users %}
 
-      <table class="table table-responsive table-sm">
+      <table class="table table-responsive">
 
        <thead>
         <tr>
         <td class="fw-bold">Name</td>
         <td class="fw-bold">Tower</td>
         <td class="fw-bold">Address</td>
+        <td class="fw-bold">Phone</td>
         <td class="fw-bold">Waiting</td>
         <td class="fw-bold"></td>
       </tr>
@@ -34,6 +35,8 @@
         <td>{{ u.tower }}</td>
 
         <td>{{ u.email|urlize }}</td>
+
+        <td>{{ u.phone_number }}</td>
 
         <td>{{ u.date_joined|timesince }}</td>
 

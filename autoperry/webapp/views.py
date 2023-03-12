@@ -745,6 +745,7 @@ def account_edit(request):
             {'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'phone_number': user.phone_number,
             'tower': user.tower,
             'send_notifications': user.send_notifications,
             'send_other': user.send_other,
@@ -759,6 +760,7 @@ def account_edit(request):
                 user.email = form.cleaned_data['email']
                 user.first_name = form.cleaned_data['first_name']
                 user.last_name = form.cleaned_data['last_name']
+                user.phone_number = form.cleaned_data['phone_number']
                 user.tower = form.cleaned_data['tower']
                 user.send_notifications = form.cleaned_data['send_notifications']
                 user.send_other = form.cleaned_data['send_other']
@@ -836,6 +838,7 @@ def account_cancel(request):
                 user.first_name = ''
                 user.last_name = f'Cancelled user #{user.pk}'
                 user.tower = ''
+                user.phone_number = ''
                 user.send_notifications = False
                 user.send_other = False
                 user.uuid = ''

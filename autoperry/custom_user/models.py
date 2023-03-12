@@ -2,6 +2,8 @@ from django_use_email_as_username.models import BaseUser, BaseUserManager
 from django.contrib import admin
 from django.db import models
 from django.apps import apps
+from django.template.defaultfilters import force_escape, urlize
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 
@@ -22,9 +24,34 @@ class User(BaseUser):
     tower = models.CharField(max_length=50, blank=False, help_text="Where you normally ring")
     send_other = models.BooleanField(null=False, default=True, verbose_name="send other emails")
     uuid = models.CharField(max_length=64, blank=True)
+    phone_number = models.CharField(max_length=64, blank=True, help_text="Optional, useful in case of last-minute cancellations or changes of plan")
 
     def __str__(self):
         return self.get_full_name()
+
+    @property
+    def contact_info(self):
+
+        """
+        Email address as link, and phone number if there is one
+        """
+        result = urlize(self.email)
+        if self.phone_number:
+            result += f', {force_escape(self.phone_number)}'
+        return mark_safe(result)
+
+
+    @property
+    def contact_info_text(self):
+
+        """
+        Email address as text, and phone number if there is one
+        """
+        result = self.email
+        if self.phone_number:
+            result += f', {self.phone_number}'
+        return result
+
 
     @property
     @admin.display(boolean=True)

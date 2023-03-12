@@ -87,6 +87,7 @@ class CustomBaseUserAdmin(BaseUserAdmin):
                     "last_name",
                     "first_name",
                     "email",
+                    "phone_number",
                     "tower",
                     ("send_notifications", "send_other"),
                 )

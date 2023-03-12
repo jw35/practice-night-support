@@ -45,7 +45,7 @@
       {% if user_is_owner %}
       <dd>You</dd>
       {% else %}
-      <dd>{{ event.owner.get_full_name }} ({{ event.contact|urlize }})</dd>
+      <dd>{{ event.owner.get_full_name }} ({{ event.contact_info }})</dd>
       {% endif %}
 
     {% endif %}
@@ -64,7 +64,7 @@
         <li>
 
           {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
-          ({{ helper.person.email|urlize }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
+          ({{ helper.person.contact_info }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
 
           {% if helper.withdrawn %} (withdrawn {{ helper.withdrawn|date:"D, j M" }}){% endif %}
 
@@ -156,7 +156,7 @@
       <dl>
 
         <dt>Event owner</dt>
-        <dd>{{ event.owner.get_full_name }} ({{ event.contact|urlize }})</dd>
+        <dd>{{ event.owner.get_full_name }} ({{ event.contact_info }})</dd>
 
         <dt>Event contact address</dt>
         <dd>{{ event.contact_address|urlize|default:"[none]" }}</dd>
@@ -175,7 +175,7 @@
         <li>
 
           {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
-          ({{ helper.person.email|urlize }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
+          ({{ helper.person.contact_info }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
 
           {% if helper.withdrawn %} (withdrawn {{ helper.withdrawn|date:"D, j M" }}){% endif %}
 

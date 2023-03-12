@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.dateformat import format
+from django.template.defaultfilters import force_escape, urlize
+from django.utils.safestring import mark_safe
 from django.urls import reverse
 
 from custom_user.models import User
@@ -62,9 +64,30 @@ class Event(models.Model):
         """
         Contact address for this event
         """
-        if self.contact_address:
-            return self.contact_address
-        return self.owner.email
+        return self.contact_address if self.contact_address else self.owner.email
+
+
+    @property
+    def contact_info(self):
+        """
+        Contact information for this event
+        """
+
+        result = urlize(self.contact)
+        if self.owner.phone_number:
+            result += f', {force_escape(self.owner.phone_number)}'
+        return mark_safe(result)
+
+    @property
+    def contact_info_text(self):
+        """
+        Contact information for this event as text
+        """
+
+        result = self.contact
+        if self.owner.phone_number:
+            result += f', {self.owner.phone_number}'
+        return result
 
 
     @property

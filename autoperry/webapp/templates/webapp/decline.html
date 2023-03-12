@@ -25,7 +25,7 @@
       <ul style="list-style: none; padding: 0; margin: 0">
       {% for h in event.current_helpers %}
         <li>
-          {{ h.get_full_name }} ({{ h.email|urlize }})
+          {{ h.get_full_name }} ({{ h.contact_info }})
         </li>
       {% endfor %}
       </ul>
@@ -50,6 +50,9 @@
     <dt>Email address</dt>
     <dd>{{ helper.email|urlize }}</dd>
 
+    <dt>Phone number</dt>
+    <dd>{{ helper.phone_number }}</dd>
+
 </dl>
 
 </div>
@@ -63,7 +66,8 @@
 <p>If want to proceed, please confirm that you want to decline this
 helper's offer of help at this event. We will try to send them an email to
 let them know that they won't be needed, but you should contact them to check
-that this arrived and to let them know why they are no longer required.</p>
+that this arrived and to let them know why they are no longer required. If the
+event is imminent, please telephone them if possible.</p>
 
 <form method="post">
     {% csrf_token %}

@@ -13,7 +13,10 @@
     <dd>{{ user.get_full_name }}</dd>
 
     <dt>Tower</dt>
-    <dd>{{ user.tower }}</dd>
+    <dd>{{ user.tower|default:"[none]" }}</dd>
+
+    <dt>Phone number</dt>
+    <dd>{{ user.phone_number|default:"[none]" }}</dd>
 
     <dt>Send alerts and reminders about your events?</dt>
     <dd>{{ user.send_notifications|yesno|capfirst }}</dd>
@@ -35,6 +38,6 @@
 
 <p><a href="{% url 'privacy' %}">How we use the information you provide</a></p>
 
-<p>iCal link: {% filter urlize %}{{ scheme }}://{{ domain }}{% url 'ical' uuid=user.uuid %}{% endfilter %}<p>
+<p>Personal iCal link: {% filter urlize %}{{ scheme }}://{{ domain }}{% url 'ical' uuid=user.uuid %}{% endfilter %}<p>
 
 {% endblock %}

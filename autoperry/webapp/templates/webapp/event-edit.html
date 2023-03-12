@@ -15,14 +15,15 @@
 
 <p>If you change it significantly (time, place, etc.) then these people may no
 longer be able to help. We will try to send them an email to let them know
-about any changes, but you might want to check with them that this arrived so
-that they don't for example turn up at the wrong time or place.</p>
+about any changes, but you should check with them that this arrived so
+that they don't for example turn up at the wrong time or place.  If the
+event is imminent, please telephone them if possible.</p>
 
 <p>The helpers are:</p>
 
     <ul class="m-0">
           {% for helper in event.current_helpers %}
-        <li>{{ helper.get_full_name }} ({{ helper.email|urlize }})</li>
+        <li>{{ helper.get_full_name }} ({{ helper.contact_info }})</li>
           {% endfor %}
     </ul>
 

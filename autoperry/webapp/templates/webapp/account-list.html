@@ -63,8 +63,8 @@
         <thead>
         <tr>
         <td class="fw-bold">Name<br>Tower</td>
-        <td class="fw-bold">Email<br>&nbsp;</td>
-        <td class="fw-bold">Created<br>LastLogin</td>
+        <td class="fw-bold">Email<br>Phone</td>
+        <td class="fw-bold">Created<br>Last Login</td>
         <td colspan="4" class="fw-bold">Flags</td>
         <td colspan="2" class="fw-bold">Counts</td>
       </tr>
@@ -81,16 +81,17 @@
         </td>
 
         <td>
-          {{ user.email|urlize }}<br>
+          {{ user.email|urlize }}
           {% if user.send_notifications and user.send_other %}
-          Allow all
           {% elif user.send_notifications %}
-          Alerts only
+          (alerts only)
           {% elif user.send_other %}
-          Non-alert emails only
+          (other only)
           {% else %}
-          Allow none
+          (no emails)
           {% endif %}
+          <br>
+          {{ user.phone_number|truncatechars:30 }}
         </td>
 
         <td>
