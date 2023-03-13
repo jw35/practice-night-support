@@ -201,7 +201,7 @@ def event_create(request):
                                      contact_address=form.cleaned_data['contact_address'],
                                      notes=form.cleaned_data['notes'],
                                      alerts=form.cleaned_data['alerts'])
-                logger.info(f'Event id {event.id} "{event}" created by "{user}"')
+                logger.info(f'"{user}"" created "{event}"')
                 messages.success(request, 'Event successfully created')
 
                 return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
@@ -315,7 +315,7 @@ def event_edit(request, event_id):
                         event.alerts = form.cleaned_data['alerts']
                         event.save()
 
-                        logger.info(f'Event id {event.id} "{event}" updated by "{user}"')
+                        logger.info(f'"{user}"" updated "{event}"')
 
                         send_email = False
                         for field in ('date', 'start_time', 'end_time', 'location', 'helpers_required', 'notes'):
@@ -329,15 +329,15 @@ def event_edit(request, event_id):
                                         { "event": event, "before": initial_data,
                                           "after": form.cleaned_data })
                                 else:
-                                    logger.warn(f'Unable to notify {helper} that event id {event.id} "{event}" has been edited')
+                                    logger.warn(f'Can\'t notify "{helper}" that "{event}" has been edited')
                         else:
-                            logger.info(f'No emailable changes to Event id {event.id} "{event}"')
+                            logger.info(f'No emailable changes to "{event}"')
 
 
                         messages.success(request, 'Event successfully updated')
 
                     else:
-                        logger.info(f'Event id {event.id} "{event}" unchanged by "{user}"')
+                        logger.info(f'"{user}" not updating "{event}"')
                         messages.success(request, 'No change made to the event')
 
                     return HttpResponseRedirect(reverse('event-details', args=[event.pk]))
@@ -393,13 +393,13 @@ def event_cancel(request, event_id):
                 event.cancelled = timezone.now()
                 event.save()
 
-                logger.info(f'Event id {event.id} "{event}" cancelled by "{user}"')
+                logger.info(f'"{user}" cancelled "{event}"')
 
                 for helper in event.current_helpers:
                     if helper.send_notifications:
                         send_template_email(helper, "event-cancel", { "event": event })
                     else:
-                        logger.info(f'Unable to notify {helper} that event id {event.id} "{event}" has been cancelled')
+                        logger.info(f'Can\'t notify "{helper}" that "{event}" has been cancelled')
 
                 messages.success(request, 'Event cancelled')
 
@@ -452,7 +452,7 @@ def volunteer(request, event_id):
             if 'confirm' in request.POST:
                 event.volunteer_set.create(person=user)
 
-                logger.info(f'"{user}" volunteered for event id {event.id} "{event}"')
+                logger.info(f'"{user}" volunteered for "{event}"')
                 messages.success(request, 'You have been added as a helper for this event')
 
                 if event.alerts and event.owner.send_notifications:
@@ -493,7 +493,7 @@ def unvolunteer(request, event_id):
                 volunteer.withdrawn = timezone.now()
                 volunteer.save()
 
-                logger.info(f'"{user}" un-volunteered for event id {event.id} "{event}"')
+                logger.info(f'"{user}" un-volunteered for "{event}"')
                 messages.success(request, 'You are no longer a helper for this event')
 
                 if event.alerts and event.owner.send_notifications:
@@ -522,7 +522,7 @@ def decline(request, event_id, helper_id):
             messages.error(request,'You are not the owner of this event - only the owner can decline offers of help')
             errors += 1
         elif not event.has_current_helper(helper):
-            messages.error(request, f"{helper} is not a helper for this event so you can't decline their offer to help")
+            messages.error(request, f"{helper.get_full_name()} is not a helper for this event so you can't decline their offer to help")
             errors += 1
 
         if errors:
@@ -534,8 +534,8 @@ def decline(request, event_id, helper_id):
                 volunteer.declined = timezone.now()
                 volunteer.save()
 
-                logger.info(f'"{user}" declined {helper} as helper for event id {event.id} "{event}"')
-                messages.success(request, f'{helper} as been removed as a helper')
+                logger.info(f'"{user}" declined "{helper}"" for "{event}"')
+                messages.success(request, f'{helper.get_full_name()} as been removed as a helper')
 
                 if helper.send_notifications:
                     send_template_email(helper, "helper-declined", { "event": event })
@@ -647,7 +647,7 @@ def account_create(request):
             user = registration_form.save()
             login(request, user)
 
-            logger.info(f'Created new user "{user}"')
+            logger.info(f'"{user}" created')
 
             # Email verification
             email_verification_token = EmailVerificationTokenGenerator()
@@ -693,7 +693,7 @@ def account_resend(request):
         }, force=True)
 
     messages.success(request, 'Email resent')
-    logger.info(f'Resent validation request for "{user}" to {user.email}')
+    logger.info(f'"{user}" reset validation request to {user.email}')
 
     return render(request, "webapp/account-create-resend.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
@@ -878,7 +878,7 @@ def account_approve(request, user_id):
 
     errors = 0
     if user.approved:
-        messages.error(request,f'User {user} has already been approved')
+        messages.error(request,f'User {user.get_full_name()} has already been approved')
         errors += 1
 
     else:
@@ -893,7 +893,7 @@ def account_approve(request, user_id):
                 send_template_email(user, "account-approved", { 'user': user }, force=True)
 
                 logger.info(f'"{user}" approved by "{request.user}"')
-                messages.success(request, f'Account for {user} approved')
+                messages.success(request, f'Account for {user.get_full_name()} approved')
 
                 return HttpResponseRedirect(reverse('account-approve-list'))
 
@@ -919,10 +919,10 @@ def account_toggle(request, action, user_id):
 
     errors = 0
     if action == 'suspend' and user.suspended:
-        messages.error(request,f'User {user} is already suspended')
+        messages.error(request,f'User {user.get_full_name()} is already suspended')
         errors += 1
     elif action == 'enable' and not user.suspended:
-        messages.error(request,f'User {user} is already enabled')
+        messages.error(request,f'User {user.get_full_name()} is already enabled')
         errors += 1
 
     else:
@@ -933,11 +933,11 @@ def account_toggle(request, action, user_id):
                 if action == 'enable':
                     user.suspended = None
                     logger.info(f'"{user}" re-enabled by "{request.user}"')
-                    messages.success(request, f'Account for {user} re-enabled')
+                    messages.success(request, f'Account for {user.get_full_name()} re-enabled')
                 elif action == 'suspend':
                     user.suspended = timezone.now()
                     logger.info(f'"{user}" suspended by "{request.user}"')
-                    messages.success(request, f'Account for {user} suspended')
+                    messages.success(request, f'Account for {user.get_full_name()} suspended')
 
                 user.save()
 
@@ -1003,7 +1003,7 @@ def send_emails(request):
                     cc=(settings.DEFAULT_FROM_EMAIL,)).send()
 
                 messages.success(request, f'Bulk email sent to {len(to_addresses)} addresses')
-                logger.info(f'Email sent to {len(to_addresses)} addresses')
+                logger.info(f'Bulk email sent to {len(to_addresses)} addresses')
                 form = EmailForm();
 
             else:
@@ -1080,6 +1080,6 @@ def ical(request, uuid):
 
     response.writelines(c.serialize_iter())
 
-    logger.info(f'Calendar feed collected by "{user}"')
+    logger.info(f'"{user}" calendar feed collected')
 
     return response

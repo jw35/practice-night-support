@@ -194,7 +194,7 @@ class FunctionTestCase(TestCase):
         volunteer1 = Volunteer.objects.get(event=self.event, person=self.live1)
         volunteer2 = Volunteer.objects.get(event=self.event, person=self.live2)
 
-        self.assertEqual(str(volunteer1), 'Denise Live1 helping at Little Shelford: Saturday 05 March 1960 (14:00-15:00)')
+        self.assertEqual(str(volunteer1), '"Denise Live1 [#2]"/"Little Shelford - Sat, 5 Mar, 2:00-3:00 [#1]" [#1]')
 
         self.assertTrue(volunteer1.current)
         self.assertTrue(volunteer2.current)

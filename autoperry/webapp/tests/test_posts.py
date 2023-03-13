@@ -391,7 +391,7 @@ class PermissionsTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'webapp/event.html')
-        self.assertContains(response, f'{self.live} as been removed as a helper')
+        self.assertContains(response, f'{self.live.get_full_name()} as been removed as a helper')
 
         self.assertEqual(len(mail.outbox), 1)
 

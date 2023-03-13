@@ -36,21 +36,21 @@ def send_template_email(to,template,context,force=False):
         # send unless the user approved 'notification' emails or force if True
 
         if to.cancelled or to.suspended:
-            logger.warn(f'Not emailing {to} "{subject}" - user cancelled or suspended')
+            logger.warn(f'"{to}": not emailing "{subject}" - user cancelled or suspended')
             return
         if not to.email_validated and not force:
-            logger.warn(f'Not emailing {to} "{subject}" - email not yet validated')
+            logger.warn(f'"{to}": not emailing "{subject}" - email not yet validated')
             return
         if not to.send_notifications and not force:
-            logger.warn(f'Not emailing {to} "{subject}" - notifications not wanted')
+            logger.warn(f'"{to}": not emailing "{subject}" - notifications not wanted')
             return
         to.email_user(subject, message)
-        logger.info(f'Emailed user {to} {to.email} "{subject}"')
+        logger.info(f'"{to}": ({to.email}) emailed "{subject}"')
 
     else:
 
         send_mail(subject, message, None, [to])
-        logger.info(f'Emailed address {to} "{subject}"')
+        logger.info(f'Emailed address "{to}"" "{subject}"')
 
 
 def autoperry_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
