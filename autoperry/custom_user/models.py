@@ -27,7 +27,7 @@ class User(BaseUser):
     phone_number = models.CharField(max_length=64, blank=True, help_text="Optional, useful in case of last-minute cancellations or changes of plan")
 
     def __str__(self):
-        return self.get_full_name()
+        return f'{self.get_full_name()} [#{self.pk}]'
 
     @property
     def contact_info(self):

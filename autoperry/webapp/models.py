@@ -159,14 +159,7 @@ class Event(models.Model):
         return reverse('event-details', args=[self.pk])
 
     def __str__(self):
-    	return (self.location +
-    		    ': ' +
-    		    self.start.strftime('%A %d %B %Y') +
-    		    ' (' +
-    		    self.start.strftime('%H:%M') +
-    		    '-' +
-    		    self.end.strftime('%H:%M') +
-    		    ')')
+    	return f'{self.location} - {self.short_when} [#{self.pk}]'
 
     class Meta:
         ordering = ["start"]
@@ -198,7 +191,7 @@ class Volunteer(models.Model):
         return self.withdrawn == None and self.declined == None
 
     def __str__(self):
-        return f'{self.person} helping at {self.event}'
+        return f'"{self.person}"/"{self.event}" [#{self.pk}]'
 
     class Meta:
         ordering = ["created"]
