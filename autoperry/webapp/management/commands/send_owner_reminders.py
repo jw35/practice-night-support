@@ -40,7 +40,7 @@ class Command(BaseCommand):
         for event in events:
 
             if options['really']:
-                send_template_email(event.contact, "event-reminder", { "event": event })
+                send_template_email(event.owner, "event-reminder", { "event": event })
 
                 event.owner_reminded = now
                 event.save()
