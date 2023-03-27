@@ -58,6 +58,7 @@ def index(request):
             logger.info(f'"{user}" logged in')
             return redirect(request.POST.get('next_page', settings.LOGIN_URL))
         else:
+            logger.error(f'"{user}" login failed')
             errors.append("Bad email address or password")
 
     user = request.user
