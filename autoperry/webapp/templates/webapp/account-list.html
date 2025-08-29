@@ -127,7 +127,7 @@
         {% if page == 'X' %}
         <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
         {% else %}
-          <li class="page-item{% if page == events.number %} active{% endif %}"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+          <li class="page-item{% if page == users.number %} active{% endif %}"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
           {% endif %}
         {% endfor %}
     </ul>
