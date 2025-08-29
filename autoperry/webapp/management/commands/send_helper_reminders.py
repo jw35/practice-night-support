@@ -54,7 +54,7 @@ class Command(BaseCommand):
         for user in users:
 
             events = (Event.objects.all()
-                .filter(helpers=user)
+                .filter(volunteer__person=user, volunteer__withdrawn=None, volunteer__declined=None)
                 .filter(cancelled=None)
                 .filter(start__gt=start)
                 .filter(start__lt=cutoff))
