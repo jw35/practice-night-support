@@ -13,6 +13,7 @@ urlpatterns = [
     path(r'help/organisers/', TemplateView.as_view(template_name="webapp/organisers.html"), name='guidelines-organisers'),
     path(r'help/helpers/', TemplateView.as_view(template_name="webapp/helpers.html"), name='guidelines-helpers'),
     path(r'help/shortcuts/', TemplateView.as_view(template_name="webapp/shortcuts.html"), name='shortcuts'),
+    path(r'help/calendars/', TemplateView.as_view(template_name="webapp/calendars.html"), name='calendars'),
     path(r"accounts/password_reset/", views.PasswordResetView.as_view(), name="password_reset"),
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"account/", views.account, name="account"),

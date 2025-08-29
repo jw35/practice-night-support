@@ -43,6 +43,8 @@
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Guidelines for event organisers</a></li>
             {% url 'shortcuts' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Home screen shortcuts</a></li>
+            {% url 'calendars' as url %}
+            <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Calendar links</a></li>
             {% url 'privacy' as url %}
             <li><a href="{{ url }}" class="dropdown-item {% if request.path == url %}active{% endif %}">Data privacy</a></li>
             {% if user.is_authenticated and user.is_enabled %}

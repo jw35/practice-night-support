@@ -1,0 +1,21 @@
+<!--webapp/templates/index.html-->
+
+{% extends 'webapp/authn.html' %}
+
+{% block content %}
+
+<div class="running">
+
+<h2>Calendar links</h2>
+
+<p>Most on-line calendar systems allow you to display event from external sources alongside other events. You can use this feature to automatically include the events that you have volunteered to help with in your calendar.</p>
+
+<p>Exactly how you do this varies between calendar systems - search your calendar's help pages or the web for detailed instructions. Some calendars call this <i>subscribing</i> to a calendar.</p>
+
+<p>However it works, you will need to supply the '<i>URL</i>' or '<i>Address</i>' or '<i>iCal Link</i>' of your personal AutoPerry calendar. You can find this labeled '<i>Personal iCal link</i>' near the bottom of your <a href="{% url 'account' %}">Your Account</a> page in AutoPerry.</p>
+
+<p>Most calendar systems only check occasionally for change in external calendars, so changes you make in AutoPerry won't appear in your calendar immediately though they should appear eventually.</p>
+
+</div>
+
+{% endblock %}
