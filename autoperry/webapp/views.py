@@ -25,7 +25,7 @@ from uuid import uuid4
 import ics
 import pytz
 
-from .models import Event
+from .models import Event, Volunteer
 from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
 from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator, event_clash_error, volunteer_clash_error, build_stats_screen
 
@@ -455,6 +455,20 @@ def volunteer(request, event_id):
 
                 logger.info(f'"{user}" volunteered for "{event}"')
                 messages.success(request, 'You have been added as a helper for this event')
+
+                # Number of successful volunteering sessions for user
+                volountered = Volunteer.objects.filter(
+                    person=user,
+                    withdrawn=None,
+                    declined=None,
+                    event__cancelled=None).count()
+                # Celebrate first, 5th and every subsequent 10
+                if (user.volunteer_celebration < volountered and
+                   (volountered == 1 or volountered == 5 or volountered % 10 == 0)):
+                    user.volunteer_celebration = volountered
+                    user.save()
+                    text = render_to_string(f"webapp/celebration-fragment.html", { 'number': volountered })
+                    messages.success(request, text)
 
                 if event.alerts and event.owner.send_notifications:
                     send_template_email(event.owner, "volunteer", { "event": event, "helper": user })

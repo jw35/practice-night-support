@@ -90,6 +90,7 @@ class CustomBaseUserAdmin(BaseUserAdmin):
                     "phone_number",
                     "tower",
                     ("send_notifications", "send_other"),
+                    "volunteer_celebration",
                 )
             }
         ),

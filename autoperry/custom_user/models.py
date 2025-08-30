@@ -25,6 +25,7 @@ class User(BaseUser):
     send_other = models.BooleanField(null=False, default=True, verbose_name="send other emails")
     uuid = models.CharField(max_length=64, blank=True)
     phone_number = models.CharField(max_length=64, blank=True, help_text="Optional, useful in case of last-minute cancellations or changes of plan")
+    volunteer_celebration = models.IntegerField(null=False, default=0, help_text="Highest volunteer count celebrated")
 
     def __str__(self):
         return f'{self.get_full_name()} [#{self.pk}]'

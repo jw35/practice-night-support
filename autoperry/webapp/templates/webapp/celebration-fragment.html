@@ -1,0 +1,13 @@
+{% load humanize %}
+{% load static %}
+
+<div class="celebration">
+<img src="{% static 'webapp/smile.png' %}" alt="Smiley face" height="100">
+{% if number == 1 %}
+Congratulations on your first time volunteering with AutoPerry!! Keep up the good work!!
+{% elif number == 5 %}
+You have volunteered 5 times!! That's really helping - keep going!
+{% else %}
+Yeh! That's your {{ number | ordinal }} time volunteering with AutoPerry!! Thanks for all your hard work - keep it up!!
+{% endif %}
+</div>
