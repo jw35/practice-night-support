@@ -2,6 +2,8 @@
 
 {% extends 'webapp/authn.html' %}
 
+{% load static %}
+
 {% block content %}
 
 <div class="running">
@@ -50,10 +52,12 @@ providing you are not organising or volunteering to help with events which
 have yet to happen. Information on <a href="{% url 'privacy' %}">how we use
 the data you provide</a> is available.</p>
 
+<img src="{% static 'webapp/geoff_perryman.jpeg' %}" alt="Photo of Geoff" height="180" align="right">
 <p>The system's name - 'AutoPerry' - is based on ‘AutoSergei’ from
-'Compare the Market' and is a an acknowledgement of the work that
-Geoff Perryman of Orwell put in over many years running the Cambridge
-District's original practice night support scheme (the 'PerryPeople').</p>
+'Compare the Market' and is a an acknowledgement of the work that Geoff
+ Perryman of Orwell put in from 2002 to 2021 creating and running the
+ Cambridge District's original practice night support scheme
+ (the 'PerryPeople'). Geoff sadly died in 2025 but the name lives on.</p>
 
 <p>The source code for AutoPerry is <a href="https://github.com/jw35/practice-night-support">
 available on GitHub.</a>
