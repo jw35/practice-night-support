@@ -1,0 +1,1 @@
+{% autoescape off %}{% if event.notes %}{{ event.notes }}{% endif %}{% endautoescape %}

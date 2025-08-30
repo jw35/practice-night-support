@@ -1049,7 +1049,7 @@ def ical(request, uuid):
         description = render_to_string(f"webapp/ical-volunteer-fragment.txt", { 'event': event }).strip()
 
         e = ics.Event(
-          name = "AutoPerry helper",
+          name = "AutoPerry helping",
           description = description,
           begin = event.start.replace(tzinfo=tz),
           end = event.end.replace(tzinfo=tz),
@@ -1064,7 +1064,7 @@ def ical(request, uuid):
         description = render_to_string(f"webapp/ical-owner-fragment.txt", { 'event': event }).strip()
 
         e = ics.Event(
-          name = "AutoPerry event",
+          name = "AutoPerry organising",
           description=description,
           begin = event.start.replace(tzinfo=tz),
           end = event.end.replace(tzinfo=tz),
@@ -1084,3 +1084,49 @@ def ical(request, uuid):
     logger.info(f'"{user}" calendar feed collected')
 
     return response
+
+
+def ical_future(request, uuid):
+
+    user = get_object_or_404(get_user_model(), uuid=uuid)
+
+    event_list = (Event.objects.all()
+                    .filter(start__gte=timezone.now())
+                    .filter(cancelled=None)
+                    .annotate(helpers_available=Count('volunteer', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))))
+                    .filter(helpers_required__gt=F("helpers_available")))
+
+    c = ics.Calendar()
+    c.creator = f'AutoPerry - {settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}/'
+    tz = pytz.timezone('Europe/London')
+
+    for event in event_list:
+
+        # Don't list events the current user is already helping with!
+        if event.has_current_helper(user):
+            continue
+
+        description = render_to_string(f"webapp/ical-future-fragment.txt", { 'event': event }).strip()
+
+        e = ics.Event(
+          name = "AutoPerry helpers needed",
+          description = description,
+          begin = event.start.replace(tzinfo=tz),
+          end = event.end.replace(tzinfo=tz),
+          location = event.location,
+          url = f"{settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}{event.get_absolute_url()}",
+          uid = f"event-{event.pk}@autoperry.cambridgeringing.org"
+        )
+        c.events.add(e)
+
+    response = HttpResponse(
+        content_type='text/calendar',
+        headers={'Content-Disposition': 'attachment; filename="autoperry-future.ics"'},
+    )
+
+    response.writelines(c.serialize_iter())
+
+    logger.info(f'"{user}" future calendar feed collected')
+
+    return response
+
