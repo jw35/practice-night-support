@@ -461,8 +461,7 @@ def volunteer(request, event_id):
                 volountered = Volunteer.objects.filter(
                     person=user,
                     withdrawn=None,
-                    declined=None,
-                    event__cancelled=None).count()
+                    declined=None).count()
                 # Celebrate first, 5th and every subsequent 10
                 if (user.volunteer_celebration < volountered and
                    (volountered == 1 or volountered == 5 or volountered % 10 == 0)):
