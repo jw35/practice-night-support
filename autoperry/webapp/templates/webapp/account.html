@@ -1,7 +1,25 @@
 
 {% extends 'webapp/authn.html' %}
 
+{% load humanize %}
+
 {% block content %}
+
+{% if user.is_enabled %}
+<div class="alert alert-info">
+{% if num_helped == 0 %}
+You have yet to volunteer to help with any events. Why not choose something today?
+{% else %}
+You have helped or volunteered to help with {{ num_helped }} events.
+    {% if rank == 1 %}
+    <b>This currently makes you the top helper in the system!!</b>
+    {% else %}
+    This currently ranks you as the {{ rank | ordinal }} most prolific helper.
+    {% endif %}
+Thank you  very much!
+{% endif %}
+</div>
+{% endif %}
 
 <h2>Your Account</h2>
 

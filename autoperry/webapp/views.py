@@ -9,7 +9,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, F, Q
+from django.db.models import Count, F, Q, Window
+from django.db.models.functions import Rank
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
@@ -641,8 +642,24 @@ def account(request):
         user.uuid = uuid4()
         user.save()
 
+    # Get volunteering count and ranking for this user
+    all_users = (get_user_model().objects.all()
+        .annotate(num_helped=Count('volunteer__id', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
+        .annotate(rank=Window(expression=Rank(), order_by=F('num_helped').desc())))
+
+    # Have to iterate the query set, rather than filter it, because it has to
+    # execute on the database with all users present
+    num_helped = rank = None
+    for u in all_users:
+        if u.pk == user.pk:
+            num_helped = u.num_helped
+            rank = u.rank
+            break
+
     return render(request, "webapp/account.html",
-        { 'domain': settings.WEBAPP_DOMAIN,
+        { 'num_helped': num_helped,
+          'rank': rank,
+          'domain': settings.WEBAPP_DOMAIN,
           'scheme': settings.WEBAPP_SCHEME
         })
 
