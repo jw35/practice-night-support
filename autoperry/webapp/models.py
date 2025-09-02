@@ -25,9 +25,10 @@ class Event(models.Model):
     notes = models.CharField(max_length=200, blank=True, null=True, help_text="Purpose of the event, helper skills required, etc.")
     owner_reminded = models.DateTimeField(null=True, blank=True)
     alerts = models.BooleanField(default=False)
-    # Also volunteer_set/volunteer to access the individual volunteering records
 
-
+    # Also
+    #
+    # volunteer_set (filter volunteer) to access the individual volunteering records
 
     def has_current_helper(self, user):
         """

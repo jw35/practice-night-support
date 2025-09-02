@@ -27,6 +27,12 @@ class User(BaseUser):
     phone_number = models.CharField(max_length=64, blank=True, help_text="Optional, useful in case of last-minute cancellations or changes of plan")
     volunteer_celebration = models.IntegerField(null=False, default=0, help_text="Highest volunteer count celebrated")
 
+    # Additional magic fields
+    #
+    # events_volountered (from webapp.models.event)
+    # events_owned (from webapp.models.event)
+    # volunteer_set (filter volunteer, from webapp.volunteer) to access the individual volunteering records
+
     def __str__(self):
         return f'{self.get_full_name()} [#{self.pk}]'
 
