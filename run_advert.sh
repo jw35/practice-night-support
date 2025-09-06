@@ -13,7 +13,7 @@ export DJANGO_SETTINGS_MODULE=autoperry.production_settings
 
 echo "*** Running $(date)" >>"${log}"
 
-./manage.py send_advert >>"${log}"
+./manage.py send_advert --really >>"${log}"
 
 
 
