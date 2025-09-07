@@ -2,6 +2,8 @@
 
 {% extends 'webapp/authn.html' %}
 
+{% load humanize %}
+
 {% block content %}
 
 <h2 class="text-center">Users</h2>
@@ -104,7 +106,7 @@
         <td>{% if user.suspended != None %}S{% endif %}</td>
         <td>{% if user.cancelled != None %}C{% endif %}</td>
 
-        <td>{% if user.num_helped %}H:{{ user.num_helped }}{% endif %}</td>
+        <td>{% if user.num_helped %}H:{{ user.num_helped }} ({{ user.rank | ordinal }}){% endif %}</td>
         <td>{% if user.num_owned %}O:{{ user.num_owned }}{% endif %}</td>
 
         {% if user.suspended %}
