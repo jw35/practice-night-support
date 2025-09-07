@@ -52,8 +52,11 @@ class Command(BaseCommand):
             self.stdout.write(self.style.NOTICE('No events in selected range'))
 
         users = (User.objects.all()
-            .filter(is_active=True)
-            .filter(send_other=True))
+            .filter(send_other=True)
+            .filter(cancelled=None)
+            .filter(suspended=None)
+            .exclude(email_validated=None)
+            .exclude(approved=None))
 
         if not users:
             self.stdout.write(self.style.NOTICE('No users eligible for this email'))
@@ -78,7 +81,7 @@ class Command(BaseCommand):
                     bcc=to_addresses,
                     cc=(settings.DEFAULT_FROM_EMAIL,)).send()
 
-                self.stdout.write(self.style.NOTICE(f'Advert email sent to {", ".join(to_addresses)} addresses'))
+                self.stdout.write(self.style.NOTICE(f'Advertised { len(events) } events to { len(to_addresses) } addresses: {", ".join(to_addresses)}'))
 
             else:
-                self.stdout.write(self.style.NOTICE(f'Need to advertise {len(events)} events between {now} to {cutoff} to {len(to_addresses)} addresses'))
+                self.stdout.write(self.style.NOTICE(f'Need to advertise { len(events) } events to { len(to_addresses) } addresses: {", ".join(to_addresses)}'))
