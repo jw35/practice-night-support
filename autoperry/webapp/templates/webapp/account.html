@@ -10,7 +10,7 @@
 {% if num_helped == 0 %}
 You have yet to volunteer to help with any events. Why not choose something today?
 {% else %}
-You have helped or volunteered to help with {{ num_helped }} events.
+You have helped or volunteered to help with {{ num_helped | apnumber }} event{{ num_helped|pluralize }}.
     {% if rank == 1 %}
     <b>This currently makes you the top helper in the system!!</b>
     {% else %}
