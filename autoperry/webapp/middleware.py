@@ -1,5 +1,8 @@
 from django.middleware.common import BrokenLinkEmailsMiddleware
 from django.http import HttpResponseForbidden
+from django.urls import resolve, Resolver404
+
+import urllib.parse
 
 class MyBrokenLinkEmailsMiddleware(BrokenLinkEmailsMiddleware):
 
@@ -18,6 +21,13 @@ class MyBrokenLinkEmailsMiddleware(BrokenLinkEmailsMiddleware):
         # Ignore non-internal requests
         if not self.is_internal_request(domain, referer):
             return True;
+
+        # Ignore requests where the referer isn't actually one of our URLs
+        path = urllib.parse.urlparse(referer).path
+        try:
+            resolve(path)
+        except Resolver404:
+            return True
 
         # Otherwise devolve to the standard code
         return BrokenLinkEmailsMiddleware.is_ignorable_request(self, request, uri, domain, referer)
