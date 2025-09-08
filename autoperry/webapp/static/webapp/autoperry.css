@@ -43,6 +43,13 @@ dd {
   );
     height: 10px;
 }
+/* Hack to force the .celebration div to expand to include all of the  floated image */
 .celebration {
-
+    overflow: auto;
+    display: flex;
+    align-items: center;
+}
+.celebration img {
+    float: left;
+    padding-right: 1em;
 }
