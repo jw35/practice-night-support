@@ -7,6 +7,8 @@ from django.template.defaultfilters import force_escape, urlize
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
+import datetime
+
 from custom_user.models import User
 
 
@@ -140,13 +142,13 @@ class Event(models.Model):
     @admin.display(ordering='start')
     def short_when(self):
         """
-        Short format d of the event with start and end times
+        Short format date of the event with start and end times
         """
         start = self.start
         end = self.end
-        # Only include year for December and January
+        # Only include year if it's not the current one
         include_year = ''
-        if start.month == 1 or start.month == 12:
+        if start.year !=  datetime.date.today().year:
             include_year = ' Y'
         # Only include AM on start if event spans midday
         include_am = ''

@@ -6,7 +6,7 @@ from django.utils import timezone
 from webapp.models import Event, Volunteer
 
 
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 
 class FunctionTestCase(TestCase):
 
@@ -64,10 +64,13 @@ class FunctionTestCase(TestCase):
             notes='Ab C#',
             alerts=True)
 
-        # In December
+        cls.today = date.today()
+        cls.testday = date(cls.today.year, 12, 5)
+
+        # This year
         cls.event3 = Event.objects.create(
-            start=datetime(1960, 12, 5, hour=14, minute=0),
-            end=datetime(1960, 12, 5, hour=15, minute=0),
+            start=datetime(cls.today.year, 12, 5, hour=14, minute=0),
+            end=datetime(cls.today.year, 12, 5, hour=15, minute=0),
             location='Whittlesford',
             helpers_required=2,
             owner=cls.owner,
@@ -89,13 +92,13 @@ class FunctionTestCase(TestCase):
     def test_event_when(self):
 
         self.assertEqual(self.event.when, 'Saturday, 5 March 1960, 2:00 to 3:00 p.m.')
-        self.assertEqual(self.event.short_when, 'Sat, 5 Mar, 2:00-3:00')
+        self.assertEqual(self.event.short_when, 'Sat, 5 Mar 1960, 2:00-3:00')
 
         self.assertEqual(self.event2.when, 'Saturday, 5 March 1960, 11:00 a.m. to 1:00 p.m.')
-        self.assertEqual(self.event2.short_when, 'Sat, 5 Mar, 11:00 a.m.-1:00 p.m.')
+        self.assertEqual(self.event2.short_when, 'Sat, 5 Mar 1960, 11:00 a.m.-1:00 p.m.')
 
-        self.assertEqual(self.event3.when, 'Monday, 5 December 1960, 2:00 to 3:00 p.m.')
-        self.assertEqual(self.event3.short_when, 'Mon, 5 Dec 1960, 2:00-3:00')
+        self.assertEqual(self.event3.when, f'{self.testday.strftime("%A")}, 5 December {self.testday.year}, 2:00 to 3:00 p.m.')
+        self.assertEqual(self.event3.short_when, f'{self.testday.strftime("%a")}, 5 Dec, 2:00-3:00')
 
 
 
@@ -194,7 +197,7 @@ class FunctionTestCase(TestCase):
         volunteer1 = Volunteer.objects.get(event=self.event, person=self.live1)
         volunteer2 = Volunteer.objects.get(event=self.event, person=self.live2)
 
-        self.assertEqual(str(volunteer1), '"Denise Live1 [#2]"/"Little Shelford - Sat, 5 Mar, 2:00-3:00 [#1]" [#1]')
+        self.assertEqual(str(volunteer1), '"Denise Live1 [#2]"/"Little Shelford - Sat, 5 Mar 1960, 2:00-3:00 [#1]" [#1]')
 
         self.assertTrue(volunteer1.current)
         self.assertTrue(volunteer2.current)
