@@ -176,6 +176,7 @@
 
           {% if helper.withdrawn or helper.declined %}<s>{% endif %}{{ helper.person.get_full_name }}
           ({{ helper.person.contact_info }}){% if helper.withdrawn or helper.declined %}</s>{% endif %}
+          volunteered {{ helper.created|date:"D, j M" }}
 
           {% if helper.withdrawn %} (withdrawn {{ helper.withdrawn|date:"D, j M" }}){% endif %}
 
