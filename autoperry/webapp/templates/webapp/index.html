@@ -34,7 +34,7 @@
         <li><a class="dropdown-item" href="{% url 'index' %}?days=28">28</a></li>
         <li><a class="dropdown-item" href="{% url 'index' %}?days=56">56</a></li>
       </ul>
-      days</h2>
+      day{{ days|pluralize }}:</h2>
       {% include 'webapp/events-list-fragment.html' %}
 
       {% else %}
@@ -49,6 +49,10 @@
       </ul> day{{ days|pluralize }}</h2>
 
       {% endif %}
+
+      <div class="col-md-6 mx-auto">
+      <p>See the <a href="{% url 'events' %}"" class="link-secondary">Events List</a> for details of all events, including events with enough helper, cancelled events, etc.</p>
+      </div>
 
     </div>
 
