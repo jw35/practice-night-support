@@ -7,7 +7,7 @@
 
         {% if flags.location %}
 
-          {% ifchanged %}
+          {% ifchanged event.location|lower %}
          <td colspan="3">
             <strong>{{event.location}}</strong>
          </td>

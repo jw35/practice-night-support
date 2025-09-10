@@ -10,7 +10,7 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Q, Window
-from django.db.models.functions import Rank
+from django.db.models.functions import Rank, Lower
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
@@ -124,7 +124,7 @@ def events(request):
         event_list = event_list.filter(cancelled=None)
 
     if flags['location']:
-        event_list = event_list.order_by('location', 'start')
+        event_list = event_list.order_by(Lower('location'), 'start')
     else:
         event_list = event_list.order_by('start', 'location')
 
