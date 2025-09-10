@@ -4,7 +4,7 @@ asgiref==3.5.2
 attrs==22.2.0
 coverage==7.1.0
 crispy-bootstrap5==0.7
-Django==3.2.14
+Django==4.0.10
 django-bootstrap-datepicker-plus==5.0.2
 django-crispy-forms==1.14.0
 django-last-seen==0.3
