@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h2>Volunteer to help at an event</h2>
+<h2>Confirm your offer to help at an event</h2>
 
 <p>Please make sure you have read the <a href="{% url 'guidelines-helpers' %}">guidelines
 for helpers</a> before volunteering to help.</p>
@@ -31,7 +31,7 @@ that you meet any helper requirements in the notes above{% endif %}.</p>
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-primary" type="submit" name="confirm" value="Volunteer">
+    <input class="btn btn-primary" type="submit" name="confirm" value="Confirm">
 </form>
 
 {% endblock %}

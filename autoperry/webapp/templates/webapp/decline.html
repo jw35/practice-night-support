@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h2>Decline offer of help</h2>
+<h2>Decline an offer of help</h2>
 
 <div class="container">
 <div class="row">
@@ -71,7 +71,7 @@ event is imminent, please telephone them if possible.</p>
 
 <form method="post">
     {% csrf_token %}
-    <input class="btn btn-danger" type="submit" name="confirm" value="Decline offer">
+    <input class="btn btn-danger" type="submit" name="confirm" value="Yes, decline this offer">
 </form>
 
 {% endblock %}
