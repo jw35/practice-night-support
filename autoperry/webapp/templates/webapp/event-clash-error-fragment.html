@@ -1,4 +1,4 @@
-<p>This event would overlap with {% if clashes|length == 1 %}an existing event{% else %}existing events{% endif %} at {{ location }}:</p>
+<p>This event would overlap with {% if clashes|length == 1 %}an existing event{% else %}existing events{% endif %} at <i>{{ location }}</i>:</p>
 <ul>
     {% for clash in clashes %}
     <li><a href="{% url 'event-details' event_id=clash.pk %}" class="alert-link">{{ clash.start|date:"H:i" }} - {{ clash.end|date:"H:i a" }}</a></li>
