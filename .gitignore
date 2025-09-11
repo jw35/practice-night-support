@@ -1,5 +1,6 @@
 .DS_Store
 venv
+venv-pre-upgrade
 __pycache__
 db.sqlite3
 db-pre-feature-rework-volunteering.sqlite

@@ -174,7 +174,7 @@ class PermissionsTestCase(TestCase):
         response = self.client.get(url)
         self.assertRedirects(response, '/?next=' + url, msg_prefix=url)
 
-        response = self.client.get(logout_url)
+        response = self.client.post(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
 
 
@@ -212,7 +212,7 @@ class PermissionsTestCase(TestCase):
             response = self.client.get(url)
             self.assertRedirects(response, '/?next=' + url, msg_prefix=url)
 
-            response = self.client.get(logout_url)
+            response = self.client.post(logout_url)
             self.assertRedirects(response, '/', msg_prefix=logout_url)
 
 
@@ -243,7 +243,7 @@ class PermissionsTestCase(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 403, url)
 
-        response = self.client.get(logout_url)
+        response = self.client.post(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
 
 
@@ -269,6 +269,6 @@ class PermissionsTestCase(TestCase):
         response = self.client.get(event_url)
         self.assertContains(response, 'Administrator Info.', msg_prefix=event_url)
 
-        response = self.client.get(logout_url)
+        response = self.client.post(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
 

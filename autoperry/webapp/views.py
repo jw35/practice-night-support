@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 
 import ics
-import pytz
+import zoneinfo
 
 from .models import Event, Volunteer
 from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
@@ -1073,7 +1073,7 @@ def ical(request, uuid):
 
     c = ics.Calendar()
     c.creator = f'AutoPerry - {settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}/'
-    tz = pytz.timezone('Europe/London')
+    tz = zoneinfo.ZoneInfo('Europe/London')
 
     for event in events_as_voluteer:
 
@@ -1129,7 +1129,7 @@ def ical_future(request, uuid):
 
     c = ics.Calendar()
     c.creator = f'AutoPerry - {settings.WEBAPP_SCHEME}://{settings.WEBAPP_DOMAIN}/'
-    tz = pytz.timezone('Europe/London')
+    tz = zoneinfo.ZoneInfo('Europe/London')
 
     for event in event_list:
 
