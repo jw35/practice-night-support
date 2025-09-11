@@ -7,7 +7,6 @@ crispy-bootstrap5==2025.6
 Django==5.2.6
 django-bootstrap-datepicker-plus==5.0.5
 django-crispy-forms==2.4
-django-last-seen==0.3
 django-use-email-as-username==1.4.0
 gunicorn==23.0.0
 ics==0.7.2
