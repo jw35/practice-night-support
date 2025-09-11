@@ -4,8 +4,8 @@ asgiref==3.9.1
 attrs==22.2.0
 coverage==7.1.0
 crispy-bootstrap5==0.7
-Django==4.2.24
-django-bootstrap-datepicker-plus==5.0.2
+Django==5.2.6
+django-bootstrap-datepicker-plus==5.0.5
 django-crispy-forms==1.14.0
 django-last-seen==0.3
 django-use-email-as-username==1.2.0
