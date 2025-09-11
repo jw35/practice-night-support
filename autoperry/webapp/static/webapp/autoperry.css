@@ -45,9 +45,9 @@ dd {
 }
 /* Hack to force the .celebration div to expand to include all of the  floated image */
 .celebration {
-    overflow: auto;
-    display: flex;
     align-items: center;
+    display: flex;
+    overflow: auto;
 }
 .celebration img {
     float: left;
@@ -59,6 +59,7 @@ dd {
 .dropdown-item .logout-form button {
   background: none;
   border: none;
+  color: rgb(33,37,41);
   cursor: pointer;
   padding: 0;
 }
