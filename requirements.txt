@@ -9,7 +9,9 @@ django-bootstrap-datepicker-plus==5.0.5
 django-crispy-forms==2.4
 django-last-seen==0.3
 django-use-email-as-username==1.4.0
+gunicorn==23.0.0
 ics==0.7.2
+packaging==25.0
 pydantic==2.11.7
 pydantic_core==2.33.2
 python-dateutil==2.9.0.post0
