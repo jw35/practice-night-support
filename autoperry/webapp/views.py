@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode, url_has_allowed_host_and_scheme
 from django.utils.safestring import mark_safe
 
 from datetime import datetime, timedelta
@@ -57,7 +57,11 @@ def index(request):
         if user:
             login(request,user)
             logger.info(f'"{user}" logged in')
-            return redirect(request.POST.get('next_page', settings.LOGIN_URL))
+            next_page = request.POST.get('next_page', settings.LOGIN_URL)
+            if url_has_allowed_host_and_scheme(next_page, allowed_hosts=None):
+                return HttpResponseRedirect(next_page)
+            else:
+                return redirect(settings.LOGIN_URL)
         else:
             logger.error(f'"{user}" login failed')
             errors.append("Bad email address or password")
