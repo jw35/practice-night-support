@@ -99,7 +99,7 @@ def event_clash_error(start, end, location, this=None):
 
     if clashes.all():
         message = (render_to_string("webapp/event-clash-error-fragment.html",
-            { "clashes": clashes }))
+            { "clashes": clashes, 'location': location }))
         return message
 
     return None
