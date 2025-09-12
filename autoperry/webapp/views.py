@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, F, Q, Window
+from django.db.models import Count, F, Q, Window, When, Case, DecimalField
 from django.db.models.functions import Rank, Lower
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
@@ -589,6 +589,15 @@ def account_list(request):
 
     base_users = get_user_model().objects.all()
 
+    # Find rank across all eligible users, before further filtering
+    ranked_users = (base_users
+        .annotate(num_helped=Count('volunteer__id', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
+        .annotate(rank=Window(expression=Rank(), order_by=F('num_helped').desc()))
+        )
+    ranking = {}
+    for user in ranked_users:
+        ranking[user.pk] = user.rank
+
     users = get_user_model().objects.none()
 
     if flags['pending']:
@@ -608,13 +617,23 @@ def account_list(request):
     if flags['cancelled']:
         users = users | base_users.exclude(cancelled=None)
 
+    # Add helping & organising stats
+    whens = [
+        When(pk=k, then=v) for k, v in ranking.items()
+    ]
     users = (users
         .annotate(num_owned=Count('events_owned', distinct=True))
         .annotate(num_helped=Count('volunteer__id', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
-        .annotate(rank=Window(expression=Rank(), order_by=F('num_helped').desc()))
+        .annotate(rank=Case(
+            *whens,
+            output_field=DecimalField()
+            )
+         )
     )
 
     users = users.order_by('last_name', 'first_name')
+
+    print(users.query)
 
     paginator = Paginator(users, 20, orphans=2)
     paginator.ELLIPSIS = "X"
