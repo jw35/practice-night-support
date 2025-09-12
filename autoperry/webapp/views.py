@@ -907,6 +907,47 @@ def account_cancel(request):
 
     return render(request, 'webapp/account-cancel.html')
 
+@django_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
+def account_delete(request, where_from, user_id):
+
+    """
+    Actually delete a account. Only allowed for suspended accounts with no events
+    or volunteer activity. Mainly for cleaning up bogus registrations.
+    """
+
+    user = get_object_or_404(get_user_model(), pk=user_id)
+    errors = 0
+
+    with transaction.atomic():
+
+        errors = 0
+
+        if user.is_approved:
+            messages.error(request, "This account has been approved - only unapproved accounts can be deleted.")
+            errors += 1
+
+        # Should be impossible !!
+        if user.is_superuser:
+            messages.error(request, "This is a superuser account. Superuser accounts can't be deleted here.")
+            errors += 1
+
+        if errors == 0:
+
+            if request.method == 'POST':
+                if 'confirm' in request.POST:
+                    name = user.get_full_name()
+                    user.delete()
+                    messages.success(request, f'User { name } deleted')
+                if where_from == 'account':
+                    return HttpResponseRedirect(reverse('account-list'))
+                else:
+                    return HttpResponseRedirect(reverse('account-approve-list'))
+
+    return render(request, 'webapp/account-delete.html',
+        { 'candidate': user,
+          'errors': errors })
+
 
 @autoperry_login_required
 @permission_required('custom_user.administrator', raise_exception=True)
