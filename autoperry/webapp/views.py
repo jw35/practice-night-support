@@ -633,8 +633,6 @@ def account_list(request):
 
     users = users.order_by('last_name', 'first_name')
 
-    print(users.query)
-
     paginator = Paginator(users, 20, orphans=2)
     paginator.ELLIPSIS = "X"
     try:
@@ -938,6 +936,7 @@ def account_delete(request, where_from, user_id):
                 if 'confirm' in request.POST:
                     name = user.get_full_name()
                     user.delete()
+                    logger.info(f'"{name}" DELETED by "{request.user}"')
                     messages.success(request, f'User { name } deleted')
                 if where_from == 'account':
                     return HttpResponseRedirect(reverse('account-list'))
