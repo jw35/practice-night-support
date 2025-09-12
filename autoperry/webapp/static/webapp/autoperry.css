@@ -61,5 +61,6 @@ dd {
   border: none;
   color: rgb(33,37,41);
   cursor: pointer;
+  font-weight: normal;
   padding: 0;
 }
