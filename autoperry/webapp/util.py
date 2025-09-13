@@ -8,10 +8,13 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Q, Count, Sum
 from django.db.models.functions import TruncMonth
+from django.http import HttpResponse
 from django.template.loader import render_to_string
 
 from custom_user.models import User
 from .models import Event
+
+import csv
 
 import logging
 logger = logging.getLogger(__name__)
@@ -211,6 +214,26 @@ def build_stats_screen(now):
         'month_summary': month_summary,
         })
 
+def response_as_csv(request, qs, fields, filename):
 
+    """
+    Return a response object containing the fields from `fields` inn `qs`
+    in csv
+    """
+
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}.csv"'},
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(fields)
+    for record in qs:
+        row = []
+        for field in fields:
+            row.append(getattr(record,field, ''))
+        writer.writerow(row)
+
+    return response
 
 

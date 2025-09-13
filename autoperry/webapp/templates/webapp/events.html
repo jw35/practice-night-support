@@ -105,4 +105,8 @@ No events
 
 {% endif %}
 
+{% if perms.custom_user.administrator %}
+<p><a href="{% url 'events-csv' %}" class="btn btn-outline-secondary btn-sm">Download all events as CSV</a></p>
+{% endif %}
+
 {% endblock %}

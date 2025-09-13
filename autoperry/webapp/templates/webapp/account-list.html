@@ -69,6 +69,8 @@
         <td class="fw-bold">Created<br>Last Login</td>
         <td colspan="4" class="fw-bold">Flags</td>
         <td colspan="2" class="fw-bold">Counts</td>
+        <td class="fw-bold">&nbsp;</td>
+        <td class="fw-bold">&nbsp;</td>
       </tr>
     </thead>
 
@@ -112,14 +114,21 @@
         <td>{% if user.num_helped %}H:{{ user.num_helped }} ({{ user.rank | ordinal }}){% endif %}</td>
         <td>{% if user.num_owned %}O:{{ user.num_owned }}{% endif %}</td>
 
+        <td>
         {% if user.suspended %}
-        <td><a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">enable</a></td>
+        <a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">enable</a>
         {% else %}
-        <td><a href="{% url 'account-toggle' action='suspend' user_id=user.pk %}" class="btn btn-outline-secondary btn-sm">suspend</a></td>
+        <a href="{% url 'account-toggle' action='suspend' user_id=user.pk %}" class="btn btn-outline-secondary btn-sm">suspend</a>
         {%endif %}
+        </td>
+
+        <td>
         {% if not user.approved %}
-          <td><a href="{% url 'account-delete' where_from='account' user_id=user.pk %}" class="btn btn-danger btn-sm">delete</a></td>
+          <a href="{% url 'account-delete' where_from='account' user_id=user.pk %}" class="btn btn-danger btn-sm">delete</a>
+        {% else %}
+          &nbsp;
         {% endif %}
+      </td>
 
       </tr>
 
@@ -140,6 +149,8 @@
         {% endfor %}
     </ul>
 </nav>
+
+<p><a href="{% url 'account-list-csv' %}" class="btn btn-outline-secondary btn-sm">Download all users as CSV</a></p>
 
 
       {% else %}

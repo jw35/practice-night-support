@@ -11,7 +11,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Q, Window, When, Case, DecimalField
 from django.db.models.functions import Rank, Lower
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -28,14 +28,12 @@ import zoneinfo
 
 from .models import Event, Volunteer
 from .forms import EventForm, CustomUserCreationForm, UserEditForm, EmailForm
-from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator, event_clash_error, volunteer_clash_error, build_stats_screen
+from .util import send_template_email, autoperry_login_required, EmailVerificationTokenGenerator, event_clash_error, volunteer_clash_error, build_stats_screen, response_as_csv
 
 import logging
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-
-from django.http import HttpResponse
 
 def index(request):
 
@@ -153,6 +151,24 @@ def events(request):
                  'events_as_organiser': events_as_organiser,
                  'events_as_voluteer': events_as_voluteer,
                  'flags': flags})
+
+
+@autoperry_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
+def events_csv(request):
+
+    """
+    Return all event records in CSV
+    """
+
+    events = (Event.objects.all()
+        .annotate(helpers_provided=Count('volunteer', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None))))
+    )
+
+    fields = ("id", "start", "end", "location", "owner", "helpers_required", "helpers_provided",
+        "created", "cancelled", "contact_address", "owner_reminded", "alerts", "notes")
+
+    return response_as_csv(request, events, fields, 'autoperry-events')
 
 
 @autoperry_login_required()
@@ -649,6 +665,32 @@ def account_list(request):
         context={'users': page_obj,
                  'page_range': page_range,
                  'flags': flags})
+
+
+@autoperry_login_required
+@permission_required('custom_user.administrator', raise_exception=True)
+def account_list_csv(request):
+
+    """
+    Return all user records i CSV
+    """
+
+    users = (get_user_model().objects.all()
+        .annotate(owned=Count('events_owned', distinct=True))
+        .annotate(helped=Count('volunteer__id', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
+        .annotate(helper_rank=Window(expression=Rank(), order_by=F('helped').desc()))
+        .order_by('last_name', 'first_name')
+
+         )
+
+    fields = ("id", "first_name", "last_name",  "email", "phone_number", "tower",
+              "date_joined", "email_validated", "approved", "suspended", "cancelled", "last_login",
+              "send_notifications", "send_other", "reminded_upto","volunteer_celebration",
+              "owned", "helped", "helper_rank",
+              "is_superuser", "is_staff", "is_active")
+
+    return response_as_csv(request, users, fields, 'autoperry-users')
+
 
 
 @django_login_required()
