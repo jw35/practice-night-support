@@ -114,7 +114,8 @@ class CustomBaseUserAdmin(BaseUserAdmin):
                     "email_validated",
                     "reminded_upto",
                     "cancelled",
-                    "suspended"
+                    "suspended",
+                    "email_blocked"
                 )
             }
         ),

@@ -44,6 +44,9 @@ def send_template_email(to,template,context,force=False):
         if not to.email_validated and not force:
             logger.warning(f'"{to}": not emailing "{subject}" - email not yet validated')
             return
+        if to.email_blocked and not force:
+            logger.warning(f'"{to}": not emailing "{subject}" - email blocked')
+            return
         if not to.send_notifications and not force:
             logger.warning(f'"{to}": not emailing "{subject}" - notifications not wanted')
             return

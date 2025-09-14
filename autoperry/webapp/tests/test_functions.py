@@ -63,6 +63,16 @@ class FunctionTestCase(TestCase):
             approved=timezone.now(),
             suspended=timezone.now())
 
+        cls.blocked = user_model.objects.create_user(
+            email='blocked@autoperry.com',
+            password='password',
+            first_name='Francis',
+            last_name='Blocked',
+            tower='Little Shelford',
+            email_validated=timezone.now(),
+            approved=timezone.now(),
+            email_blocked=timezone.now())
+
         cls.admin_group = Group.objects.create(name='webapp.administrators')
         permission = Permission.objects.get(codename='administrator')
         cls.admin_group.permissions.add (permission)
@@ -135,6 +145,11 @@ class FunctionTestCase(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         mail.outbox = []
 
+        # ... or are blocked
+        send_template_email(self.blocked,'email-email',{},force=False)
+        self.assertEqual(len(mail.outbox), 0)
+        mail.outbox = []
+
     def test_send_template_email_force(self):
 
         send_template_email(self.live,'email-email',{},force=True)
@@ -149,6 +164,11 @@ class FunctionTestCase(TestCase):
         self.live.email_validated = timezone.now()
         self.live.send_notifications = False
         send_template_email(self.live,'email-email',{},force=True)
+        self.assertEqual(len(mail.outbox), 1)
+        mail.outbox = []
+
+        # blocked OK (else can't recieeve validatio messages!)
+        send_template_email(self.blocked,'email-email',{},force=True)
         self.assertEqual(len(mail.outbox), 1)
         mail.outbox = []
 

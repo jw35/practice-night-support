@@ -26,6 +26,7 @@ class User(BaseUser):
     uuid = models.CharField(max_length=64, blank=True)
     phone_number = models.CharField(max_length=64, blank=True, help_text="Optional, useful in case of last-minute cancellations or changes of plan")
     volunteer_celebration = models.IntegerField(null=False, default=0, help_text="Highest volunteer count celebrated")
+    email_blocked = models.DateTimeField(null=True, blank=True, help_text="Timestamp of email suspension")
 
     # Additional magic fields
     #

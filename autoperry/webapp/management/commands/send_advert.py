@@ -55,6 +55,7 @@ class Command(BaseCommand):
             .filter(send_other=True)
             .filter(cancelled=None)
             .filter(suspended=None)
+            .filter(email_blocked=None)
             .exclude(email_validated=None)
             .exclude(approved=None))
 

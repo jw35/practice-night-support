@@ -684,7 +684,7 @@ def account_list_csv(request):
          )
 
     fields = ("id", "first_name", "last_name",  "email", "phone_number", "tower",
-              "date_joined", "email_validated", "approved", "suspended", "cancelled", "last_login",
+              "date_joined", "email_validated", "approved", "suspended", "cancelled", "email_blocked", "last_login",
               "send_notifications", "send_other", "reminded_upto","volunteer_celebration",
               "owned", "helped", "helper_rank",
               "is_superuser", "is_staff", "is_active")
@@ -775,7 +775,7 @@ def account_resend(request):
 
     user = request.user
 
-    if user.email_validated:
+    if user.email_validated and not user.email_blocked:
         messages.success(request, 'This email address has already been confirmed')
         return redirect(reverse('index'))
 
@@ -809,14 +809,15 @@ def account_confirm(request, uidb64, token):
 
     email_verification_token = EmailVerificationTokenGenerator()
 
-    if user.email_validated:
+    if user.email_validated and not user.email_blocked:
         messages.success(request, 'This email address has already been confirmed')
     elif email_verification_token.check_token(user, token):
         user.email_validated = timezone.now()
+        user.email_blocked = None
         user.save()
         logger.info(f'"{user}" email verified')
         if user.approved:
-            messages.success(request, 'Your email address has been confirmed and you can login in.')
+            messages.success(request, 'Your email address has been confirmed.')
         else:
             messages.warning(request, 'Your email address has been confirmed, but your account has yet to be approved.')
     else:
@@ -1107,6 +1108,7 @@ def send_emails(request):
             base_users = (get_user_model().objects.all()
                 .filter(cancelled=None)
                 .exclude(email_validated=None)
+                .filter(email_blocked=None)
                 .filter(send_other=True)
                 .annotate(num_owned=Count('events_owned', distinct=True))
                 .annotate(num_helped=Count('volunteer__person', filter=(Q(volunteer__withdrawn=None) & Q(volunteer__declined=None)), distinct=True))
