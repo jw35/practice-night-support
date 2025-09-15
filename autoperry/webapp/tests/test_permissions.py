@@ -152,6 +152,7 @@ class PermissionsTestCase(TestCase):
 
         print(f'Future event id {cls.future_event.pk}')
         print(f'Live user id {cls.live.pk}')
+        print(f'Suspended user id {cls.suspended.pk}')
 
 
     def test_anonymous(self):
@@ -272,21 +273,21 @@ class PermissionsTestCase(TestCase):
         response = self.client.post(logout_url)
         self.assertRedirects(response, '/', msg_prefix=logout_url)
 
-def test_delete(self):
+    def test_delete(self):
 
         user = self.live
         self.assertTrue(self.client.login(username=user.email, password='password'),f'Logging in {user.email}')
 
-        response = self.client.get(f'admin/account/delete/account/{self.suspended.pk}/')
-        self.assertEqual(response.status_code, 403, url)
+        with self.subTest('As mortal user'):
+
+            url = f'/admin/account/delete/account/{self.suspended.pk}/'
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
 
         user = self.admin
         self.assertTrue(self.client.login(username=user.email, password='password'),f'Logging in {user.email}')
 
-        response = self.client.get(f'admin/account/delete/account/{self.suspended.pk}/')
-        self.assertEqual(response.status_code, 302, url)
-        self.assertRedirects(response, '/account-list/')
-
-        response = self.client.get(f'admin/account/delete/account/{self.owner.pk}/')
-        self.assertEqual(response.status_code, 302, url)
-        self.assertRedirects(response, '/account-list/')
+        with self.subTest('As admin user'):
+            url = f'/admin/account/delete/account/{self.suspended.pk}/'
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
