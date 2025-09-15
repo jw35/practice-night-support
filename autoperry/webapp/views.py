@@ -818,7 +818,7 @@ def account_resend(request):
         }, force=True)
 
     messages.success(request, 'Email resent')
-    logger.info(f'"{user}" reset validation request to {user.email}')
+    logger.info(f'"{user}" resent validation request to {user.email}')
 
     return render(request, "webapp/account-create-resend.html",
         context={'sender': settings.DEFAULT_FROM_EMAIL,
