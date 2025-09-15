@@ -42,8 +42,6 @@
 
         <td><a href="{% url 'account-approve' user_id=u.pk %}" class="btn btn-outline-primary btn-sm">approve</a></td>
 
-        <td><a href="{% url 'account-toggle' action='suspend' user_id=u.pk %}" class="btn btn-outline-secondary btn-sm">suspend</a></td>
-
         <td><a href="{% url 'account-delete' where_from='approve' user_id=u.pk %}" class="btn btn-secondary btn-danger btn-sm">delete</a></td>
 
       </tr>

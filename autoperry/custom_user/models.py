@@ -98,6 +98,11 @@ class User(BaseUser):
         return self.cancelled != None
 
     @property
+    @admin.display(boolean=True)
+    def is_email_blocked(self):
+        return self.email_blocked != None
+
+    @property
     def n_events_helped(self):
         """
         Return the number of events at which the user helped

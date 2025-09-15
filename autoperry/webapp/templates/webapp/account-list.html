@@ -115,11 +115,18 @@
         <td>{% if user.num_owned %}O:{{ user.num_owned }}{% endif %}</td>
 
         <td>
-        {% if user.suspended %}
-        <a href="{% url 'account-toggle' action='enable' user_id=user.pk %}" class="btn btn-outline-primary btn-sm">enable</a>
-        {% else %}
-        <a href="{% url 'account-toggle' action='suspend' user_id=user.pk %}" class="btn btn-outline-secondary btn-sm">suspend</a>
-        {%endif %}
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.pk }}">
+            <div class="form-check">
+               <input class="form-check-input" id="suspended" name="suspended" onchange="this.form.submit()" type="checkbox" value="yes" {% if user.suspended %}checked{% endif %}>
+               <label class="form-check-label" for="email_blocked">Suspended?</label>
+            </div>
+            <div class="form-check">
+               <input class="form-check-input" id="email_blocked" name="email_blocked" onchange="this.form.submit()" type="checkbox" value="yes" {% if user.email_blocked %}checked{% endif %}>
+               <label class="form-check-label" for="email_blocked">Email&nbsp;blocked?</label>
+            </div>
+          </form>
         </td>
 
         <td>

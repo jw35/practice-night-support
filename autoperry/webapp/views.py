@@ -592,6 +592,36 @@ def account_list(request):
     List accounts (admin only)
     """
 
+    # Process suspend and block_email changes
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = get_object_or_404(get_user_model(), pk=user_id)
+
+        if 'suspended' in request.POST:
+            user.suspended = timezone.now()
+            user.save()
+            logger.info(f'"{user}" suspended by "{request.user}"')
+            messages.success(request, f'Account for "{user.get_full_name()}" suspended')
+        else:
+            user.suspended = None
+            user.save()
+            logger.info(f'"{user}" re-enabled by "{request.user}"')
+            messages.success(request, f'Account for "{user.get_full_name()}" re-enabled')
+
+        if 'email_blocked' in request.POST:
+            user.email_blocked = timezone.now()
+            user.save()
+            logger.info(f'"{user}" email blocked by "{request.user}"')
+            messages.success(request, f'Email for "{user.get_full_name()}" blocked')
+        else:
+            user.email_blocked = None
+            user.save()
+            logger.info(f'"Email for {user}" re-enabled by "{request.user}"')
+            messages.success(request, f'Email for "{user.get_full_name()}" re-enabled')
+
+        return HttpResponseRedirect(reverse('account-list'))
+
     # Make search flags 'sticky', overridden by GET args
     if 'f' in request.GET:
         flags = {}
@@ -1038,56 +1068,6 @@ def account_approve(request, user_id):
     return render(request, 'webapp/account-approve.html',
         { 'candidate': user,
           'errors': errors })
-
-
-@autoperry_login_required
-@permission_required('custom_user.administrator', raise_exception=True)
-def account_toggle(request, action, user_id):
-
-    user = get_object_or_404(get_user_model(), pk=user_id)
-
-    events_as_organiser = (Event.objects.all()
-                               .filter(owner=user)
-                               .filter(start__gte=timezone.now())
-                               .filter(cancelled=None))
-    events_as_volunteer = (Event.objects.all()
-                               .filter(volunteer__person=user, volunteer__withdrawn=None, volunteer__declined=None)
-                               .filter(start__gte=timezone.now())
-                               .filter(cancelled=None))
-
-    errors = 0
-    if action == 'suspend' and user.suspended:
-        messages.error(request,f'User {user.get_full_name()} is already suspended')
-        errors += 1
-    elif action == 'enable' and not user.suspended:
-        messages.error(request,f'User {user.get_full_name()} is already enabled')
-        errors += 1
-
-    else:
-        with transaction.atomic():
-
-            if request.method == 'POST':
-
-                if action == 'enable':
-                    user.suspended = None
-                    logger.info(f'"{user}" re-enabled by "{request.user}"')
-                    messages.success(request, f'Account for {user.get_full_name()} re-enabled')
-                elif action == 'suspend':
-                    user.suspended = timezone.now()
-                    logger.info(f'"{user}" suspended by "{request.user}"')
-                    messages.success(request, f'Account for {user.get_full_name()} suspended')
-
-                user.save()
-
-                return HttpResponseRedirect(reverse('account-list'))
-
-    return render(request, 'webapp/account-toggle.html',
-        { 'target_user': user,
-          'action': action,
-          'errors': errors,
-          'events_as_organiser': events_as_organiser,
-          'events_as_volunteer': events_as_volunteer
-        })
 
 
 @autoperry_login_required

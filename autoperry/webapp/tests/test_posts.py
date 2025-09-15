@@ -475,50 +475,62 @@ class PermissionsTestCase(TestCase):
     def test_account_suspend(self):
 
         self.assertTrue(self.client.login(username=self.admin.email, password='password'),f'Logging in {self.admin.email}')
+        self.assertIsNone(self.live.suspended)
 
-        response = self.client.post('/admin/account-toggle/suspend/1/',
-            { 'confirm': 'Suspend' }, follow=True)
+        response = self.client.post('/admin/account-list/',
+            { "user_id": self.live.pk, "suspended": "Yes" }, follow=True)
+
+        self.live.refresh_from_db()
+        self.assertIsNotNone(self.live.suspended)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'webapp/account-list.html')
-        self.assertContains(response, f'Account for {self.live.first_name} {self.live.last_name} suspended')
+        self.assertContains(response, f'Account for &quot;{self.live.first_name} {self.live.last_name}&quot; suspended')
 
-        self.live.refresh_from_db()
-        self.assertIsNotNone(self.live.suspended)
-
-        # Try to do it again
-
-        response = self.client.post('/admin/account-toggle/suspend/1/',
-            { 'confirm': 'Suspend' }, follow=True)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'webapp/account-toggle.html')
-        self.assertContains(response, 'is already suspended')
-
-        self.live.refresh_from_db()
-        self.assertIsNotNone(self.live.suspended)
 
         # Reverse it
 
-        response = self.client.post('/admin/account-toggle/enable/1/',
-            { 'confirm': 'Enable' }, follow=True)
+        self.assertIsNotNone(self.live.suspended)
+
+        response = self.client.post('/admin/account-list/',
+            { "user_id": self.live.pk }, follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'webapp/account-list.html')
-        self.assertContains(response, f'Account for {self.live.first_name} {self.live.last_name} re-enabled')
 
         self.live.refresh_from_db()
         self.assertIsNone(self.live.suspended)
 
-        # And try to do it again
+        self.assertContains(response, f'Account for &quot;{self.live.first_name} {self.live.last_name}&quot; re-enabled')
 
-        response = self.client.post('/admin/account-toggle/enable/1/',
-            { 'confirm': 'Enable' }, follow=True)
+
+    def test_email_block(self):
+
+        self.assertTrue(self.client.login(username=self.admin.email, password='password'),f'Logging in {self.admin.email}')
+        self.assertIsNone(self.live.email_blocked)
+
+        response = self.client.post('/admin/account-list/',
+            { "user_id": self.live.pk, "email_blocked": "Yes" }, follow=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'webapp/account-toggle.html')
-        self.assertContains(response, 'is already enabled')
+        self.assertTemplateUsed(response, 'webapp/account-list.html')
 
         self.live.refresh_from_db()
-        self.assertIsNone(self.live.suspended)
+        self.assertIsNotNone(self.live.email_blocked)
 
+        self.assertContains(response, f'Email for &quot;{self.live.first_name} {self.live.last_name}&quot; blocked')
+
+        # Reverse it
+
+        self.assertIsNotNone(self.live.email_blocked)
+
+        response = self.client.post('/admin/account-list/',
+            { "user_id": self.live.pk }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'webapp/account-list.html')
+
+        self.live.refresh_from_db()
+        self.assertIsNone(self.live.email_blocked)
+
+        self.assertContains(response, f'Email for &quot;{self.live.first_name} {self.live.last_name}&quot; re-enabled')

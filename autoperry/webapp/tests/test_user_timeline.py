@@ -156,8 +156,8 @@ class UserTimelineTestCase(TestCase):
         #
 
         self.assertFalse(user.suspended, 'not yet suspended')
-        response = self.client.post(f'/admin/account-toggle/suspend/{uid}/',
-            { 'confirm': 'Suspend'})
+        response = self.client.post('/admin/account-list/',
+            { "user_id": user.pk, "suspended": "Yes" })
         self.assertRedirects(response, '/admin/account-list/')
         user.refresh_from_db()
         self.assertTrue(user.suspended, 'now suspended')
@@ -166,8 +166,8 @@ class UserTimelineTestCase(TestCase):
         # Put them back
         #
 
-        response = self.client.post(f'/admin/account-toggle/enable/{uid}/',
-            { 'confirm': 'Enable'})
+        response = self.client.post('/admin/account-list/',
+            { "user_id": user.pk })
         self.assertRedirects(response, '/admin/account-list/')
         user.refresh_from_db()
         self.assertFalse(user.suspended, 'reenabled')

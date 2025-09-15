@@ -37,7 +37,6 @@ urlpatterns = [
     path(r"admin/account-list-csv/", views.account_list_csv, name="account-list-csv"),
     path(r"admin/account-approve-list/", views.account_approve_list, name="account-approve-list"),
     path(r"admin/account-approve/<int:user_id>/", views.account_approve, name="account-approve"),
-    path(r"admin/account-toggle/<str:action>/<int:user_id>/", views.account_toggle, name="account-toggle"),
     path(r"admin/account/delete/<str:where_from>/<int:user_id>/", views.account_delete, name="account-delete"),
     path(r"stats/", views.stats_screen, name="stats"),
     path(r"ical/future/<str:uuid>/", views.ical_future, name="ical-future"),

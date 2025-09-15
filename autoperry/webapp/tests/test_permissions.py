@@ -61,7 +61,6 @@ admin_urls  = ['/admin/send-emails/',
                '/admin/account-list/',
                '/admin/account-approve-list/',
                '/admin/account-approve/1/',
-               '/admin/account-toggle/suspend/1/',
                ]
 
 

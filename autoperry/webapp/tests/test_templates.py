@@ -24,5 +24,5 @@ class TemplateTestCase(TestCase):
                 with self.subTest(name):
                     try:
                         template = get_template(name)
-                    except TemplateSyntaxError as e:
-                         self.fail("Syntax error - '" + str(e) + "'")
+                    except Exception as e:
+                         self.fail("Template error - '" + str(e) + "'" + " in " + name)
