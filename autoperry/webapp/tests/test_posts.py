@@ -17,6 +17,7 @@ class PermissionsTestCase(TestCase):
     def setUpTestData(cls):
 
         user_model = get_user_model()
+        cls.user_model = user_model
 
         cls.live = user_model.objects.create_user(
             email='live@autoperry.com',
@@ -49,6 +50,13 @@ class PermissionsTestCase(TestCase):
             tower='Little Shelford',
             email_validated=timezone.now(),
             approved=timezone.now())
+
+        cls.registered = user_model.objects.create_user(
+            email='registered@autoperry.com',
+            password='password',
+            first_name='Albert',
+            last_name='Registered',
+            tower='Little Shelford')
 
         anchor = timezone.now() + timedelta(days=1)
 
@@ -534,3 +542,33 @@ class PermissionsTestCase(TestCase):
         self.assertIsNone(self.live.email_blocked)
 
         self.assertContains(response, f'Email for &quot;{self.live.first_name} {self.live.last_name}&quot; re-enabled')
+
+    def test_delete(self):
+
+        self.assertTrue(self.client.login(username=self.admin.email, password='password'),f'Logging in {self.admin.email}')
+
+        with self.subTest('Registered user'):
+            # self.registered is deletable
+            pk = self.registered.pk
+            response = self.client.post(f'/admin/account/delete/account/{self.registered.pk}/',
+                { "confirm": "Yes, delete this account" }, follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'webapp/account-list.html')
+
+            self.assertContains(response, f'User {self.registered.first_name} {self.registered.last_name} deleted')
+
+            # Check the object is gone from the database
+            with self.assertRaises(self.user_model.DoesNotExist):
+                self.registered.refresh_from_db()
+
+        with self.subTest('Live user'):
+            # Self live isn't deletable
+            response = self.client.post(f'/admin/account/delete/account/{self.live.pk}/',
+                { "confirm": "Yes, delete this account" })
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'webapp/account-delete.html')
+
+            self.assertContains(response, f'This account has been approved - only unapproved accounts can be deleted.')
+
+            # Check the object is NOT gone from the database
+            self.live.refresh_from_db()
