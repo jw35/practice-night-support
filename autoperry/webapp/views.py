@@ -484,7 +484,7 @@ def volunteer(request, event_id):
                     declined=None).count()
                 # Celebrate first, 5th and every subsequent 10
                 if (user.volunteer_celebration < volountered and
-                   (volountered == 1 or volountered == 5 or volountered % 10 == 0)):
+                   (volountered == 1 or volountered % 5 == 0)):
                     user.volunteer_celebration = volountered
                     user.save()
                     text = render_to_string(f"webapp/celebration-fragment.html", { 'number': volountered })
